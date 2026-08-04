@@ -1,0 +1,7 @@
+series,method,n_known,n_filled,train_r2
+ALU,ridge_loglevel,6,94,0.025543599081573776
+CIPI_BLDG,ridge_loglevel,6,94,0.07397893595447314
+CIPI_CIVIL,ridge_loglevel,6,94,0.018216155495974884
+IRONSTEEL,ridge_loglevel,6,94,0.05470913915005171
+MURRAM,insufficient_overlap,6,0,
+NAILS,ridge_loglevel,6,94,0.1469288369480145

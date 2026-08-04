@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d0" for="edge" attr.name="weight" attr.type="double" />
+  <graph edgedefault="directed">
+    <node id="CEM" />
+    <node id="AGG" />
+    <node id="PAINT" />
+    <node id="DIESEL" />
+    <node id="BRICK" />
+    <node id="IRON" />
+    <node id="STEEL" />
+    <node id="LABOUR" />
+    <node id="LIME" />
+    <node id="SAND" />
+    <node id="CLAY" />
+    <node id="TILES" />
+    <node id="TIMBER" />
+    <node id="PIPES" />
+    <edge source="CEM" target="AGG">
+      <data key="d0">22.613453511615766</data>
+    </edge>
+    <edge source="CEM" target="DIESEL">
+      <data key="d0">12.699069780507912</data>
+    </edge>
+    <edge source="CEM" target="IRON">
+      <data key="d0">7.948633619614287</data>
+    </edge>
+    <edge source="CEM" target="LABOUR">
+      <data key="d0">10.601111555649318</data>
+    </edge>
+    <edge source="CEM" target="LIME">
+      <data key="d0">36.9806912724071</data>
+    </edge>
+    <edge source="CEM" target="PAINT">
+      <data key="d0">27.497595661278595</data>
+    </edge>
+    <edge source="CEM" target="SAND">
+      <data key="d0">10.99687110173929</data>
+    </edge>
+    <edge source="CEM" target="STEEL">
+      <data key="d0">11.750847119990945</data>
+    </edge>
+    <edge source="AGG" target="SAND">
+      <data key="d0">6.760600419228502</data>
+    </edge>
+    <edge source="AGG" target="STEEL">
+      <data key="d0">13.023523131038539</data>
+    </edge>
+    <edge source="PAINT" target="AGG">
+      <data key="d0">8.180940150173177</data>
+    </edge>
+    <edge source="PAINT" target="CEM">
+      <data key="d0">6.453623411988617</data>
+    </edge>
+    <edge source="PAINT" target="LIME">
+      <data key="d0">5.197835606462858</data>
+    </edge>
+    <edge source="PAINT" target="SAND">
+      <data key="d0">9.05293874464119</data>
+    </edge>
+    <edge source="DIESEL" target="BRICK">
+      <data key="d0">5.672985873894331</data>
+    </edge>
+    <edge source="DIESEL" target="IRON">
+      <data key="d0">6.138121994346697</data>
+    </edge>
+    <edge source="DIESEL" target="LABOUR">
+      <data key="d0">11.247227904938747</data>
+    </edge>
+    <edge source="DIESEL" target="SAND">
+      <data key="d0">6.368901297479758</data>
+    </edge>
+    <edge source="DIESEL" target="STEEL">
+      <data key="d0">5.3823085831714375</data>
+    </edge>
+    <edge source="BRICK" target="LIME">
+      <data key="d0">10.467720628409198</data>
+    </edge>
+    <edge source="BRICK" target="SAND">
+      <data key="d0">5.547351294524998</data>
+    </edge>
+    <edge source="IRON" target="PAINT">
+      <data key="d0">6.0150413086328856</data>
+    </edge>
+    <edge source="IRON" target="SAND">
+      <data key="d0">5.124797672600217</data>
+    </edge>
+    <edge source="STEEL" target="IRON">
+      <data key="d0">6.090972699290922</data>
+    </edge>
+    <edge source="STEEL" target="PAINT">
+      <data key="d0">6.409589560659248</data>
+    </edge>
+    <edge source="LIME" target="TIMBER">
+      <data key="d0">13.343291295977789</data>
+    </edge>
+    <edge source="CLAY" target="TILES">
+      <data key="d0">30.954355924246986</data>
+    </edge>
+    <edge source="PIPES" target="TIMBER">
+      <data key="d0">5.739365340708431</data>
+    </edge>
+  </graph>
+</graphml>

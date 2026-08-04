@@ -1,0 +1,15 @@
+{
+  "panel_shape": [
+    106,
+    29
+  ],
+  "coverage_file": "data/processed/diagnostics/coverage_metrics.csv",
+  "missingness_map": "data/processed/diagnostics/missingness_map.png",
+  "coverage_heatmap": "data/processed/diagnostics/coverage_heatmap.png",
+  "unit_root_tests": "data/processed/diagnostics/unit_root_stationarity_tests.csv",
+  "break_scans": "data/processed/diagnostics/bai_perron_style_breaks.csv",
+  "rebasing_history": "data/processed/diagnostics/rebasing_history_summary.csv",
+  "n_series_stationarity": 29,
+  "n_series_break_scan": 29,
+  "n_series_rebasing": 18
+}

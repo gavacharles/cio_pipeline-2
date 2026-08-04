@@ -1,0 +1,3 @@
+comparison,status,n_overlap,start,end,corr,mad_index_points,rmse_index_points
+CIPI vs CPI,ok,100,2017-07-01,2026-04-01,0.9724,2.256,3.179
+CIPI vs PPI-manufacturing,ok,100,2017-07-01,2026-04-01,0.9901,3.467,3.828

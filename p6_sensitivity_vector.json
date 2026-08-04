@@ -1,0 +1,9 @@
+{
+  "exchange_rate_sensitivity": 8.596282391791425,
+  "cpi_sensitivity": 0.2765278573846723,
+  "asymmetry": {
+    "mean_cipi_when_depreciation": 0.38105354692578575,
+    "mean_cipi_when_appreciation": 0.2491644884388139,
+    "asymmetry": 0.13188905848697186
+  }
+}

@@ -1,0 +1,5 @@
+series,n_rows,n_nonnull_panel,n_nonnull_source,max_abs_diff,mean_abs_diff,exact_match_rows
+total_central_government_revenue,168,168,168,0.0,0.0,168
+overall_public_expenditure,168,168,168,0.0,0.0,168
+fiscal_deficit,168,168,168,0.0,0.0,168
+total_public_debt,168,168,168,0.0,0.0,168

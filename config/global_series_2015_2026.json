@@ -1,0 +1,163 @@
+{
+  "window": {
+    "start_year": 2015,
+    "end_year": 2026,
+    "country_iso3": "UGA",
+    "reporter_iso3": "UGA"
+  },
+  "sources": [
+    {
+      "source": "MOFPED/BoU/UBOS via ugatsdb",
+      "provider": "ugatsdb",
+      "dataset": "BOU_E",
+      "series": "E_PERIOD_AVG_USD",
+      "var": "exchange_rate_ugx_usd",
+      "frequency": "monthly",
+      "notes": "MoFPED Macro Data Portal API package ugatsdb"
+    },
+    {
+      "source": "MOFPED/BoU via ugatsdb",
+      "provider": "ugatsdb",
+      "dataset": "BOU_MMI",
+      "series": "CBR",
+      "var": "central_bank_rate",
+      "frequency": "monthly",
+      "notes": "Central Bank Rate"
+    },
+    {
+      "source": "MOFPED/BoU via ugatsdb",
+      "provider": "ugatsdb",
+      "dataset": "BOU_I",
+      "series": "LENDING_RATE",
+      "var": "lending_rate",
+      "frequency": "monthly",
+      "notes": "Commercial bank lending rate"
+    },
+    {
+      "source": "MOFPED/UBOS via ugatsdb",
+      "provider": "ugatsdb",
+      "dataset": "BOU_CPI",
+      "series": "CPI_HEADLINE",
+      "var": "cpi_headline",
+      "frequency": "monthly",
+      "notes": "Headline CPI mirror"
+    },
+    {
+      "source": "MOFPED/BoU via ugatsdb",
+      "provider": "ugatsdb",
+      "dataset": "BOU_PSC",
+      "series": "PSC_TOTAL",
+      "var": "private_sector_credit",
+      "frequency": "monthly",
+      "notes": "Private sector credit"
+    },
+    {
+      "source": "World Bank WDI",
+      "provider": "world_bank",
+      "dataset": "WDI",
+      "series": "PA.NUS.FCRF",
+      "var": "wb_official_exchange_rate_lcu_per_usd",
+      "frequency": "annual",
+      "notes": "Official exchange rate"
+    },
+    {
+      "source": "World Bank WDI",
+      "provider": "world_bank",
+      "dataset": "WDI",
+      "series": "FP.CPI.TOTL.ZG",
+      "var": "wb_inflation_cpi_pct",
+      "frequency": "annual",
+      "notes": "Inflation, consumer prices"
+    },
+    {
+      "source": "World Bank WDI",
+      "provider": "world_bank",
+      "dataset": "WDI",
+      "series": "FR.INR.LEND",
+      "var": "wb_lending_interest_rate_pct",
+      "frequency": "annual",
+      "notes": "Lending interest rate"
+    },
+    {
+      "source": "World Bank WDI",
+      "provider": "world_bank",
+      "dataset": "WDI",
+      "series": "NE.CON.TOTL.KD.ZG",
+      "var": "wb_household_consumption_growth_pct",
+      "frequency": "annual",
+      "notes": "Activity proxy"
+    },
+    {
+      "source": "IMF WEO",
+      "provider": "imf_weo",
+      "dataset": "WEO",
+      "series": "NGDP_RPCH",
+      "var": "imf_real_gdp_growth_pct",
+      "frequency": "annual",
+      "notes": "Real GDP growth"
+    },
+    {
+      "source": "IMF WEO",
+      "provider": "imf_weo",
+      "dataset": "WEO",
+      "series": "PCPIPCH",
+      "var": "imf_cpi_inflation_pct",
+      "frequency": "annual",
+      "notes": "CPI inflation"
+    },
+    {
+      "source": "IMF WEO",
+      "provider": "imf_weo",
+      "dataset": "WEO",
+      "series": "LP",
+      "var": "imf_population_mn",
+      "frequency": "annual",
+      "notes": "Population level"
+    },
+    {
+      "source": "ILO ILOSTAT",
+      "provider": "manual",
+      "dataset": "ILOSTAT",
+      "series": "UNE_TUNE_SEX_AGE_RT_A",
+      "var": "ilo_unemployment_rate",
+      "frequency": "annual",
+      "notes": "Fetch manually if API endpoint differs"
+    },
+    {
+      "source": "UN Comtrade",
+      "provider": "manual",
+      "dataset": "HS total trade",
+      "series": "imports_exports_total",
+      "var": "comtrade_total_trade_value_usd",
+      "frequency": "annual",
+      "notes": "Use manual extraction if API key/rate limits bind"
+    },
+    {
+      "source": "UBOS datasets",
+      "provider": "manual",
+      "dataset": "CIPI Excel Tables",
+      "series": "CIPI_HEADLINE",
+      "var": "ubos_cipi_headline",
+      "frequency": "monthly",
+      "notes": "Already harvested from UBOS datasets page"
+    },
+    {
+      "source": "UBOS datasets",
+      "provider": "manual",
+      "dataset": "PPI Manufacturing and Utilities Excel Tables",
+      "series": "PPI_MANUFACTURING",
+      "var": "ubos_ppi_manufacturing",
+      "frequency": "monthly",
+      "notes": "Already harvested from UBOS datasets page"
+    },
+    {
+      "source": "UBOS datasets",
+      "provider": "manual",
+      "dataset": "CPI Excel Tables",
+      "series": "CPI_HEADLINE",
+      "var": "ubos_cpi_headline",
+      "frequency": "monthly",
+      "notes": "Already harvested from UBOS datasets page"
+    }
+  ]
+}

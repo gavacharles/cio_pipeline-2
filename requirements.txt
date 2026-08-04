@@ -1,0 +1,15 @@
+# CiO price-panel pipeline + estimation templates — Python dependencies
+pandas>=2.0
+numpy>=1.24
+openpyxl>=3.1          # UBOS CIPI .xlsx parsing
+pyarrow>=14.0          # parquet panel I/O
+statsmodels>=0.14      # VAR/SVAR, FEVD, local projections (P4, P6), STL, unit-root (P1)
+arch>=6.2              # (G)ARCH / DCC-GARCH volatility (P4, P5)
+ruptures>=1.1          # change-point / structural-break detection (P1, P5)
+networkx>=3.1          # spillover & centrality networks (P4, P5)
+tslearn>=0.6           # DTW k-means time-series clustering (P3)
+umap-learn>=0.5        # embedding stability check vs t-SNE (P3) [optional]
+scikit-learn>=1.3      # k-medoids, t-SNE, ridge baselines (P3, P9)
+torch>=2.1             # LSTM/GRU forecasting (P9) [optional; ridge fallback provided]
+matplotlib>=3.7        # figures
+pytest>=7.4            # test suite

@@ -1,0 +1,15 @@
+{
+  "input_panel": "data/processed/panel_v1.0.parquet",
+  "output_panel": "data/processed/panel_v1.0_filled_sparse.parquet",
+  "targets": [
+    "ALU",
+    "CIPI_BLDG",
+    "CIPI_CIVIL",
+    "IRONSTEEL",
+    "MURRAM",
+    "NAILS"
+  ],
+  "rows": 106,
+  "columns": 29,
+  "report": "data/processed/panel_v1.0_filled_sparse_fill_report.csv"
+}

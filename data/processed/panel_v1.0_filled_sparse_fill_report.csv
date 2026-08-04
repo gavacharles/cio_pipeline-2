@@ -1,0 +1,7 @@
+series,method,n_known,n_filled,train_r2
+ALU,ridge_plus_ratio_cipi_mat,6,100,0.025543599081573776
+CIPI_BLDG,ridge_plus_ratio_cipi_mat,6,100,0.07397893595447314
+CIPI_CIVIL,ridge_plus_ratio_cipi_mat,6,100,0.018216155495974884
+IRONSTEEL,ridge_plus_ratio_cipi_mat,6,100,0.05470913915005171
+MURRAM,ratio_to_cipi_mat,6,100,
+NAILS,ridge_plus_ratio_cipi_mat,6,100,0.1469288369480145

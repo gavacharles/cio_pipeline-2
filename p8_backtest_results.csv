@@ -1,0 +1,4 @@
+project,window_start,window_end,fixed_final_margin,dam_final_margin,margin_protected,fixed_margin_var,dam_margin_var,n_adjustments
+road,2022-03-01,2023-08-01,-0.1112,-0.0592,0.052,0.00128,0.000493,4
+building,2022-03-01,2023-08-01,0.1686,0.1749,0.0063,0.006162,0.006383,2
+water,2022-03-01,2023-08-01,0.281,0.2918,0.0108,0.014883,0.015492,2

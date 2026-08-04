@@ -1,0 +1,15 @@
+# Editable mapping consumed by pull_ugatsdb.R and documented for reviewers.
+# Dataset/series codes come from the MoFPED portal Data Catalog (API tab).
+# Verify against datasets()/series() before a production run, as codes can be revised.
+macro_block:
+  exchange_rate:      { dataset: BOU_E,   series: E_PERIOD_AVG_USD, freq: monthly }
+  central_bank_rate:  { dataset: BOU_MMI, series: CBR,              freq: monthly }
+  lending_rate:       { dataset: BOU_I,   series: LENDING_RATE,     freq: monthly }
+  cpi_headline:       { dataset: BOU_CPI, series: CPI_HEADLINE,     freq: monthly }
+  private_credit:     { dataset: BOU_PSC, series: PSC_TOTAL,        freq: monthly }
+  gdp_nominal:        { dataset: UBOS_GDP_CP, series: GDP_TOTAL,    freq: quarterly }
+
+cipi:
+  start: "2016-01-01"
+  base_note: "UBOS rebased the index (e.g. Aug-2022 'rebased' release); splicing is mandatory."
+  headline_code: CIPI_ALL

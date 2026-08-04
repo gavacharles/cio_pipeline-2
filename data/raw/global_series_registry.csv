@@ -1,0 +1,18 @@
+source,provider,dataset,series,var,frequency,start_year,end_year,status,message,notes,updated_utc
+MOFPED/BoU/UBOS via ugatsdb,ugatsdb,BOU_E,E_PERIOD_AVG_USD,exchange_rate_ugx_usd,monthly,2015,2026,ok,546 rows,MoFPED Macro Data Portal API package ugatsdb,2026-07-22T14:39:07
+MOFPED/BoU via ugatsdb,ugatsdb,BOU_MMI,CBR,central_bank_rate,monthly,2015,2026,ok,232 rows,Central Bank Rate,2026-07-22T14:39:07
+MOFPED/BoU via ugatsdb,ugatsdb,BOU_I,LENDING_RATE,lending_rate,monthly,2015,2026,ok,482 rows,Commercial bank lending rate,2026-07-22T14:39:07
+MOFPED/UBOS via ugatsdb,ugatsdb,BOU_CPI,CPI_HEADLINE,cpi_headline,monthly,2015,2026,ok,198 rows,Headline CPI mirror,2026-07-22T14:39:07
+MOFPED/BoU via ugatsdb,ugatsdb,BOU_PSC,PSC_TOTAL,private_sector_credit,monthly,2015,2026,ok,228 rows,Private sector credit,2026-07-22T14:39:07
+World Bank WDI,world_bank,WDI,PA.NUS.FCRF,wb_official_exchange_rate_lcu_per_usd,annual,2015,2026,ok,11 rows,Official exchange rate,2026-07-22T14:39:07
+World Bank WDI,world_bank,WDI,FP.CPI.TOTL.ZG,wb_inflation_cpi_pct,annual,2015,2026,ok,11 rows,"Inflation, consumer prices",2026-07-22T14:39:08
+World Bank WDI,world_bank,WDI,FR.INR.LEND,wb_lending_interest_rate_pct,annual,2015,2026,ok,4 rows,Lending interest rate,2026-07-22T14:39:08
+World Bank WDI,world_bank,WDI,NE.CON.TOTL.KD.ZG,wb_household_consumption_growth_pct,annual,2015,2026,ok,11 rows,Activity proxy,2026-07-22T14:39:08
+IMF WEO,imf_weo,WEO,NGDP_RPCH,imf_real_gdp_growth_pct,annual,2015,2026,failed,HTTP Error 403: Forbidden,Real GDP growth,2026-07-22T14:39:08
+IMF WEO,imf_weo,WEO,PCPIPCH,imf_cpi_inflation_pct,annual,2015,2026,failed,HTTP Error 403: Forbidden,CPI inflation,2026-07-22T14:39:09
+IMF WEO,imf_weo,WEO,LP,imf_population_mn,annual,2015,2026,failed,HTTP Error 403: Forbidden,Population level,2026-07-22T14:39:09
+ILO ILOSTAT,manual,ILOSTAT,UNE_TUNE_SEX_AGE_RT_A,ilo_unemployment_rate,annual,2015,2026,manual,manual-only source; series quoted in registry,Fetch manually if API endpoint differs,2026-07-22T14:39:09
+UN Comtrade,manual,HS total trade,imports_exports_total,comtrade_total_trade_value_usd,annual,2015,2026,manual,manual-only source; series quoted in registry,Use manual extraction if API key/rate limits bind,2026-07-22T14:39:09
+UBOS datasets,manual,CIPI Excel Tables,CIPI_HEADLINE,ubos_cipi_headline,monthly,2015,2026,manual,manual-only source; series quoted in registry,Already harvested from UBOS datasets page,2026-07-22T14:39:09
+UBOS datasets,manual,PPI Manufacturing and Utilities Excel Tables,PPI_MANUFACTURING,ubos_ppi_manufacturing,monthly,2015,2026,manual,manual-only source; series quoted in registry,Already harvested from UBOS datasets page,2026-07-22T14:39:09
+UBOS datasets,manual,CPI Excel Tables,CPI_HEADLINE,ubos_cpi_headline,monthly,2015,2026,manual,manual-only source; series quoted in registry,Already harvested from UBOS datasets page,2026-07-22T14:39:09

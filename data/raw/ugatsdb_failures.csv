@@ -1,0 +1,6 @@
+"var","dataset","series","error"
+"exchange_rate","BOU_E","E_PERIOD_AVG_USD","empty result (likely connection blocked or bad series code)"
+"central_bank_rate","BOU_MMI","CBR","empty result (likely connection blocked or bad series code)"
+"lending_rate","BOU_I","LENDING_RATE","empty result (likely connection blocked or bad series code)"
+"cpi","BOU_CPI","CPI_HEADLINE","empty result (likely connection blocked or bad series code)"
+"private_credit","BOU_PSC","PSC_TOTAL","empty result (likely connection blocked or bad series code)"
