@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CiO Phase 0 Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --page:#121314; --surface:#1b1d1f; --surface-2:#232628; --line:#2e3134; --line-2:#3a3e42;
+  --ink:#f3f1ec; --ink-2:#c6c3ba; --ink-3:#8d8b84;
+  --accent:#e0a458; --accent-ink:#1a1408;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#4fae4f; --s7:#9085e9; --s8:#e66767;
+  --good:#3fb950; --warn:#fab219; --crit:#e05c5c;
+  --display:"Archivo",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --rail:220px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(30px,4vw,46px);line-height:1.05;font-weight:700}
+h2{font-size:26px;font-weight:600;line-height:1.15}
+h3{font-size:17px;font-weight:600}
+p{margin:0}
+.lede{color:var(--ink-2);max-width:62ch;font-size:16px}
+.kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+code{font-family:var(--mono);font-size:.9em;background:var(--surface-2);padding:1px 5px;border-radius:3px;color:var(--ink-2)}
+
+/* shell */
+.shell{display:grid;grid-template-columns:var(--rail) 1fr;min-height:100vh}
+.rail{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column;gap:22px;background:var(--page)}
+.brand{display:flex;flex-direction:column;gap:6px}
+.brand .mark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em}
+.brand .mark i{width:22px;height:22px;border:2px solid var(--accent);border-radius:50%;display:inline-block;position:relative}
+.brand .mark i::after{content:"";position:absolute;inset:5px;background:var(--accent);border-radius:50%}
+.brand small{color:var(--ink-3);font-size:12px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:baseline;padding:8px 10px;border-radius:6px;color:var(--ink-2);text-decoration:none;font-size:14px}
+.nav a .n{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.nav a:hover{background:var(--surface);color:var(--ink)}
+.nav a.active{background:var(--surface-2);color:var(--ink)}
+.nav a.active .n{color:var(--accent)}
+.rail .meta{margin-top:auto;font-size:12px;color:var(--ink-3);line-height:1.5}
+.rail .meta b{color:var(--ink-2);font-weight:500}
+main{min-width:0;padding:0 clamp(20px,4vw,56px) 80px}
+section.block{padding:64px 0 24px;border-top:1px solid var(--line);scroll-margin-top:0}
+section.block:first-of-type{border-top:0;padding-top:48px}
+.sec-head{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:28px;max-width:900px}
+.sec-head .kicker{margin-bottom:2px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:820px){.shell{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}.nav{flex-direction:row;flex-wrap:wrap}.rail .meta{display:none}.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* tiles & panels */
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tile .v{font-family:var(--display);font-size:32px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.tile .v small{font-size:15px;color:var(--ink-3);font-weight:500;margin-left:4px}
+.tile .l{color:var(--ink-3);font-size:13px}
+.tile .d{color:var(--ink-2);font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.panel-head h3{font-size:16px}
+.panel-head .sub{color:var(--ink-3);font-size:13px}
+.chart{width:100%;height:340px}
+.chart.tall{height:440px}
+.chart.short{height:240px}
+.note{color:var(--ink-3);font-size:12.5px;line-height:1.5;margin-top:10px}
+.prose{color:var(--ink-2);max-width:68ch;display:flex;flex-direction:column;gap:10px}
+.prose strong{color:var(--ink);font-weight:600}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-2);background:transparent;color:var(--ink-2);border-radius:999px;padding:4px 11px 4px 8px;font:500 12.5px var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--line-2);display:inline-block}
+.chip.on{background:var(--surface-2);color:var(--ink);border-color:var(--ink-3)}
+.chip:focus-visible,.nav a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.toolbar{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-start;margin-bottom:14px}
+.toolbar .group{display:flex;flex-direction:column;gap:6px}
+.toolbar .group .kicker{font-size:10.5px}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);cursor:pointer}
+.toggle input{accent-color:var(--accent)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+table.wrap th,table.wrap td{white-space:normal}
+table.wrap td.num{white-space:nowrap}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:500;background:var(--surface)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:rgba(255,255,255,.025)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-family:var(--mono);border:1px solid var(--line-2);color:var(--ink-2)}
+.pill.good{color:var(--good);border-color:rgba(63,185,80,.4)}
+.pill.warn{color:var(--warn);border-color:rgba(250,178,25,.4)}
+.pill.crit{color:var(--crit);border-color:rgba(224,92,92,.4)}
+details{border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+details summary{cursor:pointer;padding:12px 16px;font-weight:500;color:var(--ink-2);list-style:none;display:flex;justify-content:space-between}
+details summary::after{content:"+";font-family:var(--mono);color:var(--ink-3)}
+details[open] summary::after{content:"–"}
+details .tbl-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 8px 8px}
+
+/* coverage bars */
+.cov{display:grid;grid-template-columns:190px 1fr 60px;gap:6px 14px;align-items:center;font-size:13px}
+.cov .lab{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cov .track{position:relative;height:14px;background:var(--surface-2);border-radius:3px}
+.cov .bar{position:absolute;top:0;bottom:0;border-radius:3px;background:var(--s1);opacity:.85}
+.cov .bar.gap{background:repeating-linear-gradient(135deg,var(--s1) 0 3px,transparent 3px 6px);opacity:.55}
+.cov .pct{text-align:right;color:var(--ink-3)}
+.cov-axis{display:grid;grid-template-columns:190px 1fr 60px;gap:14px;font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-bottom:8px}
+.cov-axis .ax{display:flex;justify-content:space-between}
+
+/* pipeline diagram */
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch;position:relative}
+.stage{position:relative;padding:16px 18px 16px 18px;border:1px solid var(--line);background:var(--surface);min-width:0}
+.stage:first-child{border-radius:8px 0 0 8px}.stage:last-child{border-radius:0 8px 8px 0}
+.stage+.stage{border-left:0}
+.stage .kicker{color:var(--accent);margin-bottom:6px}
+.stage h4{font-size:15px;margin-bottom:6px}
+.stage p{color:var(--ink-3);font-size:12.5px;line-height:1.45}
+.stage ul{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
+.stage li{font-family:var(--mono);font-size:11px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stage .cnt{font-family:var(--display);font-size:22px;font-weight:600;margin-top:10px}
+.stage .cnt small{font-family:var(--body);font-size:12px;color:var(--ink-3);font-weight:400;margin-left:4px}
+.stage::after{content:"";position:absolute;right:-7px;top:50%;width:12px;height:12px;border-top:1px solid var(--line-2);border-right:1px solid var(--line-2);transform:translateY(-50%) rotate(45deg);background:var(--surface);z-index:1}
+.stage:last-child::after{display:none}
+@media (max-width:1100px){.pipe{grid-template-columns:1fr}.stage{border-radius:0!important;border-left:1px solid var(--line)}.stage+.stage{border-top:0}.stage::after{display:none}}
+
+/* products */
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.product{padding:18px 20px;border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,var(--surface),var(--page))}
+.product h3{margin-bottom:8px}
+.product p{color:var(--ink-2);font-size:13.5px}
+.product .from{margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+@media (max-width:820px){.products{grid-template-columns:1fr}}
+
+/* clusters */
+.clusters{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.cluster{border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--surface)}
+.cluster .kicker{margin-bottom:8px}
+.cluster .mats{display:flex;flex-wrap:wrap;gap:6px}
+.cluster .mats span{padding:3px 8px;border-radius:4px;background:var(--surface-2);font-size:12.5px;color:var(--ink-2)}
+
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.road>div{padding:18px 20px;border-left:1px solid var(--line);background:var(--surface)}
+.road>div:first-child{border-left:0}
+.road .st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.road .st i{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.road .st.done{color:var(--good)}.road .st.done i{background:var(--good)}
+.road .st.next{color:var(--accent)}.road .st.next i{background:var(--accent)}
+.road h3{margin-bottom:8px}
+.road ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+@media (max-width:1100px){.road{grid-template-columns:1fr 1fr}.road>div:nth-child(3){border-left:0;border-top:1px solid var(--line)}.road>div:nth-child(4){border-top:1px solid var(--line)}}
+@media (max-width:820px){.road{grid-template-columns:1fr}.road>div{border-left:0;border-top:1px solid var(--line)}}
+
+.footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-3);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<!--__ECHARTS__-->
+<script>const DATA=/*__CIO_DATA__*/null;</script>
+
+<div class="shell">
+<aside class="rail">
+  <div class="brand">
+    <div class="mark"><i></i>CiO Institute</div>
+    <small>Phase 0 · Price-panel foundation</small>
+  </div>
+  <nav class="nav" id="nav">
+    <a href="#overview"><span class="n">01</span>Overview</a>
+    <a href="#foundation"><span class="n">02</span>Data foundation</a>
+    <a href="#explorer"><span class="n">03</span>Price explorer</a>
+    <a href="#audit"><span class="n">04</span>Audit trail</a>
+    <a href="#research"><span class="n">05</span>Research outputs</a>
+    <a href="#fiscal"><span class="n">06</span>Fiscal context</a>
+    <a href="#roadmap"><span class="n">07</span>Roadmap</a>
+  </nav>
+  <div class="meta" id="railMeta"></div>
+</aside>
+
+<main>
+
+<!-- 01 OVERVIEW -->
+<section class="block" id="overview">
+  <div class="sec-head">
+    <span class="kicker">01 · Overview</span>
+    <h1>One price panel for Uganda's construction economy</h1>
+    <p class="lede">Phase 0 turns nine years of Uganda Bureau of Statistics construction-price releases and the Ministry of Finance macro portal into a single, audited, monthly panel — the foundation every CiO product and paper builds on.</p>
+  </div>
+  <div class="grid g4" id="heroTiles"></div>
+  <div style="height:28px"></div>
+  <div class="panel-head"><h3>How the data moves</h3><span class="sub">Every stage is a script in the repository; counts are read from the current build</span></div>
+  <div class="pipe" id="pipe"></div>
+  <div style="height:28px"></div>
+  <div class="panel-head"><h3>What the panel is for</h3><span class="sub">Three target products, each with a live prototype in the estimation layer</span></div>
+  <div class="products">
+    <div class="product"><span class="kicker">Product</span><h3>Accurate bidding and pricing</h3><p>Material-level price indices, spliced across every UBOS rebasing, so a bill of quantities can be priced against the real trajectory of cement, steel, diesel and labour — not a rule of thumb.</p><div class="from">Panel v1.0 · P4 spillover network · P9 forecasts</div></div>
+    <div class="product"><span class="kicker">Product</span><h3>Realistic works programmes</h3><p>Volatility clusters and structural-break dates show which inputs move together and when regimes changed, so programmes carry the right float where price shocks actually land.</p><div class="from">P3 clustering · Bai–Perron break scans</div></div>
+    <div class="product"><span class="kicker">Product</span><h3>Claim avoidance</h3><p>The Dynamic Adjustment Mechanism replaces disputed price-fluctuation claims with a contract clause that revises the contract sum when a calibrated volatility index breaches its band.</p><div class="from">P6 macro sensitivities · P8 DAM back-test</div></div>
+  </div>
+</section>
+
+<!-- 02 FOUNDATION -->
+<section class="block" id="foundation">
+  <div class="sec-head">
+    <span class="kicker">02 · Data foundation</span>
+    <h2>Two public sources, one harmonised panel</h2>
+    <p class="lede">Only obtainable, citable sources are used. Every raw release is kept frozen in the repository; the panel is rebuilt from them by one command.</p>
+  </div>
+  <div class="grid g2" id="sourceCards"></div>
+  <div style="height:16px"></div>
+  <div class="panel">
+    <div class="panel-head"><h3>Coverage of the 29 panel series</h3><span class="sub" id="covSub"></span></div>
+    <div class="cov-axis"><span></span><div class="ax" id="covAxis"></div><span style="text-align:right">missing</span></div>
+    <div class="cov" id="coverage"></div>
+    <p class="note">Solid bars are observed months; hatched segments mark gaps inside a series' span. The short bars (aluminium, buildings and civil-works sub-indices) are structurally short — UBOS published them for six months of 2022 only — not parser failures.</p>
+  </div>
+</section>
+
+<!-- 03 EXPLORER -->
+<section class="block" id="explorer">
+  <div class="sec-head">
+    <span class="kicker">03 · Price explorer</span>
+    <h2>Material prices, July 2017 to April 2026</h2>
+    <p class="lede">Pick any materials and macro series. Everything is re-indexed to 100 at the first month shown so different units share one axis; switch that off to see the raw index values.</p>
+  </div>
+  <div class="panel">
+    <div class="toolbar">
+      <div class="group"><span class="kicker">Aggregates</span><div class="chips" id="chipsAgg"></div></div>
+      <div class="group"><span class="kicker">Materials</span><div class="chips" id="chipsMat"></div></div>
+      <div class="group"><span class="kicker">Macro</span><div class="chips" id="chipsMacro"></div></div>
+      <div class="group"><span class="kicker">Options</span>
+        <label class="toggle"><input type="checkbox" id="optIndex" checked> Re-index to 100 at start</label>
+        <label class="toggle"><input type="checkbox" id="optBreaks" checked> Show structural breaks of first series</label>
+      </div>
+    </div>
+    <div class="chart tall" id="explorerChart"></div>
+    <p class="note" id="explorerNote"></p>
+  </div>
+</section>
+
+<!-- 04 AUDIT -->
+<section class="block" id="audit">
+  <div class="sec-head">
+    <span class="kicker">04 · Audit trail</span>
+    <h2>Every number can be traced back to a release</h2>
+    <p class="lede">The panel ships with its own evidence: how vintages were chained, how it reconciles with official aggregates, and the time-series properties a reviewer will ask about first.</p>
+  </div>
+  <div class="grid g3" id="auditTiles"></div>
+  <div style="height:16px"></div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="panel-head"><h3>Reconciliation with official aggregates</h3><span class="sub">Overlap window, monthly</span></div>
+      <div class="tbl-wrap"><table id="reconTable"></table></div>
+      <p class="note">Correlation of the CIPI headline with the consumer price index and the manufacturing producer price index over the same months. High agreement confirms the spliced series tracks the official picture; the residual index-point gap is the construction-specific signal.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Stationarity verdicts</h3><span class="sub">ADF and KPSS, level and first difference</span></div>
+      <div class="chart short" id="statChart"></div>
+      <p class="note">Most usable series are integrated of order one — difference-stationary — which is what the SVAR and forecasting layers assume. Level-stationary and inconclusive cases are the short or sparse series.</p>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="panel-head"><h3>Structural breaks by series</h3><span class="sub">Bai–Perron-style scan, BIC-selected</span></div>
+      <div class="chart" id="breakChart" style="height:560px"></div>
+      <p class="note">Each dot is a detected break in a series' level. The 2020 and 2022 columns are the pandemic and the commodity shock; the explorer above overlays the same dates.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Vintage splicing</h3><span class="sub">Chain-linking across UBOS rebasings</span></div>
+      <div class="tbl-wrap"><table id="spliceTable"></table></div>
+      <p class="note">A factor of 1.000 means consecutive releases agreed on the overlap; factors below one record a rebasing. Links with no overlapping months are flagged for manual review rather than fabricated.</p>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+  <details><summary>Full stationarity table (29 series)</summary><div class="tbl-wrap"><table id="statTable"></table></div></details>
+</section>
+
+<!-- 05 RESEARCH -->
+<section class="block" id="research">
+  <div class="sec-head">
+    <span class="kicker">05 · Research outputs</span>
+    <h2>Five estimation models already run end to end</h2>
+    <p class="lede">Each paper in the portfolio has a starter model wired to the panel. These are its current results, read straight from the repository outputs.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>P4 · Which inputs move the market — the SIMI ranking</h3><span class="sub">Diebold–Yilmaz spillovers from a VAR on monthly log-returns</span></div>
+    <div class="grid g2">
+      <div><div class="chart" id="simiChart"></div><p class="note">Net spillover: the share of other materials' forecast-error variance a material explains, minus the share explained by others. Cement dominates the system; sand, timber and paint are mostly receivers.</p></div>
+      <div><div class="chart" id="spillChart"></div><p class="note">Spillover table: row = receiving material, column = source. The diagonal is own-variance; brighter off-diagonal cells are stronger transmission.</p></div>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+
+  <div class="grid g2">
+    <div class="panel">
+      <div class="panel-head"><h3>P3 · Volatility clusters</h3><span class="sub">Dynamic-time-warping k-means on log-returns</span></div>
+      <div class="clusters" id="clusters"></div>
+      <p class="note">Materials whose price paths share a shape sit in the same cluster — the basis for procurement risk grouping and programme float.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>P6 · Macro shocks into construction costs</h3><span class="sub">Recursive SVAR, 24-month horizon</span></div>
+      <div class="grid g3" id="sensTiles" style="margin-bottom:12px"></div>
+      <div class="chart short" id="fevdChart" style="height:270px"></div>
+      <p class="note">Forecast-error variance of the CIPI headline attributed to each shock as the horizon lengthens. The exchange rate is the dominant external driver.</p>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>P6 · Impulse responses of the CIPI headline</h3><span class="sub">Response to a one-unit shock, months after impact</span></div>
+    <div class="grid g4" id="irfGrid"></div>
+  </div>
+  <div style="height:16px"></div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>P8 · The Dynamic Adjustment Mechanism, back-tested</h3><span class="sub">Flagship product · stylised road, building and water projects</span></div>
+    <div class="grid g2">
+      <div class="prose">
+        <p>Under a fixed-price contract the contractor's margin erodes one-for-one as input costs drift. The DAM is a price-adjustment clause: when a <strong>Weighted Macro-Volatility Index</strong> — the basket's rolling material volatility plus the exchange-rate volatility scaled by the P6 sensitivity — breaches its trigger band, the contract sum is revised upward, capped per period and cumulative for the remainder of the contract.</p>
+        <p>The back-test picks the most volatile 18-month window in the panel (the 2022 commodity shock) and compares the final margin and its variance under a fixed price against the DAM, for three reference baskets built from CIPI weights. <strong>These are simulations on transparently stylised projects, not real contract data.</strong></p>
+        <div class="tbl-wrap" style="margin-top:6px"><table id="damTable"></table></div>
+      </div>
+      <div>
+        <div class="chart" id="damChart"></div>
+        <p class="note" id="damNote"></p>
+      </div>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+
+  <div class="panel">
+    <div class="panel-head"><h3>P9 · Does the network help forecast the CIPI?</h3><span class="sub">Strict walk-forward evaluation, ridge regression on lags</span></div>
+    <div class="grid g4" id="p9Tiles"></div>
+    <p class="note">The network-augmented model adds cross-material dispersion and pairwise-correlation features to the own-lag baseline. A Diebold–Mariano statistic above about 1.96 means the accuracy gain is unlikely to be noise.</p>
+  </div>
+</section>
+
+<!-- 06 FISCAL -->
+<section class="block" id="fiscal">
+  <div class="sec-head">
+    <span class="kicker">06 · Fiscal context</span>
+    <h2>The public purse behind public works</h2>
+    <p class="lede">A companion monthly panel from the MoFPED fiscal operations tables — the demand side of the construction market, since government is the sector's largest client.</p>
+  </div>
+  <div class="grid g2">
+    <div class="panel"><div class="panel-head"><h3>Revenue and expenditure</h3><span class="sub">UGX billion, monthly</span></div><div class="chart" id="fiscalChart"></div></div>
+    <div class="panel"><div class="panel-head"><h3>Total public debt</h3><span class="sub">UGX billion, monthly, as published</span></div><div class="chart" id="debtChart"></div></div>
+  </div>
+</section>
+
+<!-- 07 ROADMAP -->
+<section class="block" id="roadmap">
+  <div class="sec-head">
+    <span class="kicker">07 · Roadmap</span>
+    <h2>Phase 0 is complete. What it unlocks</h2>
+    <p class="lede">The foundation is reproducible, tested and documented. The next phases deepen the data, finish the paper portfolio and turn the prototypes into products.</p>
+  </div>
+  <div class="road">
+    <div><span class="st done"><i></i>Done</span><h3>Phase 0 · Foundation</h3><ul><li>UBOS CIPI harvested and parsed across every layout change</li><li>MoFPED macro block joined; CPI/PPI reconciliation passed</li><li>Panel v1.0 with splice log, coverage, break and stationarity diagnostics</li><li>Five estimation starters running; regression suite green</li></ul></div>
+    <div><span class="st next"><i></i>Next</span><h3>Phase 1 · Depth</h3><ul><li>Extend the panel backwards with historical UBOS and Bank of Uganda series</li><li>Add the wider drivers: forex, weather, tax-law changes, Hansard</li><li>Automate monthly refresh from the source portals</li><li>Deposit versioned panels with a citable DOI</li></ul></div>
+    <div><span class="st"><i></i>Planned</span><h3>Phase 2 · Papers</h3><ul><li>Complete P1 methodology and the P5 network-centrality paper</li><li>Replace ridge with the GRU forecaster in P9</li><li>Full DCC-GARCH estimation for P4</li><li>Peer review and publication of the portfolio</li></ul></div>
+    <div><span class="st"><i></i>Planned</span><h3>Phase 3 · Products</h3><ul><li>Bid-pricing service on live indices</li><li>Programme risk tool from clusters and breaks</li><li>DAM clause templates and calibration service</li><li>Partner access for UBOS, BoU and the host university</li></ul></div>
+  </div>
+  <div class="footer"><span>CiO Institute · Construction Intelligence &amp; Optimisation · Phase 0 pipeline by Gavamukulya Charles</span><span id="footMeta"></span></div>
+</section>
+
+</main>
+</div>
+
+<script>
+(function(){
+'use strict';
+const D = DATA;
+const css = getComputedStyle(document.documentElement);
+const tok = n => css.getPropertyValue(n).trim();
+const SERIES = [tok('--s1'),tok('--s2'),tok('--s3'),tok('--s4'),tok('--s5'),tok('--s6'),tok('--s7'),tok('--s8')];
+const INK={1:tok('--ink'),2:tok('--ink-2'),3:tok('--ink-3')};
+const LINE=tok('--line'), LINE2=tok('--line-2'), SURF=tok('--surface'), ACC=tok('--accent');
+const FONT = tok('--body').replace(/"/g,'');
+const MONO = tok('--mono').replace(/"/g,'');
+const fmt = (v,d=1)=> v==null? '—' : Number(v).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
+const int = v => v==null? '—' : Number(v).toLocaleString('en-GB');
+const pct = v => v==null? '—' : (v*100).toFixed(1)+' pp';
+const el = (id)=>document.getElementById(id);
+const h = (tag,cls,html)=>{const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e;};
+const monthLabel = ym => { const [y,m]=ym.split('-'); return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+y; };
+const charts=[];
+function mk(id){ const c=echarts.init(el(id),null,{renderer:'canvas'}); charts.push(c); return c; }
+const base = {
+  textStyle:{fontFamily:FONT,color:INK[2]},
+  animationDuration:500,
+  grid:{left:8,right:16,top:28,bottom:8,containLabel:true},
+  tooltip:{trigger:'axis',backgroundColor:'#0f1011',borderColor:LINE2,borderWidth:1,textStyle:{color:INK[1],fontSize:12,fontFamily:FONT},
+    axisPointer:{type:'cross',lineStyle:{color:LINE2},crossStyle:{color:LINE2},label:{backgroundColor:'#2a2d30',color:INK[1],fontFamily:MONO,fontSize:11}}},
+  legend:{top:0,left:0,icon:'roundRect',itemWidth:10,itemHeight:10,itemGap:14,textStyle:{color:INK[2],fontSize:12}},
+};
+const axisX = extra => Object.assign({type:'category',boundaryGap:false,axisLine:{lineStyle:{color:LINE2}},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,hideOverlap:true}},extra||{});
+const axisY = extra => Object.assign({type:'value',scale:true,splitLine:{lineStyle:{color:LINE}},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11}},extra||{});
+
+/* ---------- rail meta + hero ---------- */
+const M=D.manifest;
+el('railMeta').innerHTML = `<b>panel v${M.panel_version}</b><br>${monthLabel(M.date_min.slice(0,7))} – ${monthLabel(M.date_max.slice(0,7))}<br>built ${M.built_utc.slice(0,10)}<br>page ${D.generated_utc.slice(0,10)}`;
+el('footMeta').textContent = `Panel v${M.panel_version} built ${M.built_utc.slice(0,10)} · page generated ${D.generated_utc}`;
+
+const S=D.sources, C=D.code;
+el('heroTiles').append(
+  tile(`${M.n_months}`,'months','monthly observations, '+monthLabel(M.date_min.slice(0,7))+' to '+monthLabel(M.date_max.slice(0,7))),
+  tile(`${M.n_series}`,'series',`${D.panel.groups.materials.length} materials, ${D.panel.groups.aggregates.length} aggregates, ${D.panel.groups.macro.length} macro`),
+  tile(`${S.ubos_release_files}`,'UBOS releases',`${S.ubos_xlsx} Excel tables and ${S.ubos_pdf} press releases harvested, frozen in the repository`),
+  tile(`${C.n_tests}<small>/ ${C.n_tests}</small>`,'tests passing',`${C.n_scripts} pipeline scripts · ${D.splices.n_links} splice links audited`)
+);
+function tile(v,l,d){ const t=h('div','tile'); t.innerHTML=`<div class="v">${v}</div><div class="l">${l}</div><div class="d">${d}</div>`; return t; }
+
+/* ---------- pipeline ---------- */
+const st=C.stages;
+const name = p => p.split('/').pop();
+const stages=[
+  {k:'Sources',t:'Harvest',p:'UBOS CIPI, CPI and PPI releases; MoFPED macro portal through the ugatsdb client, with bulk-CSV and manual-export fallbacks.',l:st.ingest.filter(s=>/pull_/.test(s)).map(name),c:S.ubos_release_files+S.mofped_datasets_downloaded,cl:'raw files'},
+  {k:'Parse',t:'Harmonise',p:'Layout-robust parser finds header rows by month tokens, maps variant labels to stable codes, and builds the macro block.',l:st.ingest.filter(s=>!/pull_/.test(s)).map(name),c:S.cipi_parser_inputs,cl:'CIPI workbooks'},
+  {k:'Splice',t:'Build panel',p:'Vintages chain-linked on overlap medians, newest scale as anchor, macro block joined at month start.',l:st.index.filter(s=>/build|fill/.test(s)).map(name),c:D.splices.n_links,cl:'splice links'},
+  {k:'Diagnose',t:'Audit',p:'Coverage, reconciliation, structural breaks, unit-root tests and rebasing history, all written beside the panel.',l:st.index.filter(s=>/reconcile|diagnos/.test(s)).map(name),c:D.stationarity.tests.length,cl:'series tested'},
+  {k:'Estimate',t:'Papers',p:'Clustering, spillovers, SVAR, DAM simulation and walk-forward forecasting, each reading panel_v1.0.',l:st.estimation.map(name),c:st.estimation.length,cl:'models'},
+];
+for(const s of stages){ const d=h('div','stage'); d.innerHTML=`<span class="kicker">${s.k}</span><h4>${s.t}</h4><p>${s.p}</p><ul>${s.l.map(x=>`<li>${x}</li>`).join('')}</ul><div class="cnt">${int(s.c)}<small>${s.cl}</small></div>`; el('pipe').append(d); }
+
+/* ---------- sources ---------- */
+const mof = S.mofped_sources.map(s=>`${s.name.replace(/\s*\(.*\)/,'')} (${s.n})`).join(' · ');
+el('sourceCards').append(
+  card('Uganda Bureau of Statistics','Construction Input Price Index',`Monthly press releases and Excel tables since 2016, disaggregated by material. ${S.ubos_release_files} release files harvested with a manifest; ${S.cipi_parser_inputs} CIPI workbooks feed the parser. Layouts changed several times and the index was rebased in August 2022 — both handled in code, not by hand.`,'ubos.org/datasets'),
+  card('Ministry of Finance, Planning and Economic Development','Macro Data Portal via ugatsdb',`Catalogue of ${int(S.mofped_catalog_datasets)} datasets and ${int(S.mofped_catalog_series)} series across ${mof}. ${S.mofped_datasets_downloaded} datasets bulk-downloaded; exchange rate, central bank rate, lending rate, CPI, activity, private credit and PPI enter the panel.`,'mepd.finance.go.ug')
+);
+function card(org,title,body,url){ const c=h('div','panel'); c.innerHTML=`<span class="kicker">${org}</span><h3 style="margin:6px 0 8px">${title}</h3><p style="color:var(--ink-2);font-size:13.5px">${body}</p><div class="note" style="font-family:var(--mono)">${url}</div>`; return c; }
+
+/* ---------- coverage ---------- */
+const dates=D.panel.dates, N=dates.length;
+const covOrder=[...D.panel.groups.aggregates,...D.panel.groups.materials,...D.panel.groups.macro];
+const covMap=Object.fromEntries(D.coverage.map(c=>[c.code,c]));
+el('covAxis').innerHTML = [0,.25,.5,.75,1].map(f=>`<span>${dates[Math.min(N-1,Math.round(f*(N-1)))]}</span>`).join('');
+el('covSub').textContent = `${fmt(M.overall_pct_missing)}% of cells missing overall`;
+const covWrap=el('coverage');
+for(const code of covOrder){
+  const c=covMap[code]; if(!c) continue;
+  const vals=D.panel.series[code];
+  covWrap.append(h('div','lab',`${D.panel.labels[code]} <span class="num" style="color:var(--ink-3);font-size:11px">${code}</span>`));
+  const track=h('div','track');
+  // draw runs of present / gap within span
+  let i0=dates.indexOf(c.first), i1=dates.indexOf(c.last);
+  let run=null;
+  for(let i=i0;i<=i1;i++){
+    const present=vals[i]!=null;
+    if(!run||run.p!==present){ if(run) push(run); run={p:present,s:i,e:i}; } else run.e=i;
+  }
+  if(run) push(run);
+  function push(r){ const b=h('div','bar'+(r.p?'':' gap')); b.style.left=(r.s/N*100)+'%'; b.style.width=((r.e-r.s+1)/N*100)+'%'; b.title=`${code}: ${r.p?'observed':'gap'} ${dates[r.s]} – ${dates[r.e]}`; track.append(b); }
+  covWrap.append(track, h('div','pct num',fmt(c.pct_missing)+'%'));
+}
+
+/* ---------- explorer ---------- */
+const colourOf={}; // colour follows the entity
+[...D.panel.groups.aggregates,...D.panel.groups.materials,...D.panel.groups.macro].forEach((c,i)=>{colourOf[c]=SERIES[i%SERIES.length];});
+// give the defaults distinct leading slots
+Object.assign(colourOf,{CIPI_ALL:SERIES[0],CEM:SERIES[1],STEEL:SERIES[2],DIESEL:SERIES[3],exchange_rate:SERIES[4],cpi:SERIES[5],LABOUR:SERIES[6],SAND:SERIES[7],IRONSTEEL:SERIES[2],TIMBER:SERIES[6]});
+const selected=new Set(['CIPI_ALL','CEM','STEEL','DIESEL']);
+const MAXSEL=8;
+function chips(container,codes){
+  for(const code of codes){
+    const b=h('button','chip'+(selected.has(code)?' on':''),`<i style="background:${selected.has(code)?colourOf[code]:''}"></i>${D.panel.labels[code]}`);
+    b.dataset.code=code; b.type='button';
+    b.addEventListener('click',()=>{
+      if(selected.has(code)) selected.delete(code); else { if(selected.size>=MAXSEL){ flash(); return; } selected.add(code); }
+      b.classList.toggle('on',selected.has(code)); b.querySelector('i').style.background=selected.has(code)?colourOf[code]:'';
+      drawExplorer();
+    });
+    el(container).append(b);
+  }
+}
+function flash(){ const n=el('explorerNote'); n.textContent='Up to eight series at a time — deselect one to add another.'; n.style.color=tok('--warn'); setTimeout(()=>{n.style.color='';drawNote();},1800); }
+chips('chipsAgg',D.panel.groups.aggregates); chips('chipsMat',D.panel.groups.materials); chips('chipsMacro',D.panel.groups.macro);
+const breaksMap=Object.fromEntries(D.breaks.map(b=>[b.code,b.dates]));
+const exChart=mk('explorerChart');
+function drawNote(){
+  const reidx=el('optIndex').checked;
+  const first=[...selected][0];
+  el('explorerNote').textContent = (reidx? 'Each series = 100 at its first observed month in view. ' : 'Raw values: CIPI series are index numbers; macro series in their own units, so compare shapes, not levels. ')
+    + (first&&el('optBreaks').checked&&breaksMap[first]?.length ? `Dashed markers: structural breaks in ${D.panel.labels[first]} (${breaksMap[first].join(', ')}).` : '');
+}
+function drawExplorer(){
+  const reidx=el('optIndex').checked, showBr=el('optBreaks').checked;
+  const codes=[...selected];
+  const series=codes.map((code,k)=>{
+    const raw=D.panel.series[code];
+    let b=null; if(reidx){ b=raw.find(v=>v!=null); }
+    const data=raw.map(v=> v==null? null : (reidx? +(v/b*100).toFixed(2) : v));
+    const s={name:D.panel.labels[code],type:'line',data,showSymbol:false,symbolSize:7,connectNulls:false,lineStyle:{width:2},itemStyle:{color:colourOf[code]},emphasis:{focus:'series'},
+      endLabel:{show:codes.length<=4,formatter:p=>code,color:INK[2],fontFamily:MONO,fontSize:11,offset:[4,0]}};
+    if(k===0&&showBr&&breaksMap[code]?.length){
+      s.markLine={silent:true,symbol:'none',lineStyle:{color:ACC,type:'dashed',width:1,opacity:.8},label:{show:true,position:'insideEndTop',formatter:p=>p.value,color:ACC,fontFamily:MONO,fontSize:10,rotate:0,distance:[0,-2]},
+        data:breaksMap[code].map(d=>({xAxis:d}))};
+    }
+    return s;
+  });
+  exChart.setOption({...base,
+    grid:{left:8,right:codes.length<=4?76:24,top:44,bottom:40,containLabel:true},
+    legend:{...base.legend,data:codes.map(c=>D.panel.labels[c])},
+    tooltip:{...base.tooltip,valueFormatter:v=>v==null?'—':fmt(v,reidx?1:2)},
+    xAxis:axisX({data:dates}), yAxis:axisY(),
+    dataZoom:[{type:'slider',height:18,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:'rgba(224,164,88,.12)',handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}},{type:'inside'}],
+    series},true);
+  drawNote();
+}
+el('optIndex').addEventListener('change',drawExplorer); el('optBreaks').addEventListener('change',drawExplorer);
+drawExplorer();
+
+/* ---------- audit ---------- */
+const R=D.reconciliation, SP=D.splices, ST=D.stationarity;
+el('auditTiles').append(
+  tile(fmt(R[0]?.corr,3),'correlation, CIPI vs CPI',`${R[0]?.n_overlap} overlapping months · mean absolute gap ${fmt(R[0]?.mad,2)} index points`),
+  tile(fmt(R[1]?.corr,3),'correlation, CIPI vs PPI manufacturing',`${R[1]?.n_overlap} overlapping months · mean absolute gap ${fmt(R[1]?.mad,2)} index points`),
+  tile(`${SP.n_links}`,'splice links across '+SP.n_vintages+' vintages',`${SP.n_unit} exact (factor 1.000) · ${SP.n_links-SP.n_unit-SP.n_no_overlap} rebased (min ${fmt(SP.min_factor,3)}) · ${SP.n_no_overlap} flagged no-overlap`)
+);
+el('reconTable').className='wrap';
+el('reconTable').innerHTML = `<thead><tr><th>Comparison</th><th>Status</th><th class="num">Corr.</th><th class="num">MAD (pts)</th><th class="num">RMSE (pts)</th></tr></thead><tbody>`+
+  R.map(r=>`<tr><td>${r.comparison}<div class="note" style="margin:2px 0 0">${r.n_overlap} months, ${r.start} – ${r.end}</div></td><td><span class="pill ${r.status==='ok'?'good':'warn'}">${r.status}</span></td><td class="num">${fmt(r.corr,3)}</td><td class="num">${fmt(r.mad,2)}</td><td class="num">${fmt(r.rmse,2)}</td></tr>`).join('')+`</tbody>`;
+const vlabel={difference_stationary:'Difference-stationary',level_stationary:'Level-stationary',mixed_or_inconclusive:'Mixed / inconclusive',insufficient_sample:'Insufficient sample'};
+const vorder=['difference_stationary','level_stationary','mixed_or_inconclusive','insufficient_sample'].filter(k=>ST.counts[k]);
+mk('statChart').setOption({...base,grid:{left:160,right:40,top:8,bottom:28,containLabel:false},tooltip:{...base.tooltip,axisPointer:{type:'none'}},legend:{show:false},
+  xAxis:axisY({splitLine:{lineStyle:{color:LINE}},minInterval:1}), yAxis:{type:'category',inverse:true,data:vorder.map(k=>vlabel[k]),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[2],fontSize:12}},
+  series:[{type:'bar',data:vorder.map(k=>ST.counts[k]),barWidth:16,itemStyle:{color:SERIES[0],borderRadius:[0,4,4,0]},label:{show:true,position:'right',color:INK[2],fontFamily:MONO,fontSize:11}}]});
+el('statTable').innerHTML = `<thead><tr><th>Series</th><th class="num">n</th><th class="num">ADF p (level)</th><th class="num">KPSS p (level)</th><th class="num">ADF p (diff)</th><th class="num">KPSS p (diff)</th><th>Verdict</th></tr></thead><tbody>`+
+  ST.tests.map(t=>`<tr><td>${t.label} <span class="num" style="color:var(--ink-3);font-size:11px">${t.code}</span></td><td class="num">${t.n}</td><td class="num">${fmt(t.adf_p_level,3)}</td><td class="num">${fmt(t.kpss_p_level,3)}</td><td class="num">${t.adf_p_diff==null?'—':t.adf_p_diff<0.001?'<0.001':fmt(t.adf_p_diff,3)}</td><td class="num">${fmt(t.kpss_p_diff,3)}</td><td><span class="pill ${t.verdict==='difference_stationary'?'good':t.verdict==='level_stationary'?'':'warn'}">${vlabel[t.verdict]||t.verdict}</span></td></tr>`).join('')+`</tbody>`;
+
+// breaks scatter
+const brSeries=D.breaks.filter(b=>b.dates.length).map(b=>b.code);
+const brPts=[]; D.breaks.forEach(b=>b.dates.forEach(d=>brPts.push([d,b.code])));
+const yearsAll=[...new Set(dates.map(d=>d.slice(0,4)))];
+mk('breakChart').setOption({...base,grid:{left:210,right:16,top:8,bottom:28,containLabel:false},legend:{show:false},
+  tooltip:{...base.tooltip,trigger:'item',axisPointer:{type:'none'},formatter:p=>`${D.panel.labels[p.value[1]]||p.value[1]}<br><span class="num">${p.value[0]}</span>`},
+  xAxis:axisX({type:'category',data:dates,boundaryGap:true,axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,interval:(i,v)=>v.endsWith('-01'),formatter:v=>v.slice(0,4)},splitLine:{show:true,lineStyle:{color:LINE},interval:(i,v)=>v.endsWith('-01')}}),
+  yAxis:{type:'category',data:brSeries,inverse:true,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[2],fontSize:12,formatter:v=>D.panel.labels[v]||v}},
+  series:[{type:'scatter',data:brPts,symbolSize:9,itemStyle:{color:ACC,borderColor:'#121314',borderWidth:1.5}}]});
+
+el('spliceTable').innerHTML = `<thead><tr><th>Series</th><th class="num">Links</th><th class="num">No overlap</th><th class="num">Factor range</th></tr></thead><tbody>`+
+  SP.summary.map(s=>`<tr><td>${s.label}</td><td class="num">${s.n_links}</td><td class="num">${s.n_no_overlap? `<span class="pill warn">${s.n_no_overlap}</span>`:'0'}</td><td class="num">${s.min_factor==null?'—':fmt(s.min_factor,3)+' – '+fmt(s.max_factor,3)}</td></tr>`).join('')+`</tbody>`;
+
+/* ---------- research: P4 ---------- */
+const P=D.papers;
+const simi=[...P.p4.simi].sort((a,b)=>b.net-a.net);
+mk('simiChart').setOption({...base,grid:{left:150,right:44,top:8,bottom:44,containLabel:false},legend:{show:false},
+  tooltip:{...base.tooltip,axisPointer:{type:'none'},formatter:ps=>{const p=ps[0];const s=simi[p.dataIndex];return `${s.label}<br>to others <span class="num">${fmt(s.to_others)}</span> · from others <span class="num">${fmt(s.from_others)}</span><br>net <span class="num">${fmt(s.net)}</span> · SIMI rank ${int(s.simi)}`;}},
+  xAxis:axisY({name:'net spillover (%)',nameLocation:'middle',nameGap:24,nameTextStyle:{color:INK[3],fontFamily:MONO,fontSize:11}}),
+  yAxis:{type:'category',inverse:true,data:simi.map(s=>s.label),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[2],fontSize:12}},
+  series:[{type:'bar',data:simi.map(s=>({value:s.net,itemStyle:{color:s.net>=0?SERIES[0]:SERIES[7],borderRadius:s.net>=0?[0,4,4,0]:[4,0,0,4]}})),barWidth:14,
+    label:{show:true,position:'right',formatter:p=>fmt(p.value,0),color:INK[3],fontFamily:MONO,fontSize:11},markLine:{silent:true,symbol:'none',lineStyle:{color:LINE2},data:[{xAxis:0}],label:{show:false}}}]});
+const sp=P.p4.spillover; const spData=[]; let spMax=0;
+sp.matrix.forEach((row,i)=>row.forEach((v,j)=>{ if(i!==j){ spData.push([j,i,v]); spMax=Math.max(spMax,v);} else spData.push([j,i,v]); }));
+mk('spillChart').setOption({...base,grid:{left:8,right:8,top:8,bottom:56,containLabel:true},legend:{show:false},
+  tooltip:{...base.tooltip,trigger:'item',axisPointer:{type:'none'},formatter:p=>`from <b>${D.panel.labels[sp.names[p.value[0]]]||sp.names[p.value[0]]}</b> to <b>${D.panel.labels[sp.names[p.value[1]]]||sp.names[p.value[1]]}</b><br><span class="num">${fmt(p.value[2])}%</span> of forecast-error variance`},
+  xAxis:{type:'category',data:sp.names,position:'top',axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:10,rotate:45}},
+  yAxis:{type:'category',data:sp.names,inverse:true,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:10}},
+  visualMap:{min:0,max:Math.min(25,spMax),calculable:false,orient:'horizontal',left:'center',bottom:0,itemHeight:120,itemWidth:10,text:['stronger','weaker'],textStyle:{color:INK[3],fontFamily:MONO,fontSize:10},inRange:{color:['#1f2730','#1c5cab','#3987e5','#9ec5f4']}},
+  series:[{type:'heatmap',data:spData.map(d=>({value:d,itemStyle:d[0]===d[1]?{color:'#2a2d30'}:undefined})),itemStyle:{borderColor:'#1b1d1f',borderWidth:2,borderRadius:2},emphasis:{itemStyle:{borderColor:INK[2]}}}]});
+
+/* ---------- P3 clusters ---------- */
+const cl={}; P.p3.forEach(m=>{(cl[m.cluster]=cl[m.cluster]||[]).push(m);});
+Object.keys(cl).sort().forEach(k=>{ const d=h('div','cluster'); d.innerHTML=`<span class="kicker">Cluster ${+k+1} · ${cl[k].length} materials</span><div class="mats">${cl[k].map(m=>`<span>${m.label}</span>`).join('')}</div>`; el('clusters').append(d); });
+
+/* ---------- P6 ---------- */
+const sens=P.p6.sensitivity||{}; const asym=sens.asymmetry||{};
+el('sensTiles').append(
+  tile(fmt(sens.exchange_rate_sensitivity,2),'exchange-rate sensitivity','cumulative CIPI response to a shilling shock — exported to P8 for WMVI calibration'),
+  tile(fmt(sens.cpi_sensitivity,2),'CPI sensitivity','cumulative response to a consumer-price shock'),
+  tile(fmt(asym.asymmetry,3),'pass-through asymmetry',`mean CIPI change ${fmt(asym.mean_cipi_when_depreciation,2)} under depreciation vs ${fmt(asym.mean_cipi_when_appreciation,2)} under appreciation`)
+);
+const fv=P.p6.fevd; const H=fv.share[fv.sources[0]].length;
+const fvOrder=[...fv.sources].sort((a,b)=>fv.share[b][H-1]-fv.share[a][H-1]);
+const fvColour={}; fvOrder.forEach((s,i)=>fvColour[s]=SERIES[i]);
+mk('fevdChart').setOption({...base,grid:{left:8,right:16,top:56,bottom:8,containLabel:true},
+  tooltip:{...base.tooltip,valueFormatter:v=>(v*100).toFixed(1)+'%'},
+  legend:{...base.legend,data:fvOrder.map(s=>fv.labels[s])},
+  xAxis:axisX({data:[...Array(H).keys()],name:'months',nameTextStyle:{color:INK[3],fontFamily:MONO,fontSize:11}}),
+  yAxis:axisY({max:1,min:0,axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,formatter:v=>(v*100)+'%'}}),
+  series:fvOrder.map(s=>({name:fv.labels[s],type:'line',stack:'t',areaStyle:{opacity:.85},lineStyle:{width:0},showSymbol:false,itemStyle:{color:fvColour[s]},data:fv.share[s]}))});
+const irf=P.p6.irf; const shocks=irf.shocks.filter(s=>s!=='CIPI_ALL');
+for(const s of shocks){
+  const d=h('div'); d.innerHTML=`<div class="kicker" style="margin-bottom:6px">${irf.labels[s]}</div><div class="chart short" style="height:170px" id="irf_${s}"></div>`; el('irfGrid').append(d);
+  const ys=irf.response[s];
+  mk(`irf_${s}`).setOption({...base,grid:{left:6,right:10,top:8,bottom:4,containLabel:true},legend:{show:false},
+    tooltip:{...base.tooltip,axisPointer:{type:'line',lineStyle:{color:LINE2}},valueFormatter:v=>fmt(v,2)},
+    xAxis:axisX({data:ys.map((_,i)=>i),axisLabel:{color:INK[3],fontFamily:MONO,fontSize:10,interval:5}}),
+    yAxis:axisY({axisLabel:{color:INK[3],fontFamily:MONO,fontSize:10}}),
+    series:[{type:'line',name:'CIPI response',data:ys,showSymbol:false,lineStyle:{width:2},itemStyle:{color:fvColour[s]||SERIES[0]},areaStyle:{opacity:.12},
+      markLine:{silent:true,symbol:'none',lineStyle:{color:LINE2},data:[{yAxis:0}],label:{show:false}}}]});
+}
+
+/* ---------- P8 ---------- */
+const p8=P.p8; const pj={road:'Road',building:'Building',water:'Water scheme'};
+el('damTable').className='wrap';
+el('damTable').innerHTML=`<thead><tr><th>Project</th><th class="num">Fixed-price margin</th><th class="num">DAM margin</th><th class="num">Margin protected</th><th class="num">Revisions</th></tr></thead><tbody>`+
+  p8.results.map(r=>`<tr><td>${pj[r.project]||r.project}<div class="note" style="margin:2px 0 0">${r.start} – ${r.end}</div></td><td class="num">${pct(r.fixed_margin)}</td><td class="num">${pct(r.dam_margin)}</td><td class="num" style="color:var(--good)">+${pct(r.protected)}</td><td class="num">${r.n_adjustments}</td></tr>`).join('')+`</tbody>`;
+const paths=p8.paths; const pk=Object.keys(paths);
+if(pk.length){
+  const pd=paths[pk[0]].dates;
+  mk('damChart').setOption({...base,grid:{left:8,right:40,top:36,bottom:8,containLabel:true},tooltip:{...base.tooltip,valueFormatter:v=>fmt(v,1)},
+    legend:{...base.legend,data:pk.map(k=>pj[k]||k)},
+    xAxis:axisX({data:pd}),yAxis:axisY(),
+    series:pk.map((k,i)=>({name:pj[k]||k,type:'line',data:paths[k].cost_index,showSymbol:false,lineStyle:{width:2},itemStyle:{color:SERIES[i]},
+      endLabel:{show:true,formatter:p=>fmt(p.value,0),color:INK[2],fontFamily:MONO,fontSize:11}}))});
+  const miss=[...new Set(pk.flatMap(k=>paths[k].basket_missing))];
+  el('damNote').textContent=`Weighted input-cost index (award month = 100) of each reference basket over the stress window, replayed from panel v1.0 (baskets: ${pk.map(k=>`${pj[k]||k} — ${Object.entries(paths[k].basket).map(([m,w])=>`${m} ${(w*100).toFixed(0)}%`).join(', ')}`).join('; ')}). Margins in the table are the simulator's reported results; margin variance falls from ${p8.results.map(r=>`${fmt(r.fixed_var*1e4,1)} to ${fmt(r.dam_var*1e4,1)} (${pj[r.project]||r.project})`).join(', ')} ×10⁻⁴.`+(miss.length?` Weights for ${miss.join(', ')} are not yet in the panel and are dropped from the basket.`:'');
+}
+
+/* ---------- P9 ---------- */
+const p9=P.p9; const b9=p9['lags_only']||{}, n9=p9['lags+network']||{}, dm=p9['DM base_vs_net']||{};
+el('p9Tiles').append(
+  tile(fmt(b9.RMSE,3),'RMSE, own lags only','baseline: three lags of the CIPI headline'),
+  tile(fmt(n9.RMSE,3),'RMSE, lags + network',`MAE ${fmt(n9.MAE,3)} vs ${fmt(b9.MAE,3)} baseline`),
+  tile(fmt(dm.DM_stat,2),'Diebold–Mariano statistic',dm.DM_stat>1.96?'significant at 5% — the network features help':'not significant at 5%'),
+  tile(fmt(((b9.RMSE-n9.RMSE)/b9.RMSE*100),2)+'<small>%</small>','RMSE reduction','expanding-window walk-forward, no look-ahead')
+);
+
+/* ---------- fiscal ---------- */
+const F=D.fiscal;
+if(F.dates){
+  const fs=F.series;
+  mk('fiscalChart').setOption({...base,grid:{left:8,right:16,top:30,bottom:40,containLabel:true},tooltip:{...base.tooltip,valueFormatter:v=>v==null?'—':fmt(v,0)},
+    legend:{...base.legend,data:['Revenue','Expenditure']},
+    xAxis:axisX({data:F.dates}),yAxis:axisY(),
+    dataZoom:[{type:'inside'},{type:'slider',height:14,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:'rgba(224,164,88,.12)',handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}}],
+    series:[{name:'Revenue',type:'line',data:fs.total_central_government_revenue,showSymbol:false,lineStyle:{width:2},itemStyle:{color:SERIES[0]}},
+            {name:'Expenditure',type:'line',data:fs.overall_public_expenditure,showSymbol:false,lineStyle:{width:2},itemStyle:{color:SERIES[1]}}]});
+  mk('debtChart').setOption({...base,grid:{left:8,right:16,top:30,bottom:40,containLabel:true},tooltip:{...base.tooltip,valueFormatter:v=>v==null?'—':fmt(v,0)},
+    legend:{...base.legend,data:['Total public debt']},
+    xAxis:axisX({data:F.dates}),yAxis:axisY(),
+    dataZoom:[{type:'inside'},{type:'slider',height:14,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:'rgba(224,164,88,.12)',handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}}],
+    series:[{name:'Total public debt',type:'line',data:fs.total_public_debt,showSymbol:false,lineStyle:{width:2},itemStyle:{color:SERIES[6]},areaStyle:{opacity:.1}}]});
+}
+
+/* ---------- nav + resize ---------- */
+const links=[...document.querySelectorAll('.nav a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{ if(e.isIntersecting){ links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)); }});},{rootMargin:'-40% 0px -55% 0px'});
+secs.forEach(s=>io.observe(s));
+let rt; window.addEventListener('resize',()=>{clearTimeout(rt); rt=setTimeout(()=>charts.forEach(c=>c.resize()),120);});
+})();
+</script>
+</body>
+</html>
