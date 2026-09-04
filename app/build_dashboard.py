@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-build_dashboard.py — assemble the CiO Phase 0 Explorer.
+build_dashboard.py — assemble the CiO Phase 0 Explorer and Projection Workbench.
 
 Reads the pipeline's processed outputs (panel, audit trail, diagnostics and the
 paper starter results) and writes a single self-contained HTML page,
@@ -298,10 +298,159 @@ def load_codebase() -> dict:
                 "estimation": [s for s in scripts if "/estimation/" in s]}}
 
 
+# ------------------------------------------------------ forecast parameters --
+# The Workbench forecasts in the browser from a small, transparent parameter
+# set per series, estimated here from panel_v1.0. Everything is ordinary
+# statistics on monthly log-returns so a reviewer can reproduce it by hand.
+import math
+
+HALF_LIFE_MONTHS = 24      # weight recent behaviour more: w = 0.5 ** (age / half-life)
+SHOCK_WINDOW = ("2022-03", "2023-03")   # the 2022 commodity shock, replayed as a scenario
+FX_LAGS = 3                # pass-through measured over the current month + 3 lags
+
+
+def _solve(a: list[list[float]], b: list[float]) -> list[float] | None:
+    """Gaussian elimination with partial pivoting for the small OLS normal equations."""
+    n = len(b)
+    m = [row[:] + [b[i]] for i, row in enumerate(a)]
+    for c in range(n):
+        p = max(range(c, n), key=lambda r: abs(m[r][c]))
+        if abs(m[p][c]) < 1e-12:
+            return None
+        m[c], m[p] = m[p], m[c]
+        for r in range(n):
+            if r != c:
+                f = m[r][c] / m[c][c]
+                for k in range(c, n + 1):
+                    m[r][k] -= f * m[c][k]
+    return [m[i][n] / m[i][i] for i in range(n)]
+
+
+def _ols(y: list[float], x_rows: list[list[float]]) -> list[float] | None:
+    k = len(x_rows[0])
+    xtx = [[sum(r[i] * r[j] for r in x_rows) for j in range(k)] for i in range(k)]
+    xty = [sum(r[i] * yy for r, yy in zip(x_rows, y)) for i in range(k)]
+    return _solve(xtx, xty)
+
+
+def estimate_series(dates: list[str], values: list, fx_returns: list | None) -> dict | None:
+    """Trend, seasonality, volatility, persistence and FX pass-through for one series."""
+    logs = [math.log(v) if (v is not None and v > 0) else None for v in values]
+    rets = []  # (index, log return) for consecutive observed months
+    for i in range(1, len(logs)):
+        if logs[i] is not None and logs[i - 1] is not None:
+            rets.append((i, logs[i] - logs[i - 1]))
+    if len(rets) < 24:
+        return None
+    last_i = max(i for i, v in enumerate(values) if v is not None)
+    n = len(rets)
+    # exponentially weighted drift and volatility
+    w = [0.5 ** ((last_i - i) / HALF_LIFE_MONTHS) for i, _ in rets]
+    sw = sum(w)
+    mu = sum(wi * r for wi, (_, r) in zip(w, rets)) / sw
+    var = sum(wi * (r - mu) ** 2 for wi, (_, r) in zip(w, rets)) / sw
+    sigma = math.sqrt(var)
+    mu_full = sum(r for _, r in rets) / n
+    sigma_full = math.sqrt(sum((r - mu_full) ** 2 for _, r in rets) / max(1, n - 1))
+    # lag-1 autocorrelation of returns (persistence of shocks)
+    pairs = [(rets[k - 1][1], rets[k][1]) for k in range(1, n) if rets[k][0] - rets[k - 1][0] == 1]
+    if len(pairs) > 12:
+        ma = sum(a for a, _ in pairs) / len(pairs); mb = sum(b for _, b in pairs) / len(pairs)
+        cov = sum((a - ma) * (b - mb) for a, b in pairs)
+        va = math.sqrt(sum((a - ma) ** 2 for a, _ in pairs) * sum((b - mb) ** 2 for _, b in pairs))
+        phi = cov / va if va > 0 else 0.0
+    else:
+        phi = 0.0
+    phi = max(-0.5, min(0.8, phi))
+    # calendar-month seasonal factors on returns (demeaned), only with 5+ years
+    seasonal = [0.0] * 12
+    if n >= 60:
+        by_m: dict[int, list[float]] = {}
+        for i, r in rets:
+            by_m.setdefault(int(dates[i][5:7]) - 1, []).append(r)
+        raw = [sum(by_m.get(m, [0])) / max(1, len(by_m.get(m, []))) for m in range(12)]
+        mean_raw = sum(raw) / 12
+        seasonal = [round(x - mean_raw, 5) for x in raw]
+    # exchange-rate pass-through: cumulative beta over current + FX_LAGS lags
+    fx_beta = None
+    if fx_returns:
+        rows, ys = [], []
+        for i, r in rets:
+            lags = [fx_returns[i - k] if i - k >= 0 else None for k in range(FX_LAGS + 1)]
+            if all(l is not None for l in lags):
+                rows.append([1.0] + lags); ys.append(r)
+        if len(rows) > 30:
+            b = _ols(ys, rows)
+            if b:
+                fx_beta = round(max(0.0, min(1.5, sum(b[1:]))), 3)
+    # the 2022 shock as a replayable path of monthly log-returns
+    shock = []
+    for i, r in rets:
+        if SHOCK_WINDOW[0] < dates[i] <= SHOCK_WINDOW[1]:
+            shock.append(round(r, 5))
+    return {
+        "last": values[last_i], "last_date": dates[last_i], "n_returns": n,
+        "mu": round(mu, 5), "sigma": round(sigma, 5),
+        "mu_full": round(mu_full, 5), "sigma_full": round(sigma_full, 5),
+        "phi": round(phi, 3), "seasonal": seasonal, "fx_beta": fx_beta,
+        "shock_2022": shock,
+        "change_12m": (round(values[last_i] / values[last_i - 12] - 1, 4)
+                       if last_i >= 12 and values[last_i - 12] else None),
+    }
+
+
+def load_forecast(panel: dict) -> dict:
+    dates, series = panel["dates"], panel["series"]
+    fx = series.get("exchange_rate")
+    fx_ret = None
+    if fx:
+        fx_ret = [None] + [
+            (math.log(fx[i]) - math.log(fx[i - 1])) if (fx[i] and fx[i - 1]) else None
+            for i in range(1, len(fx))]
+    out = {}
+    for code in panel["groups"]["materials"] + panel["groups"]["aggregates"] + ["exchange_rate", "cpi"]:
+        if code in series:
+            est = estimate_series(dates, series[code], fx_ret if code not in ("exchange_rate",) else None)
+            if est:
+                out[code] = est
+    macro_latest = {}
+    for code in panel["groups"]["macro"]:
+        vals = series[code]
+        idx = [i for i, v in enumerate(vals) if v is not None]
+        if idx:
+            i = idx[-1]
+            macro_latest[code] = {"value": vals[i], "date": dates[i],
+                                  "change_12m": (round(vals[i] / vals[i - 12] - 1, 4) if i >= 12 and vals[i - 12] else None),
+                                  "delta_12m": (round(vals[i] - vals[i - 12], 2) if i >= 12 and vals[i - 12] is not None else None)}
+    # average pairwise correlation of material returns -> common-factor loading for joint simulation
+    mats = [c for c in panel["groups"]["materials"] if c in out and out[c]["n_returns"] >= 60]
+    rets = {}
+    for c in mats:
+        v = series[c]
+        rets[c] = [(math.log(v[i]) - math.log(v[i - 1])) if (v[i] and v[i - 1]) else None for i in range(1, len(v))]
+    cors = []
+    for a in range(len(mats)):
+        for b in range(a + 1, len(mats)):
+            pa, pb = rets[mats[a]], rets[mats[b]]
+            xs = [(x, y) for x, y in zip(pa, pb) if x is not None and y is not None]
+            if len(xs) < 30:
+                continue
+            mx = sum(x for x, _ in xs) / len(xs); my = sum(y for _, y in xs) / len(xs)
+            sxy = sum((x - mx) * (y - my) for x, y in xs)
+            sxx = sum((x - mx) ** 2 for x, _ in xs); syy = sum((y - my) ** 2 for _, y in xs)
+            if sxx > 0 and syy > 0:
+                cors.append(sxy / math.sqrt(sxx * syy))
+    avg_corr = sum(cors) / len(cors) if cors else 0.0
+    return {"series": out, "macro_latest": macro_latest,
+            "common_corr": round(max(0.0, avg_corr), 4), "n_pairs": len(cors),
+            "method": {"half_life_months": HALF_LIFE_MONTHS, "shock_window": SHOCK_WINDOW, "fx_lags": FX_LAGS}}
+
+
 def build_payload() -> dict:
     panel = load_panel()
     manifest = read_json(PROCESSED / "panel_manifest.json", {})
     return {
+        "forecast": load_forecast(panel),
         "generated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "manifest": manifest,
         "panel": panel,
@@ -317,8 +466,14 @@ def build_payload() -> dict:
     }
 
 
-def render(payload: dict) -> str:
-    template = (APP / "template.html").read_text(encoding="utf-8")
+PAGES = {  # template -> output, both under app/
+    "template.html": "index.html",
+    "workbench_template.html": "workbench.html",
+}
+
+
+def render(payload: dict, template_name: str) -> str:
+    template = (APP / template_name).read_text(encoding="utf-8")
     vendor = APP / "vendor" / "echarts.min.js"
     if vendor.exists():
         lib = "<script>" + vendor.read_text(encoding="utf-8") + "</script>"
@@ -332,18 +487,21 @@ def render(payload: dict) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--out", default=str(APP / "index.html"))
     ap.add_argument("--json", action="store_true", help="also write app/dashboard_data.json")
     args = ap.parse_args()
 
     payload = build_payload()
     if args.json:
         (APP / "dashboard_data.json").write_text(json.dumps(payload, indent=1), encoding="utf-8")
-    html = render(payload)
-    Path(args.out).write_text(html, encoding="utf-8")
     m = payload["manifest"]
-    print(f"wrote {args.out} ({len(html)/1e6:.2f} MB) — panel v{m.get('panel_version')} "
-          f"{m.get('n_months')} months × {m.get('n_series')} series")
+    for template_name, out_name in PAGES.items():
+        if not (APP / template_name).exists():
+            continue
+        html = render(payload, template_name)
+        (APP / out_name).write_text(html, encoding="utf-8")
+        print(f"wrote app/{out_name} ({len(html)/1e6:.2f} MB)")
+    print(f"panel v{m.get('panel_version')} — {m.get('n_months')} months × {m.get('n_series')} series; "
+          f"forecast parameters for {len(payload['forecast']['series'])} series")
 
 
 if __name__ == "__main__":
