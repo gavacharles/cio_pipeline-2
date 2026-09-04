@@ -489,6 +489,9 @@ def render(payload: dict, template_name: str, font: str = DEFAULT_FONT) -> str:
     else:
         font_tag = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
                     f'family={font}:wght@400..800&display=swap">')
+    display = APP / "vendor" / "clash-grotesk.css"   # display face for headings and figures
+    if display.exists():
+        font_tag = "<style>" + display.read_text(encoding="utf-8") + "</style>" + font_tag
     data = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
     return (template.replace("<!--__ECHARTS__-->", lib)
                     .replace("<!--__FONTS__-->", font_tag)

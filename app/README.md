@@ -62,6 +62,6 @@ column appears.
 - `build_dashboard.py` — reads the artefacts, injects the data and the vendored
   chart library, writes `index.html`.
 - `vendor/echarts.min.js` — Apache ECharts 5.4.3, inlined so the page works offline.
-- `vendor/inter.css`, `vendor/montserrat.css` — typefaces (SIL Open Font License, variable weight 400–800) as base64 `@font-face`, inlined so they render offline and inside sandboxed viewers. Inter is the default; `--font Montserrat` switches.
+- `vendor/inter.css`, `vendor/montserrat.css` — typefaces (SIL Open Font License, variable weight 400–800) as base64 `@font-face`, inlined so they render offline and inside sandboxed viewers. Inter is the default body face; `--font Montserrat` switches. `vendor/clash-grotesk.css` — Clash Grotesk 300/400/500 (Indian Type Foundry Free Font License, via Fontshare) is the display face for headings and figures.
 - `index.html`, `workbench.html` — the generated pages. Commit them alongside
   data changes so the repository always carries pages that match the current artefacts.
