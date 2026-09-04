@@ -61,8 +61,30 @@ code{font-family:var(--mono);font-size:.9em;background:var(--surface-2);padding:
 .rail{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column;gap:22px;background:var(--page)}
 .brand{display:flex;flex-direction:column;gap:6px}
 .brand .mark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em}
-.brand .mark i{width:22px;height:22px;border:2px solid var(--accent);border-radius:50%;display:inline-block;position:relative}
-.brand .mark i::after{content:"";position:absolute;inset:5px;background:var(--accent);border-radius:50%}
+/* animated mark: arc rotates, a teal node orbits, the core breathes */
+.logo{display:inline-block;overflow:visible}
+.logo .ring{transform-origin:12px 12px;animation:cio-spin 9s linear infinite}
+.logo .orbit{transform-origin:12px 12px;animation:cio-spin 4.5s linear infinite reverse}
+.logo .core{transform-origin:12px 12px;animation:cio-breathe 3.2s ease-in-out infinite}
+@keyframes cio-spin{to{transform:rotate(360deg)}}
+@keyframes cio-breathe{0%,100%{transform:scale(1)}50%{transform:scale(.82)}}
+.reveal{animation:cio-rise .55s cubic-bezier(.2,.7,.2,1) both}
+.reveal.d1{animation-delay:.08s}.reveal.d2{animation-delay:.16s}.reveal.d3{animation-delay:.24s}.reveal.d4{animation-delay:.32s}
+@keyframes cio-rise{from{transform:translateY(10px)}to{transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.logo .ring,.logo .orbit,.logo .core,.reveal{animation:none}}
+/* hero: ambient strand field behind the headline */
+.hero{position:relative}
+.hero canvas{position:absolute;top:-48px;left:-20px;width:calc(100% + 40px);height:min(100%,600px);pointer-events:none;z-index:0;opacity:.9;-webkit-mask-image:linear-gradient(180deg,#000 70%,transparent);mask-image:linear-gradient(180deg,#000 70%,transparent)}
+.hero>*:not(canvas){position:relative;z-index:1}
+/* pipeline: flowing dash on the stage connectors */
+.stage::before{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent) 40%,var(--teal) 60%,transparent);background-size:220% 100%;opacity:0;transition:opacity .4s}
+.pipe:hover .stage::before{opacity:.9;animation:cio-flow 2.4s linear infinite}
+@keyframes cio-flow{from{background-position:120% 0}to{background-position:-120% 0}}
+.tile,.panel,.product{transition:border-color .25s,transform .25s}
+.tile:hover,.product:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.chip{transition:background .2s,border-color .2s,color .2s}
+.stat .v{transition:none}
+@media (prefers-reduced-motion:reduce){.pipe:hover .stage::before{animation:none}.tile:hover,.product:hover{transform:none}}
 .brand small{color:var(--ink-3);font-size:12px}
 .nav{display:flex;flex-direction:column;gap:2px}
 .nav a{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:baseline;padding:8px 10px;border-radius:6px;color:var(--ink-2);text-decoration:none;font-size:14px}
@@ -214,7 +236,7 @@ details .tbl-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 8p
 <div class="shell">
 <aside class="rail">
   <div class="brand">
-    <div class="mark"><i></i>CiO Lab</div>
+    <div class="mark"><svg class="logo" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="100" stroke-dasharray="62 38"/><circle class="orbit" cx="12" cy="2.5" r="1.6" fill="var(--teal)"/><circle class="core" cx="12" cy="12" r="4" fill="var(--accent)"/></svg>CiO Lab</div>
     <small>Phase 0 · Price-panel foundation</small>
   </div>
   <nav class="nav" id="nav">
@@ -234,13 +256,14 @@ details .tbl-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 8p
 <main>
 
 <!-- 01 OVERVIEW -->
-<section class="block" id="overview">
+<section class="block hero" id="overview">
+  <canvas id="heroField" aria-hidden="true"></canvas>
   <div class="sec-head">
-    <span class="kicker">01 · Overview</span>
-    <h1>One price panel for Uganda's construction economy</h1>
-    <p class="lede">Phase 0 turns nine years of Uganda Bureau of Statistics construction-price releases and the Ministry of Finance macro portal into a single, audited, monthly panel — the foundation every CiO product and paper builds on.</p>
+    <span class="kicker reveal">01 · Overview</span>
+    <h1 class="reveal d1">One price panel for Uganda's construction economy</h1>
+    <p class="lede reveal d2">Phase 0 turns nine years of Uganda Bureau of Statistics construction-price releases and the Ministry of Finance macro portal into a single, audited, monthly panel — the foundation every CiO product and paper builds on.</p>
   </div>
-  <div class="stats" id="heroTiles"></div>
+  <div class="stats reveal d3" id="heroTiles"></div>
   <div style="height:28px"></div>
   <div class="panel-head"><h3>How the data moves</h3><span class="sub">Every stage is a script in the repository; counts are read from the current build</span></div>
   <div class="pipe" id="pipe"></div>
@@ -703,6 +726,41 @@ if(F.dates){
 
 } /* end renderAll */
 renderAll();
+
+/* ---------- motion: count-up on the hero stats, ambient strand field ---------- */
+const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function countUp(){
+  if(reduce) return;
+  document.querySelectorAll('#heroTiles .stat .v').forEach(v=>{
+    const node=[...v.childNodes].find(n=>n.nodeType===3 && /\d/.test(n.textContent)); if(!node) return;
+    const target=parseInt(node.textContent.replace(/\D/g,''),10); if(!(target>0)) return;
+    const t0=performance.now(), dur=900+Math.min(600,target*3);
+    const step=now=>{ const k=Math.min(1,(now-t0)/dur); const e=1-Math.pow(1-k,3); node.textContent=String(Math.round(target*e)); if(k<1) requestAnimationFrame(step); };
+    node.textContent='0'; requestAnimationFrame(step);
+  });
+})();
+(function field(){
+  const cv=document.getElementById('heroField'); if(!cv) return;
+  const ctx=cv.getContext('2d'); let W,H,strands=[],raf=null,t=0;
+  const rng=(s=>()=>{s=(s*1664525+1013904223)>>>0; return s/4294967296;})(7);
+  function size(){ const r=cv.getBoundingClientRect(); W=cv.width=Math.max(1,Math.floor(r.width*devicePixelRatio)); H=cv.height=Math.max(1,Math.floor(r.height*devicePixelRatio)); strands=[...Array(22).keys()].map(i=>({y0:0.15+rng()*0.7, amp:0.05+rng()*0.16, f:0.9+rng()*1.6, ph:rng()*6.28, sp:0.25+rng()*0.5, hue:rng()})); }
+  function colour(a){ const c=getComputedStyle(document.documentElement); const teal=c.getPropertyValue('--teal').trim(), amber=c.getPropertyValue('--accent').trim(); return a<0.5?teal:amber; }
+  function draw(){
+    ctx.clearRect(0,0,W,H); ctx.lineWidth=Math.max(1,devicePixelRatio*0.9); ctx.globalAlpha=.22;
+    const xs=W*0.42, xe=W*1.02;
+    for(const s of strands){
+      ctx.beginPath(); ctx.strokeStyle=colour(s.hue);
+      for(let x=xs;x<=xe;x+=W/140){ const u=(x-xs)/(xe-xs); const env=Math.sin(Math.PI*Math.min(1,u*1.15))*(1-u*0.85)+0.02; const y=H*(s.y0+(0.5-s.y0)*u*0.9)+H*s.amp*env*Math.sin(u*s.f*6.28+s.ph+t*s.sp); x===xs?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+  function loop(){ t+=0.016; draw(); raf=requestAnimationFrame(loop); }
+  size(); draw(); if(!reduce) loop();
+  window.addEventListener('resize',()=>{ size(); draw(); });
+  document.getElementById('theme').addEventListener('click',()=>setTimeout(draw,50));
+  document.addEventListener('visibilitychange',()=>{ if(reduce) return; if(document.hidden){ cancelAnimationFrame(raf); raf=null; } else if(!raf) loop(); });
+})();
 
 /* ---------- nav + resize ---------- */
 const links=[...document.querySelectorAll('.nav a')];

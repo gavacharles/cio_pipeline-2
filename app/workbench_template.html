@@ -58,8 +58,22 @@ label{color:var(--ink-2);font-size:12.5px}
 /* top bar */
 .top{display:flex;align-items:center;gap:22px;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5}
 .top .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;font-size:18px}
-.top .brand i{width:18px;height:18px;border:2px solid var(--accent);border-radius:50%;position:relative;display:inline-block}
-.top .brand i::after{content:"";position:absolute;inset:4px;background:var(--accent);border-radius:50%}
+/* animated mark: arc rotates, a teal node orbits, the core breathes */
+.logo{display:inline-block;overflow:visible}
+.logo .ring{transform-origin:12px 12px;animation:cio-spin 9s linear infinite}
+.logo .orbit{transform-origin:12px 12px;animation:cio-spin 4.5s linear infinite reverse}
+.logo .core{transform-origin:12px 12px;animation:cio-breathe 3.2s ease-in-out infinite}
+@keyframes cio-spin{to{transform:rotate(360deg)}}
+@keyframes cio-breathe{0%,100%{transform:scale(1)}50%{transform:scale(.82)}}
+.reveal{animation:cio-rise .55s cubic-bezier(.2,.7,.2,1) both}
+.reveal.d1{animation-delay:.08s}.reveal.d2{animation-delay:.16s}.reveal.d3{animation-delay:.24s}.reveal.d4{animation-delay:.32s}
+@keyframes cio-rise{from{transform:translateY(10px)}to{transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.logo .ring,.logo .orbit,.logo .core,.reveal{animation:none}}
+.tile,.panel{transition:border-color .25s,transform .25s}
+.tile:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.tile .v,.kpi .v{transition:opacity .25s}
+.tab.on{animation:cio-rise .35s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.tile:hover{transform:none}.tab.on{animation:none}}
 .top .brand small{font-family:var(--body);font-weight:400;color:var(--ink-3);font-size:12px;margin-left:6px}
 .top nav{display:flex;gap:4px;margin-left:8px}
 .top nav a{padding:6px 12px;border-radius:6px;color:var(--ink-2);font-size:13px}
@@ -153,12 +167,12 @@ td input.wide{width:150px;text-align:left;font-family:var(--body)}
 <script>const DATA=/*__CIO_DATA__*/null;</script>
 
 <header class="top">
-  <div class="brand"><i></i>CiO Lab<small>Projection Workbench</small></div>
+  <div class="brand"><svg class="logo" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="100" stroke-dasharray="62 38"/><circle class="orbit" cx="12" cy="2.5" r="1.6" fill="var(--teal)"/><circle class="core" cx="12" cy="12" r="4" fill="var(--accent)"/></svg>CiO Lab<small>Projection Workbench</small></div>
   <nav><a href="index.html">Explorer</a><a class="on" href="workbench.html">Workbench</a></nav>
   <div class="vint" id="vint"></div>
   <div class="seg theme" id="theme" role="group" aria-label="Colour theme" style="margin-left:14px"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
 </header>
-<div class="kpis" id="kpis"></div>
+<div class="kpis reveal" id="kpis"></div>
 
 <div class="ws">
 <aside class="side">
