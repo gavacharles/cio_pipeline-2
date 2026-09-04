@@ -1,6 +1,7 @@
 # CiO dashboard pages
 
-Two self-contained pages, generated from the pipeline's own artefacts. Open
+Two self-contained pages, generated from the pipeline's own artefacts. Both follow
+the viewer's light/dark setting and carry an Auto / Light / Dark switch. Open
 either in any browser — no server, no build tooling, no network needed (Inter is
 embedded in the page).
 
@@ -34,7 +35,8 @@ from that model into the payload; the page needs no change.
 ## Regenerating after a pipeline run
 
 ```bash
-python3 app/build_dashboard.py          # rewrites app/index.html
+python3 app/build_dashboard.py          # rewrites app/index.html and app/workbench.html
+python3 app/build_dashboard.py --font Montserrat   # same, set in Montserrat
 python3 app/build_dashboard.py --json   # also dumps app/dashboard_data.json for inspection
 ```
 
@@ -60,6 +62,6 @@ column appears.
 - `build_dashboard.py` — reads the artefacts, injects the data and the vendored
   chart library, writes `index.html`.
 - `vendor/echarts.min.js` — Apache ECharts 5.4.3, inlined so the page works offline.
-- `vendor/inter.css` — Inter (SIL Open Font License, variable weight 400–800) as base64 `@font-face`, inlined so the typeface renders offline and inside sandboxed viewers.
+- `vendor/inter.css`, `vendor/montserrat.css` — typefaces (SIL Open Font License, variable weight 400–800) as base64 `@font-face`, inlined so they render offline and inside sandboxed viewers. Inter is the default; `--font Montserrat` switches.
 - `index.html`, `workbench.html` — the generated pages. Commit them alongside
   data changes so the repository always carries pages that match the current artefacts.

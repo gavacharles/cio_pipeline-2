@@ -472,7 +472,10 @@ PAGES = {  # template -> output, both under app/
 }
 
 
-def render(payload: dict, template_name: str) -> str:
+DEFAULT_FONT = "Inter"   # vendored faces: app/vendor/<name>.css (Inter, Montserrat)
+
+
+def render(payload: dict, template_name: str, font: str = DEFAULT_FONT) -> str:
     template = (APP / template_name).read_text(encoding="utf-8")
     vendor = APP / "vendor" / "echarts.min.js"
     if vendor.exists():
@@ -480,21 +483,23 @@ def render(payload: dict, template_name: str) -> str:
     else:  # fall back to the CDN copy if the vendored file is absent
         lib = ('<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/'
                'echarts.min.js"></script>')
-    fonts = APP / "vendor" / "inter.css"
-    if fonts.exists():  # Inter embedded as base64 @font-face so the pages need no font host
+    fonts = APP / "vendor" / f"{font.lower()}.css"
+    if fonts.exists():  # typeface embedded as base64 @font-face so the pages need no font host
         font_tag = "<style>" + fonts.read_text(encoding="utf-8") + "</style>"
     else:
         font_tag = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
-                    'family=Inter:wght@400;700;900&display=swap">')
+                    f'family={font}:wght@400..800&display=swap">')
     data = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
     return (template.replace("<!--__ECHARTS__-->", lib)
                     .replace("<!--__FONTS__-->", font_tag)
+                    .replace("__FONT__", font)
                     .replace("/*__CIO_DATA__*/null", data))
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--json", action="store_true", help="also write app/dashboard_data.json")
+    ap.add_argument("--font", default=DEFAULT_FONT, help="typeface to embed (Inter or Montserrat)")
     args = ap.parse_args()
 
     payload = build_payload()
@@ -504,7 +509,7 @@ def main() -> None:
     for template_name, out_name in PAGES.items():
         if not (APP / template_name).exists():
             continue
-        html = render(payload, template_name)
+        html = render(payload, template_name, args.font)
         (APP / out_name).write_text(html, encoding="utf-8")
         print(f"wrote app/{out_name} ({len(html)/1e6:.2f} MB)")
     print(f"panel v{m.get('panel_version')} — {m.get('n_months')} months × {m.get('n_series')} series; "

@@ -10,11 +10,33 @@
   color-scheme:dark;
   --page:#121314; --surface:#1b1d1f; --surface-2:#232628; --line:#2e3134; --line-2:#3a3e42;
   --ink:#f3f1ec; --ink-2:#c6c3ba; --ink-3:#8d8b84;
-  --accent:#e0a458; --accent-ink:#1a1408;
+  --accent:#e0a458; --accent-ink:#1a1408; --accent-line:rgba(224,164,88,.45); --accent-soft:rgba(224,164,88,.10); --accent-fill:rgba(224,164,88,.12);
   --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#4fae4f; --s7:#9085e9; --s8:#e66767;
   --good:#3fb950; --warn:#fab219; --crit:#e05c5c;
-  --display:"Inter",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"Inter",system-ui,sans-serif;
+  --tip-bg:#0f1011; --tip-label:#2a2d30; --hover:rgba(255,255,255,.025);
+  --heat-0:#1f2730; --heat-1:#1c5cab; --heat-2:#3987e5; --heat-3:#9ec5f4; --heat-diag:#2a2d30;
+  --display:"__FONT__",system-ui,sans-serif; --body:"__FONT__",system-ui,sans-serif; --mono:"__FONT__",system-ui,sans-serif;
   --rail:220px;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  color-scheme:light;
+  --page:#f5f4f0; --surface:#ffffff; --surface-2:#efede7; --line:#e3e0d8; --line-2:#cdc9bf;
+  --ink:#17191c; --ink-2:#474a50; --ink-3:#767a81;
+  --accent:#b3721f; --accent-ink:#ffffff; --accent-line:rgba(179,114,31,.45); --accent-soft:rgba(179,114,31,.08); --accent-fill:rgba(179,114,31,.14);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --good:#0a8a0a; --warn:#b07500; --crit:#c93636;
+  --tip-bg:#ffffff; --tip-label:#e6e3db; --hover:rgba(0,0,0,.03);
+  --heat-0:#eef2f7; --heat-1:#9ec5f4; --heat-2:#3987e5; --heat-3:#104281; --heat-diag:#e6e3db;
+}}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --page:#f5f4f0; --surface:#ffffff; --surface-2:#efede7; --line:#e3e0d8; --line-2:#cdc9bf;
+  --ink:#17191c; --ink-2:#474a50; --ink-3:#767a81;
+  --accent:#b3721f; --accent-ink:#ffffff; --accent-line:rgba(179,114,31,.45); --accent-soft:rgba(179,114,31,.08); --accent-fill:rgba(179,114,31,.14);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --good:#0a8a0a; --warn:#b07500; --crit:#c93636;
+  --tip-bg:#ffffff; --tip-label:#e6e3db; --hover:rgba(0,0,0,.03);
+  --heat-0:#eef2f7; --heat-1:#9ec5f4; --heat-2:#3987e5; --heat-3:#104281; --heat-diag:#e6e3db;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -45,8 +67,11 @@ code{font-family:var(--mono);font-size:.9em;background:var(--surface-2);padding:
 .nav a:hover{background:var(--surface);color:var(--ink)}
 .nav a.active{background:var(--surface-2);color:var(--ink)}
 .nav a.active .n{color:var(--accent)}
-.wb-link{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid rgba(224,164,88,.45);border-radius:6px;color:var(--accent);font-size:13px;font-weight:400;text-decoration:none;background:rgba(224,164,88,.08)}
-.wb-link:hover{background:rgba(224,164,88,.16)}
+.wb-link{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--accent-line);border-radius:6px;color:var(--accent);font-size:13px;font-weight:400;text-decoration:none;background:var(--accent-soft)}
+.wb-link:hover{background:var(--accent-fill)}
+.theme{display:flex;background:var(--surface);border:1px solid var(--line-2);border-radius:6px;padding:2px;gap:2px;margin-top:10px}
+.theme button{flex:1;background:transparent;border:0;color:var(--ink-3);padding:5px 4px;border-radius:4px;font:500 11.5px var(--body);cursor:pointer}
+.theme button.on{background:var(--surface-2);color:var(--ink)}
 .rail .meta{font-size:12px;color:var(--ink-3);line-height:1.5}
 .rail .meta b{color:var(--ink-2);font-weight:400}
 main{min-width:0;padding:0 clamp(20px,4vw,56px) 80px}
@@ -99,11 +124,11 @@ table.wrap td.num{white-space:nowrap}
 th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:400;background:var(--surface)}
 td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
 tbody tr:last-child td{border-bottom:0}
-tbody tr:hover td{background:rgba(255,255,255,.025)}
+tbody tr:hover td{background:var(--hover)}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-family:var(--mono);border:1px solid var(--line-2);color:var(--ink-2)}
-.pill.good{color:var(--good);border-color:rgba(63,185,80,.4)}
-.pill.warn{color:var(--warn);border-color:rgba(250,178,25,.4)}
-.pill.crit{color:var(--crit);border-color:rgba(224,92,92,.4)}
+.pill.good{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+.pill.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.pill.crit{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 45%,transparent)}
 details{border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 details summary{cursor:pointer;padding:12px 16px;font-weight:400;color:var(--ink-2);list-style:none;display:flex;justify-content:space-between}
 details summary::after{content:"+";font-family:var(--mono);color:var(--ink-3)}
@@ -188,6 +213,7 @@ details .tbl-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 8p
     <a href="#roadmap"><span class="n">07</span>Roadmap</a>
   </nav>
   <a class="wb-link" href="workbench.html">Open the Projection Workbench <span>→</span></a>
+  <div class="theme" id="theme" role="group" aria-label="Colour theme"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
   <div class="meta" id="railMeta"></div>
 </aside>
 
@@ -387,6 +413,17 @@ details .tbl-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 8p
 (function(){
 'use strict';
 const D = DATA;
+/* ---------- theme ---------- */
+let themePref='auto'; try{ themePref=localStorage.getItem('cio-theme')||'auto'; }catch(e){}
+function applyTheme(v){ themePref=v; if(v==='auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',v); try{ localStorage.setItem('cio-theme',v); }catch(e){} [...document.querySelectorAll('#theme button')].forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
+applyTheme(themePref);
+document.getElementById('theme').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; applyTheme(b.dataset.v); renderAll();});
+if(window.matchMedia){ window.matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{ if(themePref==='auto') renderAll(); }); }
+const selected=new Set(['CIPI_ALL','CEM','STEEL','DIESEL']);
+let charts=[];
+function renderAll(){
+charts.forEach(c=>c.dispose()); charts=[];
+['heroTiles','pipe','sourceCards','coverage','chipsAgg','chipsMat','chipsMacro','auditTiles','clusters','sensTiles','irfGrid','p9Tiles'].forEach(id=>{ const e=document.getElementById(id); if(e) e.innerHTML=''; });
 const css = getComputedStyle(document.documentElement);
 const tok = n => css.getPropertyValue(n).trim();
 const SERIES = [tok('--s1'),tok('--s2'),tok('--s3'),tok('--s4'),tok('--s5'),tok('--s6'),tok('--s7'),tok('--s8')];
@@ -400,14 +437,13 @@ const pct = v => v==null? '—' : (v*100).toFixed(1)+' pp';
 const el = (id)=>document.getElementById(id);
 const h = (tag,cls,html)=>{const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e;};
 const monthLabel = ym => { const [y,m]=ym.split('-'); return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+y; };
-const charts=[];
 function mk(id){ const c=echarts.init(el(id),null,{renderer:'canvas'}); charts.push(c); return c; }
 const base = {
   textStyle:{fontFamily:FONT,color:INK[2]},
   animationDuration:500,
   grid:{left:8,right:16,top:28,bottom:8,containLabel:true},
-  tooltip:{trigger:'axis',backgroundColor:'#0f1011',borderColor:LINE2,borderWidth:1,textStyle:{color:INK[1],fontSize:12,fontFamily:FONT},
-    axisPointer:{type:'cross',lineStyle:{color:LINE2},crossStyle:{color:LINE2},label:{backgroundColor:'#2a2d30',color:INK[1],fontFamily:MONO,fontSize:11}}},
+  tooltip:{trigger:'axis',backgroundColor:tok('--tip-bg'),borderColor:LINE2,borderWidth:1,textStyle:{color:INK[1],fontSize:12,fontFamily:FONT},
+    axisPointer:{type:'cross',lineStyle:{color:LINE2},crossStyle:{color:LINE2},label:{backgroundColor:tok('--tip-label'),color:INK[1],fontFamily:MONO,fontSize:11}}},
   legend:{top:0,left:0,icon:'roundRect',itemWidth:10,itemHeight:10,itemGap:14,textStyle:{color:INK[2],fontSize:12}},
 };
 const axisX = extra => Object.assign({type:'category',boundaryGap:false,axisLine:{lineStyle:{color:LINE2}},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,hideOverlap:true}},extra||{});
@@ -476,7 +512,6 @@ const colourOf={}; // colour follows the entity
 [...D.panel.groups.aggregates,...D.panel.groups.materials,...D.panel.groups.macro].forEach((c,i)=>{colourOf[c]=SERIES[i%SERIES.length];});
 // give the defaults distinct leading slots
 Object.assign(colourOf,{CIPI_ALL:SERIES[0],CEM:SERIES[1],STEEL:SERIES[2],DIESEL:SERIES[3],exchange_rate:SERIES[4],cpi:SERIES[5],LABOUR:SERIES[6],SAND:SERIES[7],IRONSTEEL:SERIES[2],TIMBER:SERIES[6]});
-const selected=new Set(['CIPI_ALL','CEM','STEEL','DIESEL']);
 const MAXSEL=8;
 function chips(container,codes){
   for(const code of codes){
@@ -520,11 +555,11 @@ function drawExplorer(){
     legend:{...base.legend,data:codes.map(c=>D.panel.labels[c])},
     tooltip:{...base.tooltip,valueFormatter:v=>v==null?'—':fmt(v,reidx?1:2)},
     xAxis:axisX({data:dates}), yAxis:axisY(),
-    dataZoom:[{type:'slider',height:18,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:'rgba(224,164,88,.12)',handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}},{type:'inside'}],
+    dataZoom:[{type:'slider',height:18,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:tok('--accent-fill'),handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}},{type:'inside'}],
     series},true);
   drawNote();
 }
-el('optIndex').addEventListener('change',drawExplorer); el('optBreaks').addEventListener('change',drawExplorer);
+el('optIndex').onchange=drawExplorer; el('optBreaks').onchange=drawExplorer;
 drawExplorer();
 
 /* ---------- audit ---------- */
@@ -553,7 +588,7 @@ mk('breakChart').setOption({...base,grid:{left:210,right:16,top:8,bottom:28,cont
   tooltip:{...base.tooltip,trigger:'item',axisPointer:{type:'none'},formatter:p=>`${D.panel.labels[p.value[1]]||p.value[1]}<br><span class="num">${p.value[0]}</span>`},
   xAxis:axisX({type:'category',data:dates,boundaryGap:true,axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,interval:(i,v)=>v.endsWith('-01'),formatter:v=>v.slice(0,4)},splitLine:{show:true,lineStyle:{color:LINE},interval:(i,v)=>v.endsWith('-01')}}),
   yAxis:{type:'category',data:brSeries,inverse:true,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[2],fontSize:12,formatter:v=>D.panel.labels[v]||v}},
-  series:[{type:'scatter',data:brPts,symbolSize:9,itemStyle:{color:ACC,borderColor:'#121314',borderWidth:1.5}}]});
+  series:[{type:'scatter',data:brPts,symbolSize:9,itemStyle:{color:ACC,borderColor:tok('--page'),borderWidth:1.5}}]});
 
 el('spliceTable').innerHTML = `<thead><tr><th>Series</th><th class="num">Links</th><th class="num">No overlap</th><th class="num">Factor range</th></tr></thead><tbody>`+
   SP.summary.map(s=>`<tr><td>${s.label}</td><td class="num">${s.n_links}</td><td class="num">${s.n_no_overlap? `<span class="pill warn">${s.n_no_overlap}</span>`:'0'}</td><td class="num">${s.min_factor==null?'—':fmt(s.min_factor,3)+' – '+fmt(s.max_factor,3)}</td></tr>`).join('')+`</tbody>`;
@@ -573,8 +608,8 @@ mk('spillChart').setOption({...base,grid:{left:8,right:8,top:8,bottom:56,contain
   tooltip:{...base.tooltip,trigger:'item',axisPointer:{type:'none'},formatter:p=>`from <b>${D.panel.labels[sp.names[p.value[0]]]||sp.names[p.value[0]]}</b> to <b>${D.panel.labels[sp.names[p.value[1]]]||sp.names[p.value[1]]}</b><br><span class="num">${fmt(p.value[2])}%</span> of forecast-error variance`},
   xAxis:{type:'category',data:sp.names,position:'top',axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:10,rotate:45}},
   yAxis:{type:'category',data:sp.names,inverse:true,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:10}},
-  visualMap:{min:0,max:Math.min(25,spMax),calculable:false,orient:'horizontal',left:'center',bottom:0,itemHeight:120,itemWidth:10,text:['stronger','weaker'],textStyle:{color:INK[3],fontFamily:MONO,fontSize:10},inRange:{color:['#1f2730','#1c5cab','#3987e5','#9ec5f4']}},
-  series:[{type:'heatmap',data:spData.map(d=>({value:d,itemStyle:d[0]===d[1]?{color:'#2a2d30'}:undefined})),itemStyle:{borderColor:'#1b1d1f',borderWidth:2,borderRadius:2},emphasis:{itemStyle:{borderColor:INK[2]}}}]});
+  visualMap:{min:0,max:Math.min(25,spMax),calculable:false,orient:'horizontal',left:'center',bottom:0,itemHeight:120,itemWidth:10,text:['stronger','weaker'],textStyle:{color:INK[3],fontFamily:MONO,fontSize:10},inRange:{color:[tok('--heat-0'),tok('--heat-1'),tok('--heat-2'),tok('--heat-3')]}},
+  series:[{type:'heatmap',data:spData.map(d=>({value:d,itemStyle:d[0]===d[1]?{color:tok('--heat-diag')}:undefined})),itemStyle:{borderColor:SURF,borderWidth:2,borderRadius:2},emphasis:{itemStyle:{borderColor:INK[2]}}}]});
 
 /* ---------- P3 clusters ---------- */
 const cl={}; P.p3.forEach(m=>{(cl[m.cluster]=cl[m.cluster]||[]).push(m);});
@@ -641,15 +676,18 @@ if(F.dates){
   mk('fiscalChart').setOption({...base,grid:{left:8,right:16,top:30,bottom:40,containLabel:true},tooltip:{...base.tooltip,valueFormatter:v=>v==null?'—':fmt(v,0)},
     legend:{...base.legend,data:['Revenue','Expenditure']},
     xAxis:axisX({data:F.dates}),yAxis:axisY(),
-    dataZoom:[{type:'inside'},{type:'slider',height:14,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:'rgba(224,164,88,.12)',handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}}],
+    dataZoom:[{type:'inside'},{type:'slider',height:14,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:tok('--accent-fill'),handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}}],
     series:[{name:'Revenue',type:'line',data:fs.total_central_government_revenue,showSymbol:false,lineStyle:{width:2},itemStyle:{color:SERIES[0]}},
             {name:'Expenditure',type:'line',data:fs.overall_public_expenditure,showSymbol:false,lineStyle:{width:2},itemStyle:{color:SERIES[1]}}]});
   mk('debtChart').setOption({...base,grid:{left:8,right:16,top:30,bottom:40,containLabel:true},tooltip:{...base.tooltip,valueFormatter:v=>v==null?'—':fmt(v,0)},
     legend:{...base.legend,data:['Total public debt']},
     xAxis:axisX({data:F.dates}),yAxis:axisY(),
-    dataZoom:[{type:'inside'},{type:'slider',height:14,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:'rgba(224,164,88,.12)',handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}}],
+    dataZoom:[{type:'inside'},{type:'slider',height:14,bottom:8,borderColor:LINE,backgroundColor:SURF,fillerColor:tok('--accent-fill'),handleStyle:{color:ACC},dataBackground:{lineStyle:{color:LINE2},areaStyle:{color:LINE}},textStyle:{color:INK[3],fontFamily:MONO,fontSize:10}}],
     series:[{name:'Total public debt',type:'line',data:fs.total_public_debt,showSymbol:false,lineStyle:{width:2},itemStyle:{color:SERIES[6]},areaStyle:{opacity:.1}}]});
 }
+
+} /* end renderAll */
+renderAll();
 
 /* ---------- nav + resize ---------- */
 const links=[...document.querySelectorAll('.nav a')];
@@ -657,7 +695,7 @@ const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
 const io=new IntersectionObserver(es=>{es.forEach(e=>{ if(e.isIntersecting){ links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)); }});},{rootMargin:'-40% 0px -55% 0px'});
 secs.forEach(s=>io.observe(s));
 let rt; window.addEventListener('resize',()=>{clearTimeout(rt); rt=setTimeout(()=>charts.forEach(c=>c.resize()),120);});
-if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ charts.forEach(c=>{ c.setOption({textStyle:{fontFamily:FONT}}); c.resize(); }); });
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>renderAll());
 })();
 </script>
 </body>
