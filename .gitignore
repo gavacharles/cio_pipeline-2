@@ -23,3 +23,6 @@ env/
 *.tmp
 *.log
 ~$*
+
+# Dashboard scratch
+app/dashboard_data.json
