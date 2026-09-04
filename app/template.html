@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CiO Phase 0 Explorer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<!--__FONTS__-->
 <style>
 :root{
   color-scheme:dark;
@@ -658,6 +657,7 @@ const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
 const io=new IntersectionObserver(es=>{es.forEach(e=>{ if(e.isIntersecting){ links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)); }});},{rootMargin:'-40% 0px -55% 0px'});
 secs.forEach(s=>io.observe(s));
 let rt; window.addEventListener('resize',()=>{clearTimeout(rt); rt=setTimeout(()=>charts.forEach(c=>c.resize()),120);});
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ charts.forEach(c=>{ c.setOption({textStyle:{fontFamily:FONT}}); c.resize(); }); });
 })();
 </script>
 </body>

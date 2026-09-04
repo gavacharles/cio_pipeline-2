@@ -480,8 +480,15 @@ def render(payload: dict, template_name: str) -> str:
     else:  # fall back to the CDN copy if the vendored file is absent
         lib = ('<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/'
                'echarts.min.js"></script>')
+    fonts = APP / "vendor" / "lato.css"
+    if fonts.exists():  # Lato embedded as base64 @font-face so the pages need no font host
+        font_tag = "<style>" + fonts.read_text(encoding="utf-8") + "</style>"
+    else:
+        font_tag = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+                    'family=Lato:wght@400;700;900&display=swap">')
     data = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
     return (template.replace("<!--__ECHARTS__-->", lib)
+                    .replace("<!--__FONTS__-->", font_tag)
                     .replace("/*__CIO_DATA__*/null", data))
 
 

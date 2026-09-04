@@ -1,8 +1,8 @@
 # CiO dashboard pages
 
 Two self-contained pages, generated from the pipeline's own artefacts. Open
-either in any browser — no server, no build tooling, no network needed (fonts
-fall back to the system sans if offline).
+either in any browser — no server, no build tooling, no network needed (Lato is
+embedded in the page).
 
 - `app/index.html` — **Phase 0 Explorer**: the presentation page. What was
   harvested, how the panel was built and audited, and the current results of the
@@ -60,5 +60,6 @@ column appears.
 - `build_dashboard.py` — reads the artefacts, injects the data and the vendored
   chart library, writes `index.html`.
 - `vendor/echarts.min.js` — Apache ECharts 5.4.3, inlined so the page works offline.
+- `vendor/lato.css` — Lato (SIL Open Font License) as base64 `@font-face`, inlined so the typeface renders offline and inside sandboxed viewers.
 - `index.html`, `workbench.html` — the generated pages. Commit them alongside
   data changes so the repository always carries pages that match the current artefacts.
