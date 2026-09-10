@@ -1,9 +1,9 @@
 # CiO Lab pages
 
-Six self-contained pages, generated from the pipeline's own artefacts. All follow
+Seven self-contained pages, generated from the pipeline's own artefacts. All follow
 the viewer's light/dark setting and carry an Auto / Light / Dark switch, and share
 one product shell (`shell.css` and the top bar with the Home · Cost projection ·
-Delay & clauses · Claim builder · Evidence · Data explorer switcher). Open any of
+Programme · Delay & clauses · Claim builder · Evidence · Data explorer switcher). Open any of
 them in any browser: no server, no build tooling, no network needed (Inter, Clash
 Grotesk and every library are embedded in the page).
 
@@ -14,6 +14,19 @@ Grotesk and every library are embedded in the page).
   cost projection with a confidence band and contingency; works-programme
   escalation by phase; a Dynamic Adjustment Mechanism simulator; procurement
   windows. The basket and the model settings sit under "More options".
+- `app/programme.html` — **Programme builder**: activities, durations (working
+  days) and logic links (FS, SS, FF, SF with lags) in an editable table; a
+  critical-path scheduler with a working calendar (5/6/7-day week, public
+  holidays) gives early and late dates, total float and the critical path as you
+  type; an SVG gantt with links, float, milestones, the Date for Completion and
+  the data date; tenability checks (open starts and ends, the Time for
+  Completion, activity length, lags, float distribution, progress to the data
+  date, sections) and a Sub-Clause 8.3 contents checklist; delay events impacted
+  on the programme as fragnets (delaying the start or prolonging the work),
+  Employer and Contractor events separately so concurrency shows, with the
+  result handed to the delay check and the claim builder; phases by section
+  handed to the cost projection; CSV, MS Project XML and JSON export. Road,
+  building and water templates.
 - `app/claims.html` — **Delay & clauses**: delay and entitlement calculator
   following the SCL Delay and Disruption Protocol (2nd ed., 2017); a notice
   timeline for the selected FIDIC form; a clause explainer with cross-form
@@ -42,7 +55,7 @@ Grotesk and every library are embedded in the page).
   P3, P4, P6, P8 and P9 starter models.
 
 Nothing typed or uploaded leaves the browser; state is kept in `localStorage`
-(`cio-claim`, `cio-evidence`, `cio-delay`, `cio-theme`). The hosted copies add
+(`cio-claim`, `cio-evidence`, `cio-delay`, `cio-programme`, `cio-programme-phases`, `cio-theme`). The hosted copies add
 "Redraft with Claude" (claim builder) and "Analyse this document" (evidence desk)
 through the artifact runtime; the repo pages work without them.
 
@@ -76,7 +89,7 @@ from that model into the payload; the page needs no change.
 ## Regenerating after a pipeline run
 
 ```bash
-python3 app/build_dashboard.py          # rewrites the six app/*.html pages
+python3 app/build_dashboard.py          # rewrites the seven app/*.html pages
 python3 app/build_dashboard.py --cdn --out hosted   # smaller copies loading libraries from cdnjs
 python3 app/build_dashboard.py --font Montserrat   # same, set in Montserrat
 python3 app/build_dashboard.py --json   # also dumps app/dashboard_data.json for inspection
@@ -101,7 +114,8 @@ column appears.
 ## Files
 
 - `home_template.html`, `explorer_template.html`, `workbench_template.html`,
-  `claims_template.html`, `evidence_template.html`, `builder_template.html` — one
+  `programme_template.html`, `claims_template.html`, `evidence_template.html`,
+  `builder_template.html` — one
   template per page (markup, page-specific styles and script).
 - `shell.css` — the shared tokens, type, top bar, panels and tables.
 - `builder_engine.js` — the claim builder's form, drafting engine and Word writer,
@@ -114,6 +128,6 @@ column appears.
   mammoth 1.6.0; `vendor/jszip.min.js` — JSZip 3.10.1. All inlined so the pages
   work offline (`--cdn` loads them from cdnjs instead).
 - `vendor/inter.css`, `vendor/montserrat.css` — typefaces (SIL Open Font License, variable weight 400–800) as base64 `@font-face`, inlined so they render offline and inside sandboxed viewers. Inter is the default body face; `--font Montserrat` switches. `vendor/clash-grotesk.css` — Clash Grotesk 300/400/500 (Indian Type Foundry Free Font License, via Fontshare) is the display face for headings and figures.
-- `index.html`, `workbench.html`, `claims.html`, `evidence.html`, `builder.html`,
-  `explorer.html` — the generated pages. Commit them alongside data changes so the
+- `index.html`, `workbench.html`, `programme.html`, `claims.html`, `evidence.html`,
+  `builder.html`, `explorer.html` — the generated pages. Commit them alongside data changes so the
   repository always carries pages that match the current artefacts.

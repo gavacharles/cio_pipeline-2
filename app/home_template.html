@@ -19,8 +19,9 @@
 .resume .t{flex:1 1 200px}
 .resume .t b{font-weight:500}
 .resume .t span{display:block;color:var(--ink-3);font-size:12.5px}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-@media (max-width:760px){.cards{grid-template-columns:1fr}}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.cards{grid-template-columns:1fr}}
 .card{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 24px 20px;color:var(--ink);min-height:200px;position:relative;overflow:hidden;transition:border-color .25s,transform .25s}
 .card:hover{border-color:var(--teal);transform:translateY(-2px)}
 .card .step{position:absolute;right:20px;top:18px;font-family:var(--display);font-size:44px;font-weight:300;color:var(--line-2);line-height:1}
@@ -38,8 +39,8 @@
 .flow{margin-top:56px;border-top:1px solid var(--line-2);padding-top:28px}
 .flow h2{font-size:26px;font-weight:300}
 .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;margin-top:22px}
-@media (max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:560px){.steps{grid-template-columns:1fr}}
+@media (max-width:1000px){.steps{grid-template-columns:repeat(2,1fr)!important}}
+@media (max-width:560px){.steps{grid-template-columns:1fr!important}}
 .stp{display:flex;flex-direction:column;gap:6px}
 .stp .n{font-family:var(--display);font-size:38px;font-weight:300;color:var(--accent);line-height:1}
 .stp b{font-weight:500;font-size:15px}
@@ -62,7 +63,7 @@
     <div class="reveal">
       <span class="kicker">Construction intelligence for Uganda</span>
       <h1 style="margin-top:14px">What would you like<br>to <b>work on</b> today?</h1>
-      <p>Price a project against ten years of Ugandan cost data, check a delay under the SCL Protocol and your FIDIC form, read the letters on file, and produce a claim that is ready to submit. Each tool asks only for what it needs.</p>
+      <p>Price a project against ten years of Ugandan cost data, build a programme that holds up, check a delay under the SCL Protocol and your FIDIC form, read the letters on file, and produce a claim that is ready to submit. Each tool asks only for what it needs.</p>
     </div>
     <div class="aside reveal d2"><b>Built on the Phase 0 data foundation</b><span id="foundationLine">Construction input prices, macro indicators and the audit trail behind them, refreshed with every pipeline run.</span></div>
   </section>
@@ -82,8 +83,16 @@
       <span class="need"><b>You need</b> the contract value, the award month and the duration. A material basket is suggested for you.</span>
       <span class="go">Open the cost projection</span>
     </a>
-    <a class="card reveal d2" href="claims.html">
+    <a class="card reveal d2" href="programme.html">
       <span class="step">02</span>
+      <span class="kicker">Before the works start</span>
+      <h2>Build the programme</h2>
+      <p>Activities, durations and logic; the critical path, the float and the completion date computed as you type, tested against what Sub-Clause 8.3 and the Protocol expect.</p>
+      <span class="need"><b>You need</b> the commencement date and the Time for Completion. A road, building or water template gets you started.</span>
+      <span class="go">Open the programme builder</span>
+    </a>
+    <a class="card reveal d2" href="claims.html">
+      <span class="step">03</span>
       <span class="kicker">When the programme slips</span>
       <h2>Check a delay</h2>
       <p>How many days of extension the event supports, what it is worth, when each notice falls due under your form of contract, and what the clause you are relying on says.</p>
@@ -91,7 +100,7 @@
       <span class="go">Open the delay check</span>
     </a>
     <a class="card reveal d3" href="evidence.html">
-      <span class="step">03</span>
+      <span class="step">04</span>
       <span class="kicker">The paper trail</span>
       <h2>Review the correspondence</h2>
       <p>Drop in the letters, instructions and minutes. The dates, references and clauses are pulled out into a chronology and an evidence register, with the notice deadlines marked.</p>
@@ -99,7 +108,7 @@
       <span class="go">Open the evidence desk</span>
     </a>
     <a class="card reveal d4" href="builder.html">
-      <span class="step">04</span>
+      <span class="step">05</span>
       <span class="kicker">Ready to submit</span>
       <h2>Build the claim</h2>
       <p>Eight sections in the house form, from executive summary to formal request, written from the facts, the delay analysis and the quantum you enter, and exported to Word.</p>
@@ -116,11 +125,12 @@
 
   <section class="flow">
     <h2>How the tools fit together</h2>
-    <div class="steps">
-      <div class="stp"><span class="n">1</span><b>Read the record</b><p>The evidence desk turns the letters into a dated chronology and numbers the annexes.</p></div>
-      <div class="stp"><span class="n">2</span><b>Measure the delay</b><p>The delay check applies the Protocol and the claim procedure of your form.</p></div>
-      <div class="stp"><span class="n">3</span><b>Price the effect</b><p>The cost projection supplies the escalation and the time-related cost.</p></div>
-      <div class="stp"><span class="n">4</span><b>Write it up</b><p>The claim builder assembles the submission and exports it to Word.</p></div>
+    <div class="steps" style="grid-template-columns:repeat(5,minmax(0,1fr))">
+      <div class="stp"><span class="n">1</span><b>Plan the works</b><p>The programme builder fixes the baseline the whole claim is measured against.</p></div>
+      <div class="stp"><span class="n">2</span><b>Read the record</b><p>The evidence desk turns the letters into a dated chronology and numbers the annexes.</p></div>
+      <div class="stp"><span class="n">3</span><b>Measure the delay</b><p>A delay impacted on the programme, then the Protocol and the claim procedure of your form.</p></div>
+      <div class="stp"><span class="n">4</span><b>Price the effect</b><p>The cost projection supplies the escalation and the time-related cost.</p></div>
+      <div class="stp"><span class="n">5</span><b>Write it up</b><p>The claim builder assembles the submission and exports it to Word.</p></div>
     </div>
   </section>
 

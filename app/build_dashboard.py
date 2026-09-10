@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 build_dashboard.py — assemble the CiO Lab pages: Home, Cost projection (Workbench),
-Delay & clauses (Claims Desk), Claim builder, Evidence desk and the Phase 0 Data explorer.
+Programme builder, Delay & clauses (Claims Desk), Claim builder, Evidence desk and the
+Phase 0 Data explorer.
 
 Reads the pipeline's processed outputs (panel, audit trail, diagnostics and the
 paper starter results) and writes a single self-contained HTML page,
@@ -475,6 +476,7 @@ def build_payload() -> dict:
 PAGES = {
     "home_template.html": ("index.html", "claims"),
     "workbench_template.html": ("workbench.html", "full"),
+    "programme_template.html": ("programme.html", "claims"),
     "claims_template.html": ("claims.html", "claims"),
     "builder_template.html": ("builder.html", "claims"),
     "evidence_template.html": ("evidence.html", "claims"),
@@ -485,6 +487,7 @@ PAGES = {
 NAV = [
     ("index.html", "Home"),
     ("workbench.html", "Cost projection"),
+    ("programme.html", "Programme"),
     ("claims.html", "Delay & clauses"),
     ("builder.html", "Claim builder"),
     ("evidence.html", "Evidence"),

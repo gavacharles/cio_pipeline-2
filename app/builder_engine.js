@@ -142,8 +142,8 @@ el('addAuth').onclick=()=>{S.legal.authorities.push({name:'',cite:'',holding:'',
 
 // ---------- delay hand-off from the Claims Desk
 (function(){let d=null;try{d=JSON.parse(localStorage.getItem('cio-delay')||'null');}catch(e){}
-  if(d&&d.eot!=null){el('pullDelay').hidden=false;el('pullDelayText').textContent=`The delay check on this device found ${d.eot} days of extension (employer delay ${d.employerDelay} days less ${d.float} days of float; ${d.contractorDelay||0} days of concurrent contractor delay) under ${d.formName||''}.`;
-    el('useDelay').onclick=()=>{S.delay.eot=d.eot;S.delay.critical=d.employerDelay;S.delay.float=d.float;S.delay.concurrency=d.contractorDelay>0?(d.separable?'some':'true'):'none';if(d.formId)S.project.form=d.formId;if(d.method)S.delay.method=d.method;save();bindAll();derived('delay');};}})();
+  if(d&&d.eot!=null){el('pullDelay').hidden=false;el('pullDelayText').textContent=d.source==='programme'?`The programme builder on this device impacted the delay events on the programme: ${d.eot} days of extension supported by Employer events (${d.contractorDelay||0} days from Contractor events).`:`The delay check on this device found ${d.eot} days of extension (employer delay ${d.employerDelay} days less ${d.float} days of float; ${d.contractorDelay||0} days of concurrent contractor delay) under ${d.formName||''}.`;
+    el('useDelay').onclick=()=>{S.delay.eot=d.eot;S.delay.critical=d.employerDelay;S.delay.float=d.float;S.delay.concurrency=d.contractorDelay>0?(d.separable?'some':'true'):'none';if(d.formId)S.project.form=d.formId;if(d.method)S.delay.method=d.method;if(d.baseline)S.delay.baseline=d.baseline;if(d.commence&&!S.project.commence)S.project.commence=d.commence;if(d.tfc&&!S.project.tfc)S.project.tfc=d.tfc;save();bindAll();derived('delay');};}})();
 
 // ---------- quantum
 function renderQuantum(){const cur=S.quantum.currency||S.project.currency;

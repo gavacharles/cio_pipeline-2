@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CiO Programme Builder</title>
+<!--__FONTS__-->
+<!--__SHELL__-->
+<style>
+.wrap{max-width:1320px;margin:0 auto;padding:22px 22px 80px}
+.intro{display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.intro h1{font-size:30px;font-weight:300;line-height:1.1}
+.intro p{color:var(--ink-3);font-size:13.5px;max-width:64ch;margin-top:6px}
+.intro .ctl{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lay{display:grid;grid-template-columns:290px minmax(0,1fr);gap:18px}
+.lay>aside,.lay>main{min-width:0}
+@media (max-width:900px){.lay{grid-template-columns:1fr}}
+.side .block{margin-bottom:16px}
+.stat>span{display:block}
+.stat .v{margin-bottom:2px}
+.fld{display:grid;grid-template-columns:1fr 130px;gap:6px 10px;align-items:center}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)}}
+.act td input,.act td select{width:100%;text-align:left;font-family:var(--body);padding:4px 6px;font-size:12.5px}
+.act td input.num{font-family:var(--mono);text-align:right;width:64px;min-width:64px}
+.act td input.sec{width:130px;min-width:130px}
+.act td input.nm{min-width:230px}
+.act td input.pr{min-width:170px}
+.act td input.id{font-family:var(--mono);width:70px}
+.act td.rd{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.act tr.crit td.rd{color:var(--accent)}
+.act td.act{width:34px}
+.act tr.bad td{background:color-mix(in srgb,var(--crit) 8%,transparent)}
+.x{background:none;border:0;color:var(--ink-3);cursor:pointer;font-size:15px}
+.x:hover{color:var(--crit)}
+.gwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.gantt svg{display:block;font-family:var(--body)}
+.gantt .lbl{font-size:11.5px;fill:var(--ink-2)}
+.gantt .lbl.crit{fill:var(--ink);font-weight:500}
+.gantt .grid{stroke:var(--line);stroke-width:1}
+.gantt .month{font-size:10.5px;fill:var(--ink-3);font-family:var(--mono)}
+.gantt .bar{fill:var(--s1);rx:3}
+.gantt .bar.crit{fill:var(--accent)}
+.gantt .bar.done{fill:var(--s3)}
+.gantt .float{stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:3 3}
+.gantt .imp{fill:none;stroke:var(--crit);stroke-width:1.5;rx:3}
+.gantt .ms{fill:var(--teal)}
+.gantt .today{stroke:var(--crit);stroke-width:1.5}
+.gantt .tfc{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:5 3}
+.gantt .lk{stroke:var(--ink-3);stroke-width:1;fill:none;opacity:.6}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-3);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:8px;border-radius:2px;vertical-align:-1px;margin-right:5px}
+.check{display:grid;grid-template-columns:24px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.check .s{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-family:var(--mono)}
+.check .s.ok{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good)}
+.check .s.warn{background:color-mix(in srgb,var(--warn) 22%,transparent);color:var(--warn)}
+.check .s.bad{background:color-mix(in srgb,var(--crit) 20%,transparent);color:var(--crit)}
+.check b{font-weight:500}
+.check p{color:var(--ink-3);font-size:12.5px;margin-top:2px}
+.list83 label{display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:13px;color:var(--ink-2)}
+.list83 input{accent-color:var(--teal);margin-top:3px}
+.dl td input,.dl td select{width:100%;font-family:var(--body);text-align:left}
+.pull{border:1px solid var(--teal);background:var(--teal-soft);border-radius:10px;padding:10px 14px;font-size:13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.pull .sp{flex:1}
+.note code{font-family:var(--mono);color:var(--ink-2)}
+</style>
+</head>
+<body>
+<script>const DATA=/*__CIO_DATA__*/null;</script>
+<header class="top">
+  <div class="brand"><svg class="logo" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="100" stroke-dasharray="62 38"/><circle class="orbit" cx="12" cy="2.5" r="1.6" fill="var(--teal)"/><circle class="core" cx="12" cy="12" r="4" fill="var(--accent)"/></svg>CiO Lab<small>Programme Builder</small></div>
+  <nav class="switch"></nav>
+  <div class="vint" id="vint"></div>
+  <div class="seg theme" id="theme" role="group" aria-label="Colour theme" style="margin-left:14px"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
+</header>
+
+<div class="wrap">
+  <div class="intro reveal">
+    <div><span class="kicker">Plan the works</span><h1 style="margin-top:6px">Build the programme</h1><p>Activities, durations and the logic that links them. The critical path, the float and the completion date are computed as you type, the programme is tested against what Sub-Clause 8.3 and the SCL Protocol expect of it, and a delay can be impacted on it to see what it does to completion.</p></div>
+    <div class="ctl"><button class="btn" id="reset">Start afresh</button><span class="note" id="savedNote" style="margin:0"></span></div>
+  </div>
+
+  <div class="lay">
+    <aside class="side">
+      <div class="block">
+        <span class="kicker">The project</span>
+        <div class="fld" style="grid-template-columns:1fr"><input id="pname" placeholder="Project name"></div>
+        <div class="fld"><label>Start from a template</label><select id="tpl"><option value="">Choose…</option><option value="road">Road</option><option value="building">Building</option><option value="water">Water scheme</option><option value="blank">Blank</option></select></div>
+        <div class="fld"><label>Commencement Date</label><input type="date" id="commence"></div>
+        <div class="fld"><label>Time for Completion</label><div class="row" style="gap:4px"><input type="number" id="tfc" min="1" step="1" style="width:78px"><span class="muted" style="font-size:12px">days</span></div></div>
+        <div class="fld"><label>Date for Completion</label><span class="num" id="completionLabel" style="text-align:right;font-size:12.5px"></span></div>
+        <div class="fld"><label>Working week</label><select id="week"><option value="5">Mon to Fri</option><option value="6" selected>Mon to Sat</option><option value="7">Every day</option></select></div>
+        <div class="fld"><label>Data date (today)</label><input type="date" id="today"></div>
+      </div>
+      <details class="sub"><summary>Public holidays</summary><textarea id="holidays" placeholder="One date per line, e.g. 2026-10-09" style="width:100%;min-height:80px;margin-top:8px;font-family:var(--mono);font-size:12px;background:var(--surface-2);color:var(--ink);border:1px solid var(--line-2);border-radius:6px;padding:6px 8px"></textarea></details>
+      <details class="sub" style="margin-top:8px"><summary>How to write logic links</summary><p class="note">In the <b>Predecessors</b> column list the activities that must come first, separated by commas: <code>A020</code> means finish-to-start; <code>A020+5</code> adds a 5-day lag; <code>A020SS</code> starts together; <code>A020FF-2</code> finishes 2 days before; <code>A020SF</code> is start-to-finish. Durations are working days; milestones have a duration of 0.</p></details>
+      <div class="stats" id="stats" style="grid-template-columns:1fr;margin-top:14px"></div>
+    </aside>
+
+    <main>
+      <div class="tabs" id="tabs">
+        <button data-t="act" class="on">Activities</button>
+        <button data-t="gantt">Gantt</button>
+        <button data-t="checks">Is it tenable?</button>
+        <button data-t="delay">Impact a delay</button>
+        <button data-t="export">Export &amp; hand-off</button>
+      </div>
+
+      <section class="tab on" id="tab-act">
+        <div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="note" style="margin:0" id="actNote"></span><div class="row"><button class="btn" id="addAct">Add an activity</button><button class="btn" id="addMs">Add a milestone</button></div></div>
+        <div class="tbl-wrap"><table class="act" id="actTable"></table></div>
+        <p class="note">Early and late dates come from the forward and backward pass over the working calendar. Total float is the slack before the activity delays completion; the critical path is every activity with none. Value share is optional and feeds the cost projection.</p>
+      </section>
+
+      <section class="tab" id="tab-gantt">
+        <div class="row" style="justify-content:space-between;margin-bottom:8px;flex-wrap:wrap"><div class="seg" id="gview"><button data-v="base" class="on">Baseline</button><button data-v="imp">With delays impacted</button></div><label style="font-size:12.5px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="showLinks" checked> Show links</label></div>
+        <div class="gwrap gantt" id="ganttBox"></div>
+        <div class="legend"><span><i style="background:var(--accent)"></i>critical</span><span><i style="background:var(--s1)"></i>with float</span><span><i style="background:var(--s3)"></i>progressed</span><span><i style="background:transparent;border:1.5px solid var(--crit)"></i>impacted position</span><span><i style="background:var(--teal);border-radius:50%"></i>milestone</span><span style="color:var(--accent)">┆ Date for Completion</span><span style="color:var(--crit)">│ data date</span></div>
+      </section>
+
+      <section class="tab" id="tab-checks">
+        <div class="grid g2" style="grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)">
+          <div class="panel"><div class="panel-head"><h3>Programme checks</h3><span class="sub" id="checkSummary"></span></div><div id="checks"></div><p class="note">The Protocol asks for a properly logic-linked, resourced programme, updated as the works proceed, so that delay can be measured against it (Core Principles 1 and 2). A programme that cannot pass these checks will struggle to carry a claim.</p></div>
+          <div class="panel"><div class="panel-head"><h3>What Sub-Clause 8.3 asks for</h3><span class="sub" id="s83Summary"></span></div><div class="list83" id="s83"></div><p class="note">Tick what the programme submission includes. The 2017 forms list these in Sub-Clause 8.3; the 1999 forms and the MDB editions ask for the order, the timing, the periods for reviews, the inspections and tests, and a supporting report on methods and resources.</p></div>
+        </div>
+      </section>
+
+      <section class="tab" id="tab-delay">
+        <div class="grid g2" style="grid-template-columns:minmax(0,1fr) 360px">
+          <div>
+            <div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="kicker">Delay events</span><button class="btn" id="addDelay">Add a delay</button></div>
+            <div class="tbl-wrap"><table class="dl wrap" id="delayTable"></table></div>
+            <p class="note">Each event is inserted as a fragnet against the activity it affects: either it delays the start of the activity or it prolongs the work. The programme is then re-scheduled and completion read off, which is the Time Impact Analysis the Protocol prefers for a prospective assessment (Core Principle 4). Employer and Contractor events are impacted separately so concurrency can be seen.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="stats" id="delayStats" style="grid-template-columns:1fr"></div>
+            <div class="pull" id="toClaims"><span>Take these figures to the delay check and the claim builder.</span><span class="sp"></span><button class="btn primary" id="sendDelay">Send</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab" id="tab-export">
+        <div class="grid g2">
+          <div class="panel"><span class="kicker">Files</span><div class="row" style="margin-top:10px"><button class="btn" id="csvAct">Activities (CSV)</button><button class="btn" id="xmlMsp">MS Project (XML)</button><button class="btn" id="jsonSave">Save programme (JSON)</button><label class="btn" style="display:inline-block">Load programme (JSON)<input type="file" id="jsonLoad" accept=".json" style="display:none"></label></div><p class="note">The MS Project file carries the activities, durations, dates and links; Primavera P6 opens it through File › Import › Microsoft Project XML.</p></div>
+          <div class="panel"><span class="kicker">To the other tools</span><p class="note" style="margin-top:8px">The cost projection reads the programme as phases by section: the value share you entered, spread over each section's dates. The delay check and the claim builder read the impacted completion.</p><div class="row" style="margin-top:8px"><button class="btn primary" id="sendPhases">Send phases to the cost projection</button><button class="btn" id="sendDelay2">Send the delay result</button></div><p class="note" id="sendNote"></p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const D=DATA;
+const el=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const pad=n=>String(n).padStart(2,'0');
+const parse=s=>{if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return null;const [y,m,d]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,d));};
+const iso=d=>d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate());
+const addDays=(d,n)=>new Date(d.getTime()+n*864e5);
+const long=d=>{d=d instanceof Date?d:parse(d);return d?pad(d.getUTCDate())+' '+MONTHS[d.getUTCMonth()].slice(0,3)+' '+d.getUTCFullYear():'—';};
+const between=(a,b)=>Math.round((b-a)/864e5);
+const m=D.manifest||{};if(m.n_months)el('vint').textContent='panel v'+(m.panel_version||'')+' · CPM scheduler';
+
+// theme
+const root=document.documentElement, tb=el('theme');
+function applyTheme(v){if(v==='light'||v==='dark')root.setAttribute('data-theme',v);else root.removeAttribute('data-theme');tb.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));}
+let th='auto';try{th=localStorage.getItem('cio-theme')||'auto'}catch(e){}applyTheme(th);
+tb.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;applyTheme(b.dataset.v);try{localStorage.setItem('cio-theme',b.dataset.v)}catch(err){}renderGantt();});
+
+// ---------- templates: [id, name, section, duration, predecessors, value share %]
+const TPL={
+road:{name:'Road rehabilitation, 20 km',tfc:420,acts:[
+ ['A010','Contract signature and Commencement','Preliminaries',0,'',0],['A020','Mobilisation and site establishment','Preliminaries',30,'A010',4],['A030','Programme, method statements and QA plan','Preliminaries',20,'A010',0],['A040','Setting out and topographical survey','Preliminaries',25,'A020SS+10',1],
+ ['B010','Identify existing services and relocation plan','Services',30,'A040SS+5',1],['B020','Relocation of services (utilities)','Services',60,'B010',3],
+ ['C010','Site clearance and topsoil strip, km 0 to 10','Earthworks',30,'A040,A030',3],['C020','Site clearance and topsoil strip, km 10 to 20','Earthworks',30,'C010',3],['C030','Cut to fill and formation, km 0 to 10','Earthworks',60,'C010,B020SS+20',8],['C040','Cut to fill and formation, km 10 to 20','Earthworks',60,'C030SS+30,C020',8],
+ ['D010','Culverts and drainage structures, km 0 to 10','Drainage',55,'C030SS+15',6],['D020','Culverts and drainage structures, km 10 to 20','Drainage',55,'D010,C040SS+15',6],['D030','Side drains and lined channels','Drainage',45,'D020SS+20',3],
+ ['E010','Subbase, km 0 to 10','Pavement',40,'C030,D010FF+5',7],['E020','Subbase, km 10 to 20','Pavement',40,'C040,E010,D020FF+5',7],['E030','Base course, km 0 to 10','Pavement',35,'E010',8],['E040','Base course, km 10 to 20','Pavement',35,'E020,E030',8],['E050','Prime and surfacing (double seal), km 0 to 10','Pavement',30,'E030',7],['E060','Prime and surfacing (double seal), km 10 to 20','Pavement',30,'E040,E050',7],
+ ['F010','Road furniture, signs and markings','Finishing',30,'E060SS+10',3],['F020','Slope protection and landscaping','Finishing',35,'D030,E060SS',3],['F030','Defects clearance and as-built drawings','Finishing',20,'F010,F020',2],['F040','Taking-Over','Finishing',0,'F030',0]]},
+building:{name:'Four-storey office block',tfc:420,acts:[
+ ['A010','Commencement','Preliminaries',0,'',0],['A020','Mobilisation, hoarding and site offices','Preliminaries',20,'A010',3],['A030','Shop drawings and material approvals','Preliminaries',40,'A010',1],['A040','Setting out','Preliminaries',5,'A020',0],
+ ['B010','Excavation and dewatering','Substructure',25,'A040',4],['B020','Foundations and ground beams','Substructure',35,'B010,A030SS+20',9],['B030','Ground floor slab','Substructure',15,'B020',3],
+ ['C010','Columns and slab, first floor','Superstructure',25,'B030',7],['C020','Columns and slab, second floor','Superstructure',25,'C010',7],['C030','Columns and slab, third floor','Superstructure',25,'C020',7],['C040','Columns and roof slab','Superstructure',25,'C030',7],['C050','Staircases and lift shaft','Superstructure',40,'C010SS+10,C040FF',4],
+ ['D010','Blockwork and external walls','Envelope',60,'C020SS+10,C040FF+15',8],['D020','Roofing and waterproofing','Envelope',25,'C040',4],['D030','Windows, curtain wall and doors','Envelope',40,'D010SS+30,D020',6],
+ ['E010','First-fix electrical and plumbing','Services',45,'D010SS+15',6],['E020','Lift installation','Services',35,'C050,D020',4],['E030','Second-fix services and testing','Services',40,'E010,F010SS+10',6],
+ ['F010','Plaster, screed and ceilings','Finishes',50,'D030SS+10,E010FF',6],['F020','Tiling, painting and joinery','Finishes',45,'F010SS+15',7],['F030','External works and drainage','Finishes',40,'D010',3],
+ ['G010','Commissioning and snagging','Handover',20,'E030,F020,F030,E020',1],['G020','Taking-Over','Handover',0,'G010',0]]},
+water:{name:'Water supply scheme, 40 km network',tfc:560,acts:[
+ ['A010','Commencement','Preliminaries',0,'',0],['A020','Mobilisation and site establishment','Preliminaries',30,'A010',3],['A030','Design review and Contractor\u2019s Documents','Preliminaries',60,'A010',2],['A040','Route survey and wayleaves','Preliminaries',40,'A020SS+10',1],
+ ['B010','Identify existing services along routes','Services',30,'A040SS',1],['B020','Relocation of services, Sections 1 to 3','Services',50,'B010',2],['B030','Relocation of services, Sections 4 to 7','Services',50,'B020',2],
+ ['C010','Intake and raw-water works','Intake and treatment',90,'A030,A020',10],['C020','Treatment plant civil works','Intake and treatment',110,'A030,A020',12],['C030','Treatment plant mechanical and electrical','Intake and treatment',80,'C020FF+20',10],
+ ['D010','Pipe supply and delivery','Pipeline',60,'A030',8],['D020','Trenching and pipelaying, Sections 1 to 3','Pipeline',90,'B020,D010SS+30,A040',12],['D030','Trenching and pipelaying, Sections 4 to 7','Pipeline',110,'B030,D020SS+40',14],['D040','Pressure testing and reinstatement','Pipeline',40,'D030FF+10',3],
+ ['E010','Reservoirs and booster stations, civil','Storage',90,'A030,A020',7],['E020','Booster mechanical and electrical','Storage',50,'E010',4],
+ ['F010','Commissioning of treatment and pumping','Commissioning',30,'C030,E020',1],['F020','Network commissioning and disinfection','Commissioning',25,'D040,F010',1],['F030','Tests on Completion and Taking-Over','Commissioning',0,'F020',0]]},
+blank:{name:'',tfc:365,acts:[['A010','Commencement','Preliminaries',0,'',0],['A020','First activity','Section 1',20,'A010',50],['A030','Second activity','Section 1',30,'A020',50],['A040','Completion','Section 1',0,'A030',0]]}};
+
+const S83=[['order','The order in which the Contractor intends to carry out the Works, including each stage of design, procurement, manufacture, delivery, construction, erection, testing and commissioning'],['dates','The Commencement Date, the Time for Completion and any Sections, with the key dates shown'],['docs','The periods for reviews under Sub-Clause 5.2 and for any other submissions, approvals and consents'],['tests','The sequence and timing of inspections and tests specified in the Contract'],['methods','A supporting report describing the methods the Contractor intends to adopt'],['resources','The number of each class of Contractor\u2019s Personnel and each type of Equipment required on Site for each stage'],['logic','Every activity logic-linked, with no open ends, so the critical path can be read'],['float','Float shown as the programme\u2019s own, not allocated to either Party in advance']];
+
+// ---------- state
+const S={project:{name:'',commence:'',tfc:'',week:6,today:iso(new Date()),holidays:''},acts:[],delays:[],s83:{},view:'base',links:true};
+function fresh(){S.project={name:'',commence:iso(new Date()),tfc:'',week:6,today:iso(new Date()),holidays:''};S.acts=[];S.delays=[];S.s83={};}
+try{const s=JSON.parse(localStorage.getItem('cio-programme')||'null');if(s&&s.acts){Object.assign(S,s);}else{fresh();}}catch(e){fresh();}
+function save(){try{localStorage.setItem('cio-programme',JSON.stringify(S));el('savedNote').textContent='Saved on this device';}catch(e){}}
+function loadTemplate(k){const t=TPL[k];if(!t)return;S.project.name=t.name;S.project.tfc=t.tfc;if(!S.project.commence)S.project.commence=iso(new Date());S.acts=t.acts.map(a=>({id:a[0],name:a[1],wbs:a[2],dur:a[3],preds:a[4],share:a[5],progress:0,ms:a[3]===0}));S.delays=[];save();bindProject();renderAll();}
+
+// ---------- calendar
+function calendar(){const week=+S.project.week||6;const hol=new Set(String(S.project.holidays||'').split(/\s+/).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)));
+  const isWork=d=>{const wd=d.getUTCDay();if(week===5&&(wd===0||wd===6))return false;if(week===6&&wd===0)return false;return !hol.has(iso(d));};
+  return {isWork,week};}
+// working-day index -> calendar date: day 0 is the first working day on or after the commencement date; durations occupy working days
+function dayToDate(cal,n){let d=parse(S.project.commence)||new Date();while(!cal.isWork(d))d=addDays(d,1);let k=0;while(k<n){d=addDays(d,1);if(cal.isWork(d))k++;}return d;}
+function dateToDay(cal,date){let d=parse(S.project.commence)||new Date();while(!cal.isWork(d))d=addDays(d,1);let k=0;if(date<=d)return 0;while(d<date){d=addDays(d,1);if(cal.isWork(d))k++;}return k;}
+// the finish date of an activity of duration n starting on working day s: the last working day worked = day s+n-1 (n>0); a milestone sits on day s
+const finishDate=(cal,s,n)=>dayToDate(cal,n>0?s+n-1:s);
+
+// ---------- logic parsing and CPM
+function parsePreds(str){const out=[];for(const tok of String(str||'').split(/[,;]+/)){const t=tok.trim().toUpperCase();if(!t)continue;const mm=t.match(/^([A-Z0-9_.-]+?)(FS|SS|FF|SF)?([+-]\d+)?$/);if(!mm){out.push({id:t,type:'FS',lag:0,bad:true});continue;}out.push({id:mm[1],type:mm[2]||'FS',lag:+(mm[3]||0)});}return out;}
+function cpm(acts,opts){opts=opts||{};const byId={};acts.forEach(a=>byId[a.id]=a);const errs=[];
+  const nodes=acts.map(a=>({a,id:a.id,dur:Math.max(0,+a.dur||0),preds:parsePreds(a.preds).map(p=>{if(!byId[p.id]){errs.push(`${a.id}: predecessor ${p.id} does not exist`);return null;}if(p.bad)errs.push(`${a.id}: cannot read link "${p.id}"`);return p;}).filter(Boolean),es:0,ef:0,ls:Infinity,lf:Infinity,succ:[]}));
+  const N={};nodes.forEach(n=>N[n.id]=n);nodes.forEach(n=>n.preds.forEach(p=>N[p.id].succ.push({id:n.id,type:p.type,lag:p.lag})));
+  // topological order (Kahn)
+  const indeg={};nodes.forEach(n=>indeg[n.id]=n.preds.length);const q=nodes.filter(n=>!n.preds.length).map(n=>n.id);const order=[];
+  while(q.length){const id=q.shift();order.push(id);for(const s of N[id].succ){if(--indeg[s.id]===0)q.push(s.id);}}
+  if(order.length<nodes.length){errs.push('The logic loops: '+nodes.filter(n=>!order.includes(n.id)).map(n=>n.id).join(', '));return {nodes,errs,order,finish:0};}
+  const start={};if(opts.startNoEarlier)Object.assign(start,opts.startNoEarlier);
+  for(const id of order){const n=N[id];let es=start[id]||0;
+    for(const p of n.preds){const P=N[p.id];const v=p.type==='FS'?P.ef+p.lag:p.type==='SS'?P.es+p.lag:p.type==='FF'?P.ef+p.lag-n.dur:P.es+p.lag-n.dur;if(v>es)es=v;}
+    n.es=Math.max(0,es);n.ef=n.es+n.dur;}
+  const finish=Math.max(0,...nodes.map(n=>n.ef));
+  for(const id of [...order].reverse()){const n=N[id];let lf=finish;
+    for(const s of n.succ){const Sn=N[s.id];const v=s.type==='FS'?Sn.ls-s.lag:s.type==='SS'?Sn.ls-s.lag+n.dur:s.type==='FF'?Sn.lf-s.lag:Sn.lf-s.lag+n.dur;if(v<lf)lf=v;}
+    n.lf=lf;n.ls=lf-n.dur;n.tf=n.ls-n.es;}
+  for(const n of nodes){let ff=finish-n.ef;for(const s of n.succ){const Sn=N[s.id];const v=s.type==='FS'?Sn.es-s.lag-n.ef:s.type==='SS'?Sn.es-s.lag-n.es:s.type==='FF'?Sn.ef-s.lag-n.ef:Sn.ef-s.lag-n.es;if(v<ff)ff=v;}n.ff=Math.max(0,ff);}
+  return {nodes,errs,order,finish,N};}
+
+// impacted programme: fragnets inserted for the chosen party filter
+function impacted(filter){const acts=S.acts.map(a=>({...a}));const byId={};acts.forEach(a=>byId[a.id]=a);const cal=calendar();const startNoEarlier={};let k=0;
+  for(const d of S.delays){if(!byId[d.act]||!(+d.days>0))continue;if(filter&&d.party!==filter)continue;const target=byId[d.act];
+    if(d.mode==='prolong'){target.dur=(+target.dur||0)+(+d.days);continue;}
+    const fid='DLY'+(++k);const frag={id:fid,name:'Delay: '+(d.name||d.act),wbs:'Delay events',dur:+d.days,preds:target.preds,share:0,progress:0,ms:false,frag:true,party:d.party};
+    if(d.date)startNoEarlier[fid]=dateToDay(cal,parse(d.date));
+    acts.push(frag);target.preds=(target.preds?target.preds+',':'')+fid;}
+  return cpm(acts,{startNoEarlier});}
+
+// ---------- rendering
+const cur=()=>cpm(S.acts);
+function bindProject(){el('pname').value=S.project.name||'';el('commence').value=S.project.commence||'';el('tfc').value=S.project.tfc||'';el('week').value=S.project.week||6;el('today').value=S.project.today||'';el('holidays').value=S.project.holidays||'';}
+[['pname','name'],['commence','commence'],['tfc','tfc'],['week','week'],['today','today'],['holidays','holidays']].forEach(([id,k])=>{el(id).addEventListener(id==='holidays'||id==='pname'?'input':'change',()=>{S.project[k]=el(id).value;save();renderAll();});});
+el('tpl').addEventListener('change',()=>{if(el('tpl').value){if(!S.acts.length||confirm('Replace the current activities with the template?'))loadTemplate(el('tpl').value);el('tpl').value='';}});
+el('reset').onclick=()=>{if(confirm('Clear the programme on this device?')){fresh();save();bindProject();renderAll();}};
+
+function completionDate(){const c=parse(S.project.commence),t=+S.project.tfc;return c&&t?addDays(c,t):null;}
+function renderStats(){const r=cur();const cal=calendar();const comp=completionDate();const fin=r.nodes.length?finishDate(cal,0,r.finish):null;const crit=r.nodes.filter(n=>n.tf<=0&&n.dur>0).length;
+  el('completionLabel').textContent=comp?long(comp):'—';
+  const buffer=(fin&&comp)?between(fin,comp):null;
+  el('stats').innerHTML=[[r.finish+'<small>working days</small>','Programme duration',fin?'finishes '+long(fin):''],[buffer==null?'—':(buffer>=0?'+':'')+buffer+'<small>days</small>','Buffer to the Date for Completion',buffer==null?'set the Time for Completion':buffer<0?'<span style="color:var(--crit)">the programme overruns the Time for Completion</span>':'terminal float, which belongs to the project'],[crit+'<small>of '+r.nodes.filter(n=>n.dur>0).length+'</small>','Critical activities',crit&&r.nodes.length?Math.round(100*crit/Math.max(1,r.nodes.filter(n=>n.dur>0).length))+'% of the work drives completion':'']].map((x,i)=>`<div class="stat${i===1&&buffer!=null&&buffer<0?' hi':''}"><span class="v">${x[0]}</span><span class="l">${x[1]}</span><span class="d">${x[2]}</span></div>`).join('');}
+
+function renderActs(){const r=cur();const cal=calendar();const t=el('actTable');const errs=new Set(r.errs.map(e=>e.split(':')[0]));
+  el('actNote').textContent=r.errs.length?r.errs.join(' · '):(S.acts.length+' activities · working days');
+  if(!S.acts.length){t.innerHTML='<tbody><tr><td class="muted">Choose a template on the left or add activities here.</td></tr></tbody>';return;}
+  t.innerHTML='<thead><tr><th>ID</th><th>Activity</th><th>Section</th><th class="num">Dur</th><th>Predecessors</th><th class="num">Value %</th><th class="num">Done %</th><th>Early start</th><th>Early finish</th><th>Late finish</th><th class="num">Float</th><th></th></tr></thead><tbody>'+S.acts.map((a,i)=>{const n=r.N?r.N[a.id]:null;const crit=n&&n.tf<=0&&n.dur>0;
+    return `<tr class="${crit?'crit':''}${errs.has(a.id)?' bad':''}"><td><input class="id" value="${esc(a.id)}" data-i="${i}" data-f="id"></td><td><input class="nm" value="${esc(a.name)}" data-i="${i}" data-f="name"></td><td><input class="sec" value="${esc(a.wbs)}" data-i="${i}" data-f="wbs" list="wbsList"></td><td><input class="num" type="number" min="0" value="${a.dur}" data-i="${i}" data-f="dur"></td><td><input class="pr" value="${esc(a.preds)}" data-i="${i}" data-f="preds" style="font-family:var(--mono);font-size:12px"></td><td><input class="num" type="number" min="0" max="100" value="${a.share||''}" data-i="${i}" data-f="share"></td><td><input class="num" type="number" min="0" max="100" value="${a.progress||''}" data-i="${i}" data-f="progress"></td><td class="rd">${n?long(dayToDate(cal,n.es)):''}</td><td class="rd">${n?long(finishDate(cal,n.es,n.dur)):''}</td><td class="rd">${n?long(finishDate(cal,n.ls,n.dur)):''}</td><td class="rd num">${n?(n.tf<=0&&n.dur>0?'critical':n.tf):''}</td><td class="act"><button class="x" data-del="${i}">×</button></td></tr>`;}).join('')+'</tbody>';
+  let dl=document.getElementById('wbsList');if(!dl){dl=document.createElement('datalist');dl.id='wbsList';document.body.appendChild(dl);}dl.innerHTML=[...new Set(S.acts.map(a=>a.wbs).filter(Boolean))].map(w=>`<option value="${esc(w)}">`).join('');}
+el('actTable').addEventListener('change',e=>{const t=e.target;if(!t.dataset.f)return;const a=S.acts[+t.dataset.i];const f=t.dataset.f;
+  if(f==='id'){const old=a.id,nu=t.value.trim().toUpperCase()||old;if(nu!==old){for(const o of S.acts)o.preds=String(o.preds||'').replace(new RegExp('\\b'+old.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),nu);for(const d of S.delays)if(d.act===old)d.act=nu;a.id=nu;}}
+  else if(f==='dur'||f==='share'||f==='progress'){a[f]=+t.value||0;if(f==='dur')a.ms=a.dur===0;}else a[f]=t.value;save();renderAll();});
+el('actTable').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){S.acts.splice(+b.dataset.del,1);save();renderAll();}});
+function nextId(){const nums=S.acts.map(a=>parseInt(String(a.id).replace(/\D/g,''),10)).filter(x=>!isNaN(x));const n=(nums.length?Math.max(...nums):0)+10;return 'A'+String(n).padStart(3,'0');}
+el('addAct').onclick=()=>{const last=S.acts[S.acts.length-1];S.acts.push({id:nextId(),name:'New activity',wbs:last?last.wbs:'Section 1',dur:10,preds:last?last.id:'',share:0,progress:0,ms:false});save();renderAll();};
+el('addMs').onclick=()=>{const last=S.acts[S.acts.length-1];S.acts.push({id:nextId(),name:'Milestone',wbs:last?last.wbs:'Section 1',dur:0,preds:last?last.id:'',share:0,progress:0,ms:true});save();renderAll();};
+
+function renderGantt(){const box=el('ganttBox');const r=cur();if(!S.acts.length||r.errs.some(e=>e.startsWith('The logic loops'))){box.innerHTML='<p class="empty" style="padding:20px;color:var(--ink-3)">'+(r.errs[0]||'No activities yet.')+'</p>';return;}
+  const cal=calendar();const imp=S.view==='imp'&&S.delays.length?impacted(null):null;
+  const start=parse(S.project.commence)||new Date();const comp=completionDate();const finBase=finishDate(cal,0,r.finish);const finImp=imp?finishDate(cal,0,imp.finish):null;
+  let end=finBase;if(comp&&comp>end)end=comp;if(finImp&&finImp>end)end=finImp;end=addDays(end,14);
+  const days=Math.max(30,between(start,end));const pxDay=Math.max(1.6,Math.min(6,1100/days));const LW=300,RH=22,TOP=34;
+  const rows=S.acts.map(a=>({a,n:r.N[a.id],ni:imp?imp.N[a.id]:null}));
+  const W=LW+days*pxDay+20,H=TOP+rows.length*RH+16;const x=d=>LW+between(start,d)*pxDay;
+  let g='';
+  // month grid
+  let d=new Date(Date.UTC(start.getUTCFullYear(),start.getUTCMonth(),1));while(d<end){const nx=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1));const xx=Math.max(LW,x(d));g+=`<line class="grid" x1="${xx}" y1="${TOP-8}" x2="${xx}" y2="${H}"/><text class="month" x="${xx+4}" y="${TOP-14}">${MONTHS[d.getUTCMonth()].slice(0,3)} ${String(d.getUTCFullYear()).slice(2)}</text>`;d=nx;}
+  rows.forEach((row,i)=>{if(i%2)g+=`<rect x="0" y="${TOP+i*RH}" width="${W}" height="${RH}" fill="var(--hover)"/>`;});
+  // links
+  if(S.links){rows.forEach((row,i)=>{for(const p of parsePreds(row.a.preds)){const j=rows.findIndex(q=>q.a.id===p.id);if(j<0||!row.n)continue;const P=rows[j];if(!P.n)continue;
+    const px=p.type==='SS'||p.type==='SF'?x(dayToDate(cal,P.n.es)):x(addDays(finishDate(cal,P.n.es,P.n.dur),1));const py=TOP+j*RH+RH/2;
+    const cx=p.type==='FF'||p.type==='SF'?x(addDays(finishDate(cal,row.n.es,row.n.dur),1)):x(dayToDate(cal,row.n.es));const cy=TOP+i*RH+RH/2;
+    g+=`<path class="lk" d="M${px},${py} H${px+4} V${cy} H${cx}"/>`;}});}
+  rows.forEach((row,i)=>{const y=TOP+i*RH;const n=row.n;if(!n)return;const crit=n.tf<=0&&n.dur>0;
+    g+=`<text class="lbl${crit?' crit':''}" x="8" y="${y+15}">${esc(row.a.id)}  ${esc(row.a.name.slice(0,38))}${row.a.name.length>38?'…':''}</text>`;
+    const xs=x(dayToDate(cal,n.es)),xe=x(addDays(finishDate(cal,n.es,n.dur),1));
+    if(n.dur===0){g+=`<path class="ms" d="M${xs},${y+4} l7,7 l-7,7 l-7,-7z"/>`;}
+    else{g+=`<rect class="bar${crit?' crit':''}" x="${xs}" y="${y+5}" width="${Math.max(2,xe-xs)}" height="12"/>`;
+      if(row.a.progress>0)g+=`<rect class="bar done" x="${xs}" y="${y+5}" width="${Math.max(2,(xe-xs)*Math.min(100,row.a.progress)/100)}" height="12"/>`;
+      if(!crit&&n.tf>0){const lf=x(addDays(finishDate(cal,n.ls,n.dur),1));g+=`<line class="float" x1="${xe}" y1="${y+11}" x2="${lf}" y2="${y+11}"/>`;}}
+    if(row.ni&&(row.ni.es!==n.es||row.ni.dur!==n.dur)){const ixs=x(dayToDate(cal,row.ni.es)),ixe=x(addDays(finishDate(cal,row.ni.es,row.ni.dur),1));g+=row.ni.dur===0?`<path class="ms" style="fill:none;stroke:var(--crit)" d="M${ixs},${y+4} l7,7 l-7,7 l-7,-7z"/>`:`<rect class="imp" x="${ixs}" y="${y+4}" width="${Math.max(2,ixe-ixs)}" height="14"/>`;}});
+  if(imp){imp.nodes.filter(n=>n.a.frag).forEach((n,k)=>{const y=H-16-(k+1)*0;});}
+  if(comp)g+=`<line class="tfc" x1="${x(comp)}" y1="${TOP-8}" x2="${x(comp)}" y2="${H}"/><text class="month" x="${x(comp)+4}" y="${H-4}" style="fill:var(--accent)">Date for Completion</text>`;
+  const td=parse(S.project.today);if(td&&td>start&&td<end)g+=`<line class="today" x1="${x(td)}" y1="${TOP-8}" x2="${x(td)}" y2="${H}"/>`;
+  if(finImp&&finImp>finBase)g+=`<line class="today" style="stroke-dasharray:2 3" x1="${x(addDays(finImp,1))}" y1="${TOP-8}" x2="${x(addDays(finImp,1))}" y2="${H}"/><text class="month" x="${x(addDays(finImp,1))+4}" y="${TOP+2}" style="fill:var(--crit)">impacted completion</text>`;
+  box.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`;}
+el('gview').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.view=b.dataset.v;[...el('gview').children].forEach(x=>x.classList.toggle('on',x===b));save();renderGantt();});
+el('showLinks').addEventListener('change',()=>{S.links=el('showLinks').checked;save();renderGantt();});
+
+function renderChecks(){const r=cur();const cal=calendar();const out=[];const acts=S.acts;const N=r.N||{};
+  const add=(s,t,p)=>out.push({s,t,p});
+  if(!acts.length){el('checks').innerHTML='<p class="muted">Add activities first.</p>';el('checkSummary').textContent='';return;}
+  if(r.errs.length)add('bad','The logic cannot be scheduled',r.errs.join('; '));
+  const noPred=acts.filter(a=>!parsePreds(a.preds).length),noSucc=acts.filter(a=>N[a.id]&&!N[a.id].succ.length&&N[a.id].ef<r.finish);
+  add(noPred.length>1?'warn':'ok','Open starts',noPred.length>1?noPred.length+' activities have no predecessor: '+noPred.map(a=>a.id).join(', ')+'. Only the commencement should float free.':'One start: the commencement.');
+  add(noSucc.length?'warn':'ok','Open ends',noSucc.length?noSucc.length+' activities have no successor: '+noSucc.map(a=>a.id).join(', ')+'. Every path should lead to completion, or the float on those paths is meaningless.':'Every path leads to completion.');
+  const comp=completionDate();const fin=finishDate(cal,0,r.finish);const buffer=comp?between(fin,comp):null;
+  if(buffer==null)add('warn','Time for Completion not set','Enter the Time for Completion so the programme can be tested against it.');else add(buffer<0?'bad':buffer<14?'warn':'ok','Meets the Time for Completion',buffer<0?`Completion falls ${-buffer} days after the Date for Completion. The programme is not tenable as submitted: shorten the critical path or seek an extension before it is accepted.`:`${buffer} days of terminal float before the Date for Completion.`);
+  const long=acts.filter(a=>a.dur>30);add(long.length?'warn':'ok','Activities short enough to monitor',long.length?long.length+' activities exceed 30 working days ('+long.slice(0,6).map(a=>a.id).join(', ')+(long.length>6?'…':'')+'). Break them into stages or sections so progress and delay can be measured against them.':'No activity exceeds 30 working days.');
+  const bigLag=[];acts.forEach(a=>parsePreds(a.preds).forEach(p=>{const P=N[p.id];if(P&&(p.lag>P.dur&&p.lag>5))bigLag.push(a.id+'←'+p.id+'+'+p.lag);if(p.lag<0)bigLag.push(a.id+'←'+p.id+p.lag);}));
+  add(bigLag.length?'warn':'ok','Lags used sparingly',bigLag.length?'Long or negative lags hide work: '+bigLag.join(', ')+'. Replace them with an activity where possible.':'No long or negative lags.');
+  const crit=acts.filter(a=>N[a.id]&&N[a.id].tf<=0&&N[a.id].dur>0).length,work=acts.filter(a=>a.dur>0).length;const share=work?crit/work:0;
+  add(share>0.6?'warn':'ok','Float distribution',share>0.6?Math.round(share*100)+'% of the work is critical: the programme has little room and any slip delays completion. Consider re-sequencing or resourcing the near-critical paths.':Math.round(share*100)+'% of the work is critical; the rest carries float.');
+  const zero=acts.filter(a=>a.dur===0&&!a.ms&&!/commence|completion|taking|milestone|handover/i.test(a.name));add(zero.length?'warn':'ok','Durations',zero.length?zero.length+' activities have no duration and are not milestones: '+zero.map(a=>a.id).join(', '):'Every activity has a duration or is a milestone.');
+  const shareTot=acts.reduce((s,a)=>s+(+a.share||0),0);add(Math.abs(shareTot-100)<0.5?'ok':shareTot?'warn':'warn','Value loaded',shareTot?`Value shares sum to ${shareTot.toFixed(0)}%${Math.abs(shareTot-100)<0.5?'.':' ; they should sum to 100 for the cost projection and the S-curve.'}`:'No value shares entered; the cost projection will spread value evenly across sections.');
+  const td=parse(S.project.today);const stale=td?acts.filter(a=>N[a.id]&&finishDate(cal,N[a.id].es,N[a.id].dur)<td&&(+a.progress||0)<100&&a.dur>0):[];
+  if(td&&td>parse(S.project.commence))add(stale.length?'warn':'ok','Progress recorded to the data date',stale.length?stale.length+' activities should have finished by the data date but are not marked complete: '+stale.slice(0,6).map(a=>a.id).join(', ')+'. Update progress so the programme stays the Updated Programme the Protocol relies on.':'Progress is recorded up to the data date.');
+  const wbs=new Set(acts.map(a=>a.wbs).filter(Boolean));add(wbs.size>=2?'ok':'warn','Sections and stages',wbs.size>=2?wbs.size+' sections: '+[...wbs].join(', '):'Group activities into sections so staged access, sectional completion and the cost projection can use them.');
+  const nBad=out.filter(o=>o.s==='bad').length,nWarn=out.filter(o=>o.s==='warn').length;
+  el('checkSummary').textContent=nBad?nBad+' failing · '+nWarn+' to improve':nWarn?nWarn+' to improve':'all checks pass';
+  el('checks').innerHTML=out.map(o=>`<div class="check"><span class="s ${o.s}">${o.s==='ok'?'✓':o.s==='warn'?'!':'×'}</span><div><b>${esc(o.t)}</b><p>${esc(o.p)}</p></div></div>`).join('');
+  el('s83').innerHTML=S83.map(x=>`<label><input type="checkbox" data-s83="${x[0]}"${S.s83[x[0]]?' checked':''}> ${esc(x[1])}</label>`).join('');
+  const n83=S83.filter(x=>S.s83[x[0]]).length;el('s83Summary').textContent=n83+' of '+S83.length+' included';}
+el('s83').addEventListener('change',e=>{const t=e.target;if(t.dataset.s83){S.s83[t.dataset.s83]=t.checked;save();renderChecks();}});
+
+function renderDelays(){const t=el('delayTable');const opts=S.acts.map(a=>`<option value="${esc(a.id)}">${esc(a.id)} ${esc(a.name.slice(0,40))}</option>`).join('');
+  t.innerHTML=(S.delays.length?'<thead><tr><th>Event</th><th>Affects</th><th>Effect</th><th class="num">Days</th><th>From</th><th>Risk of</th><th></th></tr></thead>':'')+'<tbody>'+(S.delays.length?S.delays.map((d,i)=>`<tr><td style="min-width:200px"><input value="${esc(d.name||'')}" data-i="${i}" data-f="name" placeholder="Late relocation instructions"></td><td style="min-width:200px"><select data-i="${i}" data-f="act">${opts.replace(`value="${esc(d.act)}"`,`value="${esc(d.act)}" selected`)}</select></td><td style="width:150px"><select data-i="${i}" data-f="mode"><option value="start"${d.mode!=='prolong'?' selected':''}>Delays the start</option><option value="prolong"${d.mode==='prolong'?' selected':''}>Prolongs the work</option></select></td><td style="width:80px"><input class="num" type="number" min="0" value="${d.days}" data-i="${i}" data-f="days" style="text-align:right;font-family:var(--mono)"></td><td style="width:150px"><input type="date" value="${d.date||''}" data-i="${i}" data-f="date"></td><td style="width:130px"><select data-i="${i}" data-f="party"><option${d.party==='Employer'?' selected':''}>Employer</option><option${d.party==='Contractor'?' selected':''}>Contractor</option><option${d.party==='Neutral'?' selected':''}>Neutral</option></select></td><td class="act"><button class="x" data-del="${i}">×</button></td></tr>`).join(''):'<tr><td class="muted">No delay events. Add one to see its effect on completion.</td></tr>')+'</tbody>';
+  const base=cur();const cal=calendar();
+  if(!S.delays.length||!S.acts.length){el('delayStats').innerHTML='';return;}
+  const all=impacted(null),emp=impacted('Employer'),con=impacted('Contractor');
+  const fb=finishDate(cal,0,base.finish),fa=finishDate(cal,0,all.finish),fe=finishDate(cal,0,emp.finish),fc=finishDate(cal,0,con.finish);
+  const dAll=between(fb,fa),dEmp=between(fb,fe),dCon=between(fb,fc);
+  const conc=dEmp>0&&dCon>0?Math.min(dEmp,dCon):0;
+  const affected=S.delays.map(d=>base.N&&base.N[d.act]).filter(Boolean);const minFloat=affected.length?Math.min(...affected.map(n=>n.tf)):0;
+  S.result={eot:dEmp,total:dAll,contractor:dCon,concurrent:conc,baseline:iso(fb),impacted:iso(fa),float:minFloat};
+  el('delayStats').innerHTML=[[dEmp+'<small>calendar days</small>','Extension supported by Employer events',`completion moves from ${long(fb)} to ${long(fe)}`,true],[dAll+'<small>days</small>','With every event impacted',`completion ${long(fa)}`+(dCon>0?`; Contractor events alone move it ${dCon} days`:'')],[conc+'<small>days</small>','Concurrent effect',conc?'both Parties\u2019 events push completion over the same period (Core Principle 10)':'no overlap between the Parties\u2019 delays'],[minFloat+'<small>days</small>','Float on the affected activities before impact',minFloat>0?'the first days of delay are absorbed by float (Core Principle 8)':'the affected work is critical']].map(x=>`<div class="stat${x[3]?' hi':''}"><span class="v">${x[0]}</span><span class="l">${x[1]}</span><span class="d">${x[2]}</span></div>`).join('');}
+el('delayTable').addEventListener('change',e=>{const t=e.target;if(!t.dataset.f)return;const d=S.delays[+t.dataset.i];d[t.dataset.f]=t.dataset.f==='days'?(+t.value||0):t.value;save();renderDelays();renderGantt();});
+el('delayTable').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){S.delays.splice(+b.dataset.del,1);save();renderDelays();renderGantt();}});
+el('addDelay').onclick=()=>{const crit=S.acts.find(a=>{const n=cur().N;return n&&n[a.id]&&n[a.id].tf<=0&&n[a.id].dur>0;})||S.acts[0];S.delays.push({name:'',act:crit?crit.id:'',mode:'start',days:14,date:S.project.today,party:'Employer'});save();renderDelays();renderGantt();};
+
+function sendDelay(){if(!S.result){alert('Add a delay event first.');return;}const r=S.result;const cal=calendar();
+  try{const prev=JSON.parse(localStorage.getItem('cio-delay')||'{}')||{};localStorage.setItem('cio-delay',JSON.stringify({...prev,eot:r.eot,employerDelay:r.eot+Math.max(0,r.float),float:Math.max(0,r.float),contractorDelay:r.contractor,separable:r.concurrent===0,commence:S.project.commence,tfc:+S.project.tfc||prev.tfc,method:'tia',baseline:`${S.project.name||'the Programme'}, ${S.acts.length} activities, baseline completion ${long(parse(r.baseline))}`,source:'programme',savedAt:Date.now()}));
+    const c=JSON.parse(localStorage.getItem('cio-claim')||'{}')||{};c.delay=Object.assign(c.delay||{},{method:'tia',eot:r.eot,critical:r.eot,float:Math.max(0,r.float),concurrency:r.concurrent>0?'true':'none',baseline:`${S.project.name||'the Programme'}: ${S.acts.length} activities, baseline completion ${long(parse(r.baseline))}, impacted completion ${long(parse(r.impacted))}`,windows:S.delays.length});c.project=c.project||{};if(!c.project.commence)c.project.commence=S.project.commence;if(!c.project.tfc)c.project.tfc=S.project.tfc;c.savedAt=Date.now();localStorage.setItem('cio-claim',JSON.stringify(c));
+    el('sendNote').textContent='Delay result sent. Open the delay check or the claim builder to use it.';}catch(e){alert('Could not hand over: storage unavailable.');}}
+el('sendDelay').onclick=()=>{sendDelay();location.href='claims.html';};el('sendDelay2').onclick=sendDelay;
+function phases(){const r=cur();if(!r.N||!S.acts.length)return [];const cal=calendar();const T=Math.max(1,r.finish);const secs=[];const seen={};
+  for(const a of S.acts){if(!a.wbs||a.dur===0&&!a.share)continue;const n=r.N[a.id];if(!n)continue;let s=seen[a.wbs];if(!s){s={name:a.wbs,es:Infinity,ef:0,share:0,days:0};seen[a.wbs]=s;secs.push(s);}s.es=Math.min(s.es,n.es);s.ef=Math.max(s.ef,n.ef);s.share+=(+a.share||0);s.days+=n.dur;}
+  const totShare=secs.reduce((x,s)=>x+s.share,0),totDays=secs.reduce((x,s)=>x+s.days,0);
+  return secs.map(s=>({name:s.name,share:Math.round(10*(totShare?100*s.share/totShare:100*s.days/Math.max(1,totDays)))/10,start:Math.round(100*s.es/T),dur:Math.max(1,Math.round(100*(s.ef-s.es)/T)),basket:null}));}
+el('sendPhases').onclick=()=>{const ph=phases();if(!ph.length){alert('No sections to send.');return;}const cal=calendar();const r=cur();const months=Math.max(3,Math.round(between(parse(S.project.commence),finishDate(cal,0,r.finish))/30.4));
+  try{localStorage.setItem('cio-programme-phases',JSON.stringify({name:S.project.name,start:(S.project.commence||'').slice(0,7),months,phases:ph,savedAt:Date.now()}));el('sendNote').textContent=ph.length+' phases sent; the cost projection offers them under Works programme.';}catch(e){alert('Could not hand over: storage unavailable.');}};
+
+// exports
+function csv(rows){return rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n');}
+function download(name,text,type){const blob=new Blob([text],{type:type||'text/plain'});if(window.__cioSave){window.__cioSave(name,blob).catch(e=>alert('Could not save: '+(e&&e.message||e)));return;}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();}
+el('csvAct').onclick=()=>{const r=cur();const cal=calendar();download('programme.csv',csv([['ID','Activity','Section','Duration (wd)','Predecessors','Value %','Done %','Early start','Early finish','Late start','Late finish','Total float','Critical'],...S.acts.map(a=>{const n=r.N&&r.N[a.id];return [a.id,a.name,a.wbs,a.dur,a.preds,a.share,a.progress,n?iso(dayToDate(cal,n.es)):'',n?iso(finishDate(cal,n.es,n.dur)):'',n?iso(dayToDate(cal,n.ls)):'',n?iso(finishDate(cal,n.ls,n.dur)):'',n?n.tf:'',n&&n.tf<=0&&n.dur>0?'yes':'no'];})]),'text/csv');};
+el('xmlMsp').onclick=()=>{const r=cur();const cal=calendar();const X=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const uid={};S.acts.forEach((a,i)=>uid[a.id]=i+1);const T={FS:1,SS:3,FF:0,SF:2};
+  const tasks=S.acts.map((a,i)=>{const n=r.N&&r.N[a.id];const st=n?dayToDate(cal,n.es):parse(S.project.commence);const fi=n?finishDate(cal,n.es,n.dur):st;
+    return `<Task><UID>${i+1}</UID><ID>${i+1}</ID><Name>${X(a.name)}</Name><Type>0</Type><OutlineLevel>1</OutlineLevel><Duration>PT${a.dur*8}H0M0S</Duration><DurationFormat>7</DurationFormat><Start>${iso(st)}T08:00:00</Start><Finish>${iso(fi)}T17:00:00</Finish><Milestone>${a.dur===0?1:0}</Milestone><PercentComplete>${a.progress||0}</PercentComplete><Notes>${X(a.wbs)}</Notes>${parsePreds(a.preds).filter(p=>uid[p.id]).map(p=>`<PredecessorLink><PredecessorUID>${uid[p.id]}</PredecessorUID><Type>${T[p.type]}</Type><LinkLag>${p.lag*4800}</LinkLag><LagFormat>7</LagFormat></PredecessorLink>`).join('')}</Task>`;}).join('');
+  const xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Project xmlns="http://schemas.microsoft.com/project"><Name>${X(S.project.name||'Programme')}</Name><Title>${X(S.project.name||'Programme')}</Title><StartDate>${S.project.commence}T08:00:00</StartDate><ScheduleFromStart>1</ScheduleFromStart><MinutesPerDay>480</MinutesPerDay><MinutesPerWeek>${480*(+S.project.week||6)}</MinutesPerWeek><DaysPerMonth>${(+S.project.week||6)===7?30:(+S.project.week||6)===6?26:20}</DaysPerMonth><Tasks>${tasks}</Tasks></Project>`;
+  download((S.project.name||'programme').replace(/[^A-Za-z0-9]+/g,'_')+'.xml',xml,'application/xml');};
+el('jsonSave').onclick=()=>download('programme.json',JSON.stringify(S,null,1),'application/json');
+el('jsonLoad').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const s=JSON.parse(await f.text());if(s.acts){Object.assign(S,s);save();bindProject();renderAll();}}catch(err){alert('That file could not be read.');}});
+
+function showTab(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+t));if(t==='gantt')renderGantt();}
+el('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.t);});
+function renderAll(){renderStats();renderActs();renderGantt();renderChecks();renderDelays();}
+bindProject();[...el('gview').children].forEach(x=>x.classList.toggle('on',x.dataset.v===(S.view||'base')));el('showLinks').checked=S.links!==false;
+if(!S.acts.length&&!S.project.name){/* first visit: offer the road template */loadTemplate('road');}
+renderAll();
+if(/^#(act|gantt|checks|delay|export)$/.test(location.hash))showTab(location.hash.slice(1));
+})();
+</script>
+</body>
+</html>

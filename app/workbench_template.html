@@ -248,7 +248,7 @@ td input.wide{width:150px;text-align:left;font-family:var(--body)}
     <div class="panel"><div class="panel-head"><h3>Programme against the projected price path</h3><span class="sub">bars are phases; colour is the phase's own basket escalation at its mid-point</span></div><div class="chart tall" id="ganttChart"></div></div>
     <div style="height:12px"></div>
     <div class="panel"><div class="panel-head"><h3>Phases</h3><span class="sub">edit share, start and duration (percent of programme); baskets follow the template</span></div><div class="tbl-wrap"><table id="phaseTable"></table></div>
-      <div class="row" style="margin-top:8px"><button class="btn" id="addPhase">Add phase</button><button class="btn" id="resetPhases">Reset to template</button></div></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="addPhase">Add phase</button><button class="btn" id="resetPhases">Reset to template</button><button class="btn primary" id="useProgramme" hidden>Use the programme from the programme builder</button></div><p class="note" id="useProgrammeNote" hidden></p></div>
   </section>
 
   <!-- DAM -->
@@ -489,6 +489,9 @@ function renderPhases(){
   t.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{S.phases.splice(+b.dataset.del,1); renderPhases(); recompute();}));
 }
 el('addPhase').addEventListener('click',()=>{S.phases.push({name:'New phase',share:10,start:0,dur:20,basket:null}); renderPhases(); recompute();});
+(function(){let pr=null;try{pr=JSON.parse(localStorage.getItem('cio-programme-phases')||'null');}catch(e){}
+  if(pr&&pr.phases&&pr.phases.length){el('useProgramme').hidden=false;el('useProgrammeNote').hidden=false;el('useProgrammeNote').textContent=(pr.name||'A programme')+' with '+pr.phases.length+' sections over about '+pr.months+' months is on this device.';
+    el('useProgramme').addEventListener('click',()=>{S.phases=pr.phases.map(p=>({name:p.name,share:p.share,start:p.start,dur:p.dur,basket:null}));if(pr.start){el('start').value=pr.start;}if(pr.months){el('dur').value=Math.min(60,Math.max(3,pr.months));}el('profile').value='programme';renderPhases();recompute();});}})();
 el('resetPhases').addEventListener('click',()=>{const b=S.basket; loadTemplate(S.tpl); S.basket=b; renderPhases(); recompute();});
 
 /* ---------------- DAM & procurement controls ---------------- */
