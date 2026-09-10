@@ -450,6 +450,7 @@ def build_payload() -> dict:
     panel = load_panel()
     manifest = read_json(PROCESSED / "panel_manifest.json", {})
     return {
+        "claims": read_json(APP / "claims_library.json", {}),
         "forecast": load_forecast(panel),
         "generated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "manifest": manifest,
@@ -469,6 +470,7 @@ def build_payload() -> dict:
 PAGES = {  # template -> output, both under app/
     "template.html": "index.html",
     "workbench_template.html": "workbench.html",
+    "claims_template.html": "claims.html",
 }
 
 

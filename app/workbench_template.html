@@ -136,6 +136,10 @@ label{color:var(--ink-2);font-size:12.5px}
 .tile .v small{font-size:12px;color:var(--ink-3);font-weight:400;margin-left:3px}
 .tile .d{font-size:12px;color:var(--ink-2)}
 .tile.hi{border-color:var(--accent-line);background:linear-gradient(180deg,var(--accent-soft),var(--surface) 70%)}
+.verdict{border:1px solid var(--accent-line);background:linear-gradient(180deg,var(--accent-soft),var(--surface) 70%);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:6px}
+.verdict .kicker{display:block}
+.verdict .v{font-family:var(--display);font-size:clamp(20px,2.2vw,30px);font-weight:300;line-height:1.2}
+.verdict .d{color:var(--ink-3);font-size:13px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
 .panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}
 .panel-head .sub{color:var(--ink-3);font-size:12px}
@@ -168,7 +172,7 @@ td input.wide{width:150px;text-align:left;font-family:var(--body)}
 
 <header class="top">
   <div class="brand"><svg class="logo" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="100" stroke-dasharray="62 38"/><circle class="orbit" cx="12" cy="2.5" r="1.6" fill="var(--teal)"/><circle class="core" cx="12" cy="12" r="4" fill="var(--accent)"/></svg>CiO Lab<small>Projection Workbench</small></div>
-  <nav><a href="index.html">Explorer</a><a class="on" href="workbench.html">Workbench</a></nav>
+  <nav class="switch"><a href="index.html">Explorer</a><a class="on" href="workbench.html">Workbench</a><a href="claims.html">Claims Desk</a></nav>
   <div class="vint" id="vint"></div>
   <div class="seg theme" id="theme" role="group" aria-label="Colour theme" style="margin-left:14px"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
 </header>
@@ -215,6 +219,8 @@ td input.wide{width:150px;text-align:left;font-family:var(--body)}
 
   <!-- COST -->
   <section class="tab on" id="tab-cost">
+    <div class="verdict" id="verdict"></div>
+    <div style="height:12px"></div>
     <div class="grid g5" id="costTiles"></div>
     <div style="height:12px"></div>
     <div class="grid g2">
@@ -506,11 +512,15 @@ function compute(){
 
 /* ---------------- COST tab ---------------- */
 function tile(v,l,d,hi){ const t=h('div','tile'+(hi?' hi':'')); t.innerHTML=`<div class="l">${l}</div><div class="v">${v}</div><div class="d">${d||''}</div>`; return t; }
+function escSensitivity(c){ const w=c.w, mats=c.mats; let best=null; for(const m of mats){ const s=FS[m]; const e=w[m]*(s.mu*c.inp.dur+ (s.fx_beta||0)*0.1); if(!best||e>best.e) best={m,e}; } return best?` · most exposed input: ${LBL[best.m]}`:''; }
 function renderCost(c){
   const {inp,w,mats,months,p50,plo,phi,sp,esc50,escLo,escHi,esc80,q}=c;
   const V=inp.value; const T=inp.dur;
   const peak=p50.reduce((b,v,i)=>v>p50[b]?i:b,0);
   const marginAtRisk=esc50/V; // share of contract value
+  const scenLabel=S.scen==='base'?'base scenario':S.scen==='fx'?`shilling −${fmt(inp.fxPct*100,0)}% over 12 months`:'2022 shock replayed from award';
+  const survives=marginAtRisk<=inp.margin;
+  el('verdict').innerHTML=`<span class="kicker">Verdict · ${scenLabel}</span><div class="v">${survives?`Escalation of about ${pct(esc50/V,1)} is likely — the ${pct(inp.margin,1)} margin holds on the median path, with ${pct(escHi/V,1)} at the upper band.`:`Escalation of about ${pct(esc50/V,1)} is likely — it exceeds the ${pct(inp.margin,1)} margin on the median path; a price-adjustment clause or re-priced bid is needed.`}</div><div class="d">${TPL[S.tpl].name} · award ${ymLabel(inp.start)} · ${inp.dur} months · contingency for P80 cover ${ugx(esc80)}${escSensitivity(c)}</div>`;
   el('costTiles').innerHTML='';
   el('costTiles').append(
     tile(pct(esc50/V,1,true),'Projected escalation','over the programme, median · '+ugx(esc50),true),
