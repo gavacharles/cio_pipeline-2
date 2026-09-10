@@ -75,13 +75,18 @@ h2.d{font-family:var(--display);font-size:30px;font-weight:300;line-height:1.1}
     <div class="fld"><label>Contractor became aware</label><input type="date" id="awareDate" value="2026-09-16"></div>
     <div class="fld"><label>Delay to completion</label><div class="row" style="gap:4px"><input type="number" id="employerDelay" value="38" min="0" step="1" style="width:78px"><span class="muted" style="font-size:12px">days</span></div></div>
     <div class="fld"><label>Float on the affected path</label><div class="row" style="gap:4px"><input type="number" id="float" value="12" min="0" step="1" style="width:78px"><span class="muted" style="font-size:12px">days</span></div></div>
+    <div class="fld"><label>Concurrent delay?</label><div class="seg" id="conc"><button data-v="no" class="on">None</button><button data-v="yes">Yes</button></div></div>
+    <div id="concBox" hidden>
+      <div class="fld"><label>Contractor delay over the same period</label><div class="row" style="gap:4px"><input type="number" id="contractorDelay" value="9" min="0" step="1" style="width:78px"><span class="muted" style="font-size:12px">days</span></div></div>
+      <div class="fld"><label>Costs separable from own delay?</label><div class="seg" id="sep"><button data-v="yes" class="on">Yes</button><button data-v="no">No</button></div></div>
+      <div class="fld" style="grid-template-columns:1fr"><label>Approach to concurrency</label><select id="approach"><option value="protocol">SCL Protocol (CP 10 and 14)</option><option value="malmaison">Malmaison: time yes, money for the non-concurrent period</option><option value="dominant">Dominant cause</option><option value="apportion">Apportionment (City Inn)</option></select></div>
+      <p class="note" id="approachNote" style="margin-top:0"></p>
+    </div>
     <p class="note" style="margin-top:2px">That is enough for the extension of time. Add the cost inputs below to value it.</p>
   </div>
 
   <details class="sub"><summary>Cost of the delay</summary>
     <div class="block" style="margin-top:8px">
-      <div class="fld"><label>Concurrent Contractor delay</label><div class="row" style="gap:4px"><input type="number" id="contractorDelay" value="9" min="0" step="1" style="width:78px"><span class="muted" style="font-size:12px">days</span></div></div>
-      <div class="fld"><label>Separable from own delay?</label><div class="seg" id="sep"><button data-v="yes" class="on">Yes</button><button data-v="no">No</button></div></div>
       <div class="fld"><label>Site overheads per day</label><div class="row" style="gap:4px"><input type="number" id="dailyCost" value="14.5" min="0" step="0.5" style="width:78px"><span class="muted" style="font-size:12px">UGX m</span></div></div>
       <div class="fld"><label>HO overhead &amp; profit, actual</label><div class="row" style="gap:4px"><input type="number" id="ohp" value="9.5" min="0" step="0.5" style="width:78px"><span class="muted" style="font-size:12px">%</span></div></div>
       <div class="fld"><label>Contract sum</label><div class="row" style="gap:4px"><input type="number" id="contractSum" value="12" min="0.01" step="0.5" style="width:78px"><span class="muted" style="font-size:12px">UGX bn</span></div></div>
@@ -175,7 +180,7 @@ applyTheme(themePref);
 el('theme').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; applyTheme(b.dataset.v);});
 
 /* ---------- state ---------- */
-const S={form:'red2017',cause:'variation',clause:'20.2',sep:true,tab:'delay',when:'now',prog:'linked',ab:'good',q:''};
+const S={form:'red2017',cause:'variation',clause:'20.2',sep:true,conc:false,approach:'protocol',tab:'delay',when:'now',prog:'linked',ab:'good',q:''};
 const formSel=el('form'); L.forms.forEach(f=>{const o=h('option');o.value=f.id;o.textContent=f.name;formSel.append(o);});
 const causeSel=el('cause'); L.causes.forEach(c=>{const o=h('option');o.value=c.id;o.textContent=c.name+' ('+c.clause+')';causeSel.append(o);});
 formSel.value=S.form; causeSel.value=S.cause;
@@ -194,6 +199,8 @@ causeSel.addEventListener('change',()=>{S.cause=causeSel.value; render();});
 ['commence','tfc','eventDate','awareDate','today','employerDelay','float','contractorDelay','dailyCost','ohp','contractSum','revTotal','hoTotal','perfDays'].forEach(id=>{el(id).addEventListener('input',render); el(id).addEventListener('change',render);});
 function seg(id,key,cb){ el(id).addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; S[key]=b.dataset.v; [...el(id).children].forEach(x=>x.classList.toggle('on',x===b)); cb();}); }
 seg('sep','sepV',()=>{S.sep=S.sepV==='yes'; render();});
+seg('conc','concV',()=>{S.conc=S.concV==='yes'; el('concBox').hidden=!S.conc; render();});
+el('approach').addEventListener('change',()=>{S.approach=el('approach').value; render();});
 seg('mWhen','when',renderMethods); seg('mProg','prog',renderMethods); seg('mAb','ab',renderMethods);
 el('tabs').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; S.tab=b.dataset.t; [...el('tabs').children].forEach(x=>x.classList.toggle('on',x===b)); document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+S.tab));});
 if(/^#(delay|notice|clause|method|protocol)$/.test(location.hash)){const b=[...el('tabs').children].find(x=>x.dataset.t===location.hash.slice(1));if(b)b.click();}
@@ -205,15 +212,25 @@ function compute(){
   const completion=addDays(i.commence,i.tfc);
   const floatUsed=Math.min(i.float,i.employerDelay);
   const eot=Math.max(0,i.employerDelay-i.float);
-  const concurrent=i.contractorDelay>0;
-  const compDays=!c.cost?0:(concurrent&&!S.sep?0:eot);
+  const conDays=S.conc?i.contractorDelay:0;
+  const concurrent=conDays>0;
+  const overlap=Math.min(conDays,eot);                        // days over which both Parties' delays run together
+  let eotDue=eot, compBase=eot, approachNote='';
+  if(concurrent){
+    if(S.approach==='protocol'){compBase=S.sep?eot:eot-overlap;approachNote='Core Principle 10: the Contractor keeps the full extension of time; Core Principle 14: prolongation cost only for delay it can separate from its own, so the overlapping days carry no money unless the costs are shown to be separable.';}
+    else if(S.approach==='malmaison'){compBase=eot-overlap;approachNote='Henry Boot v Malmaison (1999): where an Employer Risk Event and a Contractor Risk Event are of equal causative potency, the Contractor gets the extension for the whole period but recovers prolongation cost only for the days not also delayed by its own default. The prevailing English-law position; De Beers v Atos and Walter Lilly v Mackay follow it.';}
+    else if(S.approach==='dominant'){const employerDominant=i.employerDelay>=conDays;eotDue=employerDominant?eot:0;compBase=employerDominant?eot:0;approachNote=employerDominant?'The Employer event is the more potent cause, so both time and money follow it in full. The dominant-cause test is easy to state and hard to apply; tribunals now use it only where one cause clearly outweighs the other (Keating).':'The Contractor\u2019s own delay is the more potent cause, so on this approach neither time nor money follows. Expect the Contractor to argue Malmaison instead.';}
+    else if(S.approach==='apportion'){const share=i.employerDelay/Math.max(1,i.employerDelay+conDays);eotDue=Math.round(eot*share);compBase=eotDue;approachNote='City Inn v Shepherd (Scotland, 2010): time and money apportioned by the relative causative potency and culpability of the two delays, here '+Math.round(share*100)+'% to the Employer. Rejected in England (Walter Lilly) and not the Protocol\u2019s view; useful where the contract or the governing law adopts it.';}
+  }
+  eotDue=Math.max(0,eotDue);
+  const compDays=!c.cost?0:Math.max(0,compBase);
   const prolong=compDays*i.dailyCost;                       // UGX m
   const sumM=i.contractSum*1000;                            // UGX m
   const emden=(i.ohp/100)*sumM*compDays/i.tfc;
   const eich=(i.revTotal>0)?((i.contractSum/i.revTotal)*i.hoTotal*1000/i.perfDays)*compDays:null;
-  const out={i,f,c,completion,floatUsed,eot,concurrent,compDays,prolong,emden,eich,newCompletion:addDays(completion,eot)};
+  const out={i,f,c,completion,floatUsed,eot:eotDue,eotGross:eot,overlap,conDays,concurrent,compDays,prolong,emden,eich,approachNote,newCompletion:addDays(completion,eotDue)};
   // hand the result to the Claim builder on this device
-  try{localStorage.setItem('cio-delay',JSON.stringify({eot,employerDelay:i.employerDelay,float:i.float,contractorDelay:i.contractorDelay,separable:S.sep,formId:f.id,formName:f.short,cause:c.id,commence:i.commence,tfc:i.tfc,eventDate:i.eventDate,awareDate:i.awareDate,savedAt:Date.now()}));}catch(e){}
+  try{localStorage.setItem('cio-delay',JSON.stringify({eot:eotDue,employerDelay:i.employerDelay,float:i.float,contractorDelay:conDays,separable:S.sep,approach:S.approach,concurrent,formId:f.id,formName:f.short,cause:c.id,commence:i.commence,tfc:i.tfc,eventDate:i.eventDate,awareDate:i.awareDate,savedAt:Date.now()}));}catch(e){}
   return out;
 }
 
@@ -224,17 +241,18 @@ function renderDelay(){
   el('completionLabel').textContent=long(r.completion);
   el('formNote').textContent=r.f.note;
   el('causeNote').textContent=r.c.note;
+  el('approachNote').textContent=r.approachNote;
   const st=el('delayStats'); st.innerHTML='';
   st.append(
-    stat(`${r.eot}<small>days</small>`,'EOT entitlement', r.eot===0?'the float absorbs the delay — no EOT is due (CP 8)':(r.concurrent?'concurrent Contractor delay does not reduce it (CP 10)':'the critical path is extended by '+r.eot+' days (CP 5)'),true),
-    stat(`${r.compDays}<small>days</small>`,'Compensable prolongation', !r.c.cost?'this cause carries time only under '+r.c.clause:(r.compDays===0&&r.eot>0?'concurrent and not separable — no prolongation money (CP 14)':'time-related cost for the period the effect was felt (CP 20, 22)')),
+    stat(`${r.eot}<small>days</small>`,'EOT entitlement', r.eot===0?'the float absorbs the delay — no EOT is due (CP 8)':(r.concurrent?(S.approach==='protocol'||S.approach==='malmaison'?'concurrent Contractor delay does not reduce it (CP 10)':S.approach==='dominant'?'the dominant cause decides: '+(r.eot?'the Employer event prevails':'the Contractor\u2019s own delay prevails'):'apportioned: '+r.eotGross+' days shared by causative potency'):'the critical path is extended by '+r.eot+' days (CP 5)'),true),
+    stat(`${r.compDays}<small>days</small>`,'Compensable prolongation', !r.c.cost?'this cause carries time only under '+r.c.clause:(r.compDays===0&&r.eot>0?'concurrent and not separable — no prolongation money (CP 14)':r.concurrent&&r.overlap>0&&r.compDays<r.eot?r.overlap+' overlapping days carry no money; '+r.compDays+' days do':'time-related cost for the period the effect was felt (CP 20, 22)')),
     stat(fmt(r.prolong,0)+'<small>UGX m</small>','Prolongation cost','site overheads × compensable days'+(r.c.profit?' · Cost Plus Profit under '+r.c.clause:' · Cost without profit')),
     stat(long(r.newCompletion),'Revised completion', r.eot>0?'Delay Damages relieved for '+r.eot+' days ('+(r.f.family==='1999'?'8.7':'8.8')+')':'Delay Damages remain exposed from '+long(r.completion))
   );
   el('deriveTable').innerHTML=`<thead><tr><th>Step</th><th>Rule</th><th class="num">Days</th></tr></thead><tbody>
     <tr><td>Employer Delay predicted to completion</td><td class="muted">CP 4–6: assess as the work proceeds; the effect need not have begun or ended</td><td class="num">${i.employerDelay}</td></tr>
     <tr><td>Less total float remaining on the affected path</td><td class="muted">CP 8: EOT only to the extent the delay drives float on the critical path below zero</td><td class="num">−${r.floatUsed}</td></tr>
-    <tr><td>Concurrent Contractor Delay</td><td class="muted">CP 10: true concurrency does not reduce the EOT</td><td class="num">${i.contractorDelay} · no reduction</td></tr>
+    <tr><td>Concurrent Contractor Delay</td><td class="muted">${!r.concurrent?'none entered':S.approach==='protocol'||S.approach==='malmaison'?'CP 10: true concurrency does not reduce the EOT':S.approach==='dominant'?'dominant cause: the more potent delay takes all':'apportioned by causative potency'}</td><td class="num">${r.conDays}${r.concurrent?(r.eot===r.eotGross?' · no reduction':' · EOT '+r.eotGross+' → '+r.eot):''}</td></tr>
     <tr><td><b>EOT due</b></td><td class="muted">CP 5: to the extent completion is reasonably predicted to be delayed; CP 7: may be increased later, not decreased (${r.f.family==='1999'?'8.4':'8.5'} says the same)</td><td class="num"><b>${r.eot}</b></td></tr>
     <tr><td>Compensable prolongation</td><td class="muted">CP 12, 14: an EOT does not imply money; where concurrent, only costs separable from the Contractor's own delay are recoverable${r.c.cost?'':'; and '+r.c.clause+' gives time only'}</td><td class="num">${r.compDays}</td></tr></tbody>`;
   el('ohTable').innerHTML=`<thead><tr><th>Formula</th><th>Protocol view</th><th class="num">UGX m</th></tr></thead><tbody>
