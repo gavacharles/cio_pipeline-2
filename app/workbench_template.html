@@ -164,6 +164,8 @@ td input.wide{width:150px;text-align:left;font-family:var(--body)}
 .explain b{color:var(--ink);font-weight:600}
 @media (max-width:820px){.explain{grid-template-columns:1fr}}
 .warnbox{border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 6%,transparent);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--ink-2)}
+.side details.sub{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:transparent}
+.side details.sub summary{cursor:pointer;color:var(--ink-3);font-size:12.5px;padding:2px 0;display:flex;justify-content:space-between}
 </style>
 </head>
 <body>
@@ -181,31 +183,38 @@ td input.wide{width:150px;text-align:left;font-family:var(--body)}
 <div class="ws">
 <aside class="side">
   <div class="block">
-    <span class="kicker">Project</span>
-    <div class="fld"><label>Template</label><select id="tpl"><option value="road">Road</option><option value="building">Building</option><option value="water">Water scheme</option><option value="custom">Custom basket</option></select></div>
+    <span class="kicker">The project</span>
+    <div class="fld"><label>Type of works</label><select id="tpl"><option value="road">Road</option><option value="building">Building</option><option value="water">Water scheme</option><option value="custom">Custom basket</option></select></div>
     <div class="fld"><label>Contract value</label><div class="row" style="gap:4px"><input type="number" id="value" value="12" min="0.01" step="0.5" style="width:78px"><span class="muted" style="font-size:12px">UGX bn</span></div></div>
     <div class="fld"><label>Award / start</label><input type="month" id="start" value="2026-10"></div>
     <div class="fld"><label>Duration</label><div class="row" style="gap:4px"><input type="number" id="dur" value="18" min="3" max="60" step="1" style="width:78px"><span class="muted" style="font-size:12px">months</span></div></div>
-    <div class="fld"><label>Spend profile</label><select id="profile"><option value="programme">From programme</option><option value="even">Even</option><option value="front">Front-loaded</option><option value="back">Back-loaded</option></select></div>
     <div class="fld"><label>Target margin</label><div class="row" style="gap:4px"><input type="number" id="margin" value="12" min="0" max="50" step="0.5" style="width:78px"><span class="muted" style="font-size:12px">%</span></div></div>
+    <p class="note" style="margin-top:2px">That is enough for a first answer. The basket and the scenario below are suggested for the type of works and can be changed.</p>
   </div>
 
   <div class="block">
-    <div class="kicker"><span>Input basket</span><b id="basketSum"></b></div>
-    <div class="basket" id="basket"></div>
-    <div class="row"><select id="addMat" style="flex:1"></select><button class="btn" id="addBtn">Add</button></div>
-    <div class="sum" id="sumLine"></div>
-  </div>
-
-  <div class="block">
-    <span class="kicker">Scenario</span>
+    <span class="kicker">What if</span>
     <div class="seg" id="scen"><button data-v="base" class="on">Base</button><button data-v="fx">FX shock</button><button data-v="replay">2022 replay</button></div>
     <div class="fld" id="fxRow"><label>Shilling depreciation, next 12 m</label><div class="row" style="gap:4px"><input type="number" id="fxPct" value="10" min="-30" max="60" step="1" style="width:78px"><span class="muted" style="font-size:12px">%</span></div></div>
-    <div class="fld"><label>Drift assumption</label><select id="drift"><option value="recent">Recent (24-month half-life)</option><option value="full">Full-sample average</option><option value="zero">No drift (volatility only)</option></select></div>
-    <div class="fld"><label>Confidence band</label><select id="band"><option value="80">P10 – P90</option><option value="50">P25 – P75</option><option value="90">P5 – P95</option></select></div>
-    <div class="fld"><label>Simulations</label><select id="nsim"><option value="300">300</option><option value="600" selected>600</option><option value="1500">1,500</option></select></div>
   </div>
-  <p class="note">Forecasts are re-computed in this page from the parameters estimated in <code>build_dashboard.py</code>: exponentially-weighted drift and volatility of monthly log-returns, lag-1 persistence, calendar seasonality and exchange-rate pass-through per material, with a common market factor across materials. Every figure updates as you change an input.</p>
+
+  <details class="sub"><summary>Input basket <b id="basketSum" style="font-family:var(--mono);font-weight:400"></b></summary>
+    <div class="block" style="margin-top:8px">
+      <div class="basket" id="basket"></div>
+      <div class="row"><select id="addMat" style="flex:1"></select><button class="btn" id="addBtn">Add</button></div>
+      <div class="sum" id="sumLine"></div>
+    </div>
+  </details>
+
+  <details class="sub"><summary>More options</summary>
+    <div class="block" style="margin-top:8px">
+      <div class="fld"><label>Spend profile</label><select id="profile"><option value="programme">From programme</option><option value="even">Even</option><option value="front">Front-loaded</option><option value="back">Back-loaded</option></select></div>
+      <div class="fld"><label>Drift assumption</label><select id="drift"><option value="recent">Recent (24-month half-life)</option><option value="full">Full-sample average</option><option value="zero">No drift (volatility only)</option></select></div>
+      <div class="fld"><label>Confidence band</label><select id="band"><option value="80">P10 – P90</option><option value="50">P25 – P75</option><option value="90">P5 – P95</option></select></div>
+      <div class="fld"><label>Simulations</label><select id="nsim"><option value="300">300</option><option value="600" selected>600</option><option value="1500">1,500</option></select></div>
+    </div>
+  </details>
+  <p class="note">Forecasts are re-computed in this page from parameters estimated on the Phase 0 panel: recent drift and volatility of monthly returns, persistence, seasonality and exchange-rate pass-through per material, with a common market factor. Every figure updates as you change an input.</p>
 </aside>
 
 <main class="main">

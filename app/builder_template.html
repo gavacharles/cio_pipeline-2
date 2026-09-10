@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CiO Claim Builder</title>
+<!--__FONTS__-->
+<!--__SHELL__-->
+<style>
+.wrap{max-width:1280px;margin:0 auto;padding:22px 22px 80px}
+.intro{display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.intro h1{font-size:30px;font-weight:300;line-height:1.1}
+.intro p{color:var(--ink-3);font-size:13.5px;max-width:62ch;margin-top:6px}
+.intro .ctl{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lay{display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px}
+@media (max-width:900px){.lay{grid-template-columns:1fr}}
+.steps{display:flex;flex-direction:column;gap:2px;position:sticky;top:70px}
+@media (max-width:900px){.steps{position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px}}
+.stepb{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-radius:10px;padding:9px 10px;color:var(--ink-2);cursor:pointer;font:13px var(--body);white-space:nowrap}
+.stepb .n{width:26px;height:26px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.stepb.done .n{background:var(--teal-soft);border-color:var(--teal);color:var(--teal)}
+.stepb.on{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2)}
+.stepb.on .n{border-color:var(--accent);color:var(--accent)}
+.stepb small{display:block;color:var(--ink-3);font-size:11px;white-space:normal}
+.step{display:none}.step.on{display:block;animation:cio-rise .35s cubic-bezier(.2,.7,.2,1) both}
+.step h2{font-size:24px;font-weight:300;margin-bottom:4px}
+.step .lead{color:var(--ink-3);font-size:13.5px;max-width:70ch;margin-bottom:18px;line-height:1.5}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
+.form.one{grid-template-columns:1fr}
+@media (max-width:760px){.form{grid-template-columns:1fr}}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f.w{grid-column:1/-1}
+.f label{font-size:12px;color:var(--ink-3)}
+.f input,.f select,.f textarea{width:100%}
+.f textarea{font-family:var(--body);font-size:13px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line-2);border-radius:6px;padding:8px 10px;min-height:96px;line-height:1.5;resize:vertical}
+.f textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.f .hint{font-size:11.5px;color:var(--ink-3);line-height:1.4}
+.f .auto{font-family:var(--mono);font-size:12px;color:var(--ink-2);padding:6px 0}
+.money{display:grid;grid-template-columns:90px 1fr;gap:6px}
+.nav{display:flex;gap:8px;justify-content:space-between;margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+.mrow{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.mrow b{font-weight:500}
+.mrow p{color:var(--ink-3);font-size:12.5px;margin-top:2px}
+.mrow textarea{margin-top:8px;min-height:56px}
+.mrow input[type=checkbox]{margin-top:4px;accent-color:var(--teal)}
+.tbl-wrap{margin-top:8px}
+td input,td select{width:100%;text-align:left;font-family:var(--body)}
+td input.num{font-family:var(--mono);text-align:right}
+td.act{width:32px}
+.x{background:none;border:0;color:var(--ink-3);cursor:pointer;font-size:15px}
+.x:hover{color:var(--crit)}
+details.more{border:1px solid var(--line);border-radius:10px;padding:8px 14px;grid-column:1/-1}
+details.more summary{cursor:pointer;color:var(--ink-3);font-size:12.5px;padding:4px 0}
+details.more .form{margin-top:10px}
+.pull{border:1px solid var(--teal);background:var(--teal-soft);border-radius:10px;padding:10px 14px;font-size:13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.pull .sp{flex:1}
+/* review */
+.review{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px}
+@media (max-width:1000px){.review{grid-template-columns:1fr}}
+.paper{background:#fff;color:#111;border-radius:6px;box-shadow:0 1px 0 var(--line),0 12px 40px rgba(0,0,0,.25);padding:56px 64px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:11pt;line-height:1.5;max-height:78vh;overflow:auto}
+@media (max-width:760px){.paper{padding:26px 22px}}
+.paper h1{font-family:inherit;font-size:14pt;font-weight:700;text-transform:uppercase;margin:22pt 0 8pt;letter-spacing:0}
+.paper h2{font-family:inherit;font-size:12pt;font-weight:700;margin:14pt 0 6pt}
+.paper h3{font-family:inherit;font-size:11pt;font-weight:700;font-style:italic;margin:10pt 0 4pt}
+.paper p{margin:5pt 0 8pt;text-wrap:pretty}
+.paper p.n{display:grid;grid-template-columns:32pt 1fr;gap:0}
+.paper p.n>span:first-child{color:#333}
+.paper .cover{text-align:center;padding:60pt 0 40pt;border-bottom:1px solid #ccc;margin-bottom:24pt}
+.paper .cover .e{font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.paper .cover .t{font-size:18pt;font-weight:700;margin:26pt 0 8pt}
+.paper .cover .s{font-size:12pt;margin:6pt 0}
+.paper table{border-collapse:collapse;width:100%;font-size:9.5pt;margin:6pt 0 10pt}
+.paper th,.paper td{border:1px solid #999;padding:4pt 6pt;text-align:left;vertical-align:top;white-space:normal;color:#111}
+.paper th{background:#e7e6e6;font-family:inherit;font-size:9.5pt;letter-spacing:0;text-transform:none;color:#111}
+.paper td.num{text-align:right;font-family:inherit}
+.paper ol.abc{margin:0 0 8pt 40pt;padding:0;list-style:lower-alpha}
+.paper ol.abc li{padding-left:6pt;margin:2pt 0}
+.paper .toc p{margin:2pt 0}
+.paper .toc .l2{padding-left:18pt}
+.paper .flag{background:#fff3bf}
+.sectlist{display:flex;flex-direction:column;gap:6px}
+.sect{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px}
+.sect small{grid-column:1/3;color:var(--ink-3);font-size:11.5px}
+.sect .btn{padding:3px 9px;font-size:11.5px}
+.sweep{font-size:12.5px;line-height:1.5}
+.sweep li{margin:4px 0;color:var(--ink-2)}
+.sweep b{font-weight:500;color:var(--warn)}
+.editor{margin-top:14px}
+.editor textarea{width:100%;min-height:220px;font-family:var(--body);font-size:13px;line-height:1.55;color:var(--ink);background:var(--surface-2);border:1px solid var(--line-2);border-radius:8px;padding:10px 12px}
+.busy{display:inline-block;width:12px;height:12px;border:2px solid var(--line-2);border-top-color:var(--teal);border-radius:50%;animation:cio-spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+</style>
+</head>
+<body>
+<script>const DATA=/*__CIO_DATA__*/null;</script>
+<!--__VENDOR:jszip-->
+<header class="top">
+  <div class="brand"><svg class="logo" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="100" stroke-dasharray="62 38"/><circle class="orbit" cx="12" cy="2.5" r="1.6" fill="var(--teal)"/><circle class="core" cx="12" cy="12" r="4" fill="var(--accent)"/></svg>CiO Lab<small>Claim Builder</small></div>
+  <nav class="switch"></nav>
+  <div class="vint" id="vint"></div>
+  <div class="seg theme" id="theme" role="group" aria-label="Colour theme" style="margin-left:14px"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
+</header>
+
+<div class="wrap">
+  <div class="intro reveal">
+    <div><span class="kicker">Ready to submit</span><h1 style="margin-top:6px">Build the claim</h1><p>Eight sections in the house form, from executive summary to formal request. Answer each step in plain terms; the document is written from your answers, the chronology from the evidence desk and the delay figures from the delay check, then exported to Word.</p></div>
+    <div class="ctl"><button class="btn" id="loadSample">Load a worked example</button><button class="btn" id="reset">Start afresh</button><span class="note" id="savedNote" style="margin:0"></span></div>
+  </div>
+
+  <div class="lay">
+    <aside class="steps" id="steps"></aside>
+    <main id="main">
+
+      <section class="step" data-s="0">
+        <h2>The contract and the parties</h2>
+        <p class="lead">Who the parties are, what the Contract is and when it runs. These particulars appear in Section 2 of the claim and in every citation.</p>
+        <div class="form">
+          <div class="f"><label>Claim title</label><input data-k="project.title" placeholder="Delayed Instructions Impeding Right of Access and Possession of Site"></div>
+          <div class="f"><label>Claim number</label><input data-k="project.number" placeholder="1"></div>
+          <div class="f"><label>The Contractor</label><input data-k="project.contractor" placeholder="Sogea Satom"></div>
+          <div class="f"><label>The Employer</label><input data-k="project.employer" placeholder="National Water and Sewerage Corporation"></div>
+          <div class="f"><label>The Engineer</label><input data-k="project.engineer" placeholder="ARTELIA in Association with Gauff Consultants Uganda Ltd"></div>
+          <div class="f"><label>Form of contract</label><select data-k="project.form" id="formSel"></select></div>
+          <div class="f w"><label>Project name</label><input data-k="project.projectName" placeholder="Greater Kampala Metropolitan Area Water Supply Network, Phase 1: Construction of Primary Network (Package 2B)"></div>
+          <div class="f"><label>Contract number</label><input data-k="project.contractNo" placeholder="NWSC/HQ/WRKS/2020-2021/172191"></div>
+          <div class="f"><label>Contract Agreement signed on</label><input type="date" data-k="project.signed"></div>
+          <div class="f"><label>Contract Price</label><div class="money"><select data-k="project.currency"><option>EUR</option><option>USD</option><option>UGX</option><option>KES</option><option>TZS</option><option>RWF</option><option>GBP</option><option>ZAR</option></select><input type="number" step="0.01" data-k="project.price" placeholder="92405463.49"></div><div class="auto" id="priceWords"></div></div>
+          <div class="f"><label>Commencement Date</label><input type="date" data-k="project.commence"></div>
+          <div class="f"><label>Time for Completion (days)</label><input type="number" min="1" data-k="project.tfc" placeholder="913"><div class="auto" id="completionAuto"></div></div>
+          <div class="f"><label>Claim assessed up to</label><input type="date" data-k="project.cutoff"><div class="hint">The date to which the effects are quantified. Later effects are reserved.</div></div>
+          <div class="f w"><label>Scope of the Works, in a sentence or two</label><textarea data-k="project.scope" placeholder="The design, supply, delivery, construction, testing and commissioning of approximately 69 kilometres of water transmission and distribution pipeline across seven sections, with booster stations, reservoirs and ancillary civil works."></textarea></div>
+          <details class="more"><summary>Location, programme and access (optional, used in Section 2)</summary><div class="form">
+            <div class="f w"><label>Project location and coverage</label><textarea data-k="project.location" placeholder="Kampala City and its metropolitan area in Wakiso District…"></textarea></div>
+            <div class="f"><label>Programme submitted on</label><input type="date" data-k="project.programmeDate"></div>
+            <div class="f"><label>Submission letter reference</label><input data-k="project.programmeRef" placeholder="P2B/SOSA/ART-GCU/04-25/029"></div>
+            <div class="f"><label>Programme accepted on</label><input type="date" data-k="project.programmeAcceptDate"></div>
+            <div class="f"><label>Acceptance letter reference</label><input data-k="project.programmeAcceptRef" placeholder="W20/CTR/031"></div>
+            <div class="f w"><label>Access to the Site (as given, and any shortfall)</label><textarea data-k="project.access" placeholder="Access was given within the Contract Data periods except for Sections 6 and 7, provided on 22 April 2025, some 50 days after the required date of 03 March 2025."></textarea></div>
+          </div></details>
+        </div>
+        <div class="nav"><span></span><button class="btn primary" data-go="1">Next: the event</button></div>
+      </section>
+
+      <section class="step" data-s="1">
+        <h2>What happened</h2>
+        <p class="lead">The event or events giving rise to the claim, in your own words. The builder maps them onto the clauses of the selected form and writes the Statement of Facts around the chronology.</p>
+        <div class="form">
+          <div class="f"><label>Cause of delay</label><select data-k="event.cause" id="causeSel"></select><div class="hint" id="causeHint"></div></div>
+          <div class="f"><label>Short name for the event</label><input data-k="event.title" placeholder="the delayed relocation instructions"></div>
+          <div class="f w"><label>Clauses relied on</label><div class="chips" id="clauseChips" style="display:flex;flex-wrap:wrap;gap:6px"></div><div class="hint">Pre-selected from the cause. Click to add or remove; each becomes a proposition in Section 5.</div></div>
+          <div class="f w"><label>The facts, as you would tell them to counsel</label><textarea data-k="event.facts" style="min-height:150px" placeholder="The Contract requires existing services to be relocated before pipelaying can begin (Employer's Requirements, Section 10.4(g)). Relocation depends on instructions from the Engineer under Sub-Clause 13.5. We asked for them from 01 April 2025, 48 days before the programme date for relocation. None came until late September 2025, and those were cancelled by the Employer on 13 October 2025…"></textarea></div>
+          <div class="f w"><label>The contractual procedure the Employer or Engineer had to follow (optional)</label><textarea data-k="event.procedure" placeholder="Section 10.4 of the Employer's Requirements: the Contractor identifies services, the Engineer nominates subcontractors and approves rates, the Engineer issues instructions under Sub-Clause 13.5…"></textarea></div>
+          <div class="f"><label>Parts of the Works affected</label><input data-k="event.sections" placeholder="Sections 3, 4, 5, 6 and 7"></div>
+          <div class="f"><label>Position as at the assessment date</label><input data-k="event.status" placeholder="five of seven sections remain without instructions"></div>
+        </div>
+        <div class="nav"><button class="btn" data-go="0">Back</button><button class="btn primary" data-go="2">Next: the chronology</button></div>
+      </section>
+
+      <section class="step" data-s="2" id="chronology">
+        <h2>The chronology</h2>
+        <p class="lead">Dated events with the letter that proves each one. Rows arrive from the evidence desk, or can be typed here. The Statement of Facts is written from this table and every row is cited with its annex.</p>
+        <div class="pull" id="pullEvidence" hidden><span id="pullText"></span><span class="sp"></span><a class="btn" href="evidence.html">Open the evidence desk</a></div>
+        <div class="form">
+          <div class="f"><label>Notice of Claim given on</label><input type="date" data-k="notice.date"></div>
+          <div class="f"><label>Notice letter reference</label><input data-k="notice.ref" placeholder="P2B/SOSA/ART-GCU/11-25/133"></div>
+          <div class="f"><label>The Contractor became aware of the event on</label><input type="date" data-k="notice.aware"><div class="hint">The Notice period runs from this date.</div></div>
+          <div class="f"><label>Earlier advance notices (references, comma-separated)</label><input data-k="notice.advance" placeholder="P2B/SOSA/ART-GCU/06-25/060, P2B/SOSA/ART-GCU/09-25/108"></div>
+        </div>
+        <div class="row" style="margin-top:16px;justify-content:space-between"><span class="kicker">Events</span><div class="row"><button class="btn" id="addChron">Add a row</button><button class="btn" id="sortChron">Sort by date</button></div></div>
+        <div class="tbl-wrap"><table class="wrap" id="chronTable"></table></div>
+        <div class="nav"><button class="btn" data-go="1">Back</button><button class="btn primary" data-go="3">Next: mitigation</button></div>
+      </section>
+
+      <section class="step" data-s="3">
+        <h2>What the Contractor did about it</h2>
+        <p class="lead">Sub-Clause 8.4(b) asks for reasonable steps, not the impossible. Tick the measures taken and add a line of detail where there is a letter or record to cite.</p>
+        <div id="mitList"></div>
+        <div class="nav"><button class="btn" data-go="2">Back</button><button class="btn primary" data-go="4">Next: the legal basis</button></div>
+      </section>
+
+      <section class="step" data-s="4">
+        <h2>The legal basis</h2>
+        <p class="lead">One proposition per clause relied on, drawn from the clause library and your facts. Add the Engineer's objections with the answer to each, and any authority you intend to cite.</p>
+        <div class="form one">
+          <div class="f"><label>Propositions (one per clause; edit the text freely)</label><div id="propList"></div></div>
+          <div class="f"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-k="legal.prevention" style="width:auto;accent-color:var(--teal)"> Rely on the prevention principle as a further basis</label></div>
+          <div class="f"><label>The Engineer's objections and the answers</label><div class="tbl-wrap"><table class="wrap" id="objTable"></table></div><div class="row" style="margin-top:6px"><button class="btn" id="addObj">Add an objection</button></div></div>
+          <div class="f"><label>Authorities</label><div class="tbl-wrap"><table class="wrap" id="authTable"></table></div><div class="row" style="margin-top:6px"><button class="btn" id="addAuth">Add an authority</button></div><div class="hint">Only cite what you have verified. A case entered here is reproduced exactly; nothing is invented.</div></div>
+        </div>
+        <div class="nav"><button class="btn" data-go="3">Back</button><button class="btn primary" data-go="5">Next: the delay analysis</button></div>
+      </section>
+
+      <section class="step" data-s="5">
+        <h2>The delay analysis</h2>
+        <p class="lead">The method, the baseline, the critical delay and the extension claimed. Figures from the delay check are offered when they are on this device.</p>
+        <div class="pull" id="pullDelay" hidden><span id="pullDelayText"></span><span class="sp"></span><button class="btn" id="useDelay">Use these figures</button></div>
+        <div class="form">
+          <div class="f"><label>Method of analysis</label><select data-k="delay.method" id="methodSel"></select><div class="hint" id="methodHint"></div></div>
+          <div class="f"><label>Baseline Programme (revision and acceptance)</label><input data-k="delay.baseline" placeholder="Revision B, accepted on 29 April 2025 by letter W20/CTR/031"></div>
+          <div class="f"><label>Delay event window, from</label><input type="date" data-k="delay.from"></div>
+          <div class="f"><label>to</label><input type="date" data-k="delay.to"></div>
+          <div class="f"><label>Cumulative critical delay (days)</label><input type="number" min="0" data-k="delay.critical"></div>
+          <div class="f"><label>Extension of Time claimed (days)</label><input type="number" min="0" data-k="delay.eot"><div class="auto" id="revisedAuto"></div></div>
+          <div class="f"><label>Float available on the affected path (days)</label><input type="number" min="0" data-k="delay.float"></div>
+          <div class="f"><label>Driving activity or section</label><input data-k="delay.driver" placeholder="Section 6 (Route S001, 7.6 km), for which no instructions have been issued"></div>
+          <div class="f"><label>Concurrent delay</label><select data-k="delay.concurrency"><option value="none">None: the Contractor's works were ready to proceed</option><option value="some">Some, but the Employer delay is dominant and separable</option><option value="true">True concurrency (EOT claimed, prolongation cost limited)</option></select></div>
+          <div class="f"><label>Number of impacted programmes or windows</label><input type="number" min="0" data-k="delay.windows" placeholder="8"></div>
+          <div class="f w"><label>Notes on the analysis (fragnets, windows, what the impacted programmes show)</label><textarea data-k="delay.notes" placeholder="Eight monthly impacted programmes incorporating 73 fragnet activities and 27 relocation activities across the seven sections…"></textarea></div>
+        </div>
+        <div class="nav"><button class="btn" data-go="4">Back</button><button class="btn primary" data-go="6">Next: the quantum</button></div>
+      </section>
+
+      <section class="step" data-s="6">
+        <h2>The quantum</h2>
+        <p class="lead">Four categories, as the house form has them. Enter each head of cost with its amount; the summaries, the overhead and profit and the figure in words are calculated.</p>
+        <div class="form">
+          <div class="f"><label>Currency of the claim</label><select data-k="quantum.currency"><option>EUR</option><option>USD</option><option>UGX</option><option>KES</option><option>TZS</option><option>RWF</option><option>GBP</option><option>ZAR</option></select></div>
+          <div class="f"><label>Costs assessed from</label><input type="date" data-k="quantum.from"></div>
+          <div class="f"><label>Overheads on direct cost (%)</label><input type="number" step="0.1" min="0" data-k="quantum.oh" placeholder="25"></div>
+          <div class="f"><label>Profit (%)</label><input type="number" step="0.1" min="0" data-k="quantum.profit" placeholder="5"></div>
+          <div class="f w"><label>Currency and exchange-rate note (optional)</label><input data-k="quantum.fx" placeholder="Local-currency costs converted at the Contract rate of UGX 4,120 per EUR"></div>
+        </div>
+        <div id="quantumCats"></div>
+        <div class="stats" id="qStats" style="margin-top:14px"></div>
+        <div class="nav"><button class="btn" data-go="5">Back</button><button class="btn primary" data-go="7">Next: review and export</button></div>
+      </section>
+
+      <section class="step" data-s="7">
+        <h2>Review and export</h2>
+        <p class="lead">The full document as it will read. Edit any section in place, run the style sweep, then export to Word in the house format.</p>
+        <div class="review">
+          <div class="paper" id="paper"></div>
+          <div>
+            <div class="panel" style="margin-bottom:12px"><span class="kicker">Export</span><div class="row" style="margin-top:10px"><button class="btn primary" id="exportDocx">Download Word (.docx)</button><button class="btn" id="exportJson">Save inputs (.json)</button></div><p class="note">Helvetica Neue 11 pt, 1.5 line spacing, decimal numbering linked to the headings, table of contents and page numbers. The table of contents lists the sections; open in Word and press F9 to add the page numbers.</p><label class="btn" style="display:inline-block;margin-top:6px">Load inputs (.json)<input type="file" id="importJson" accept=".json" style="display:none"></label></div>
+            <div class="panel" style="margin-bottom:12px"><span class="kicker">Sections</span><div class="sectlist" id="sectList" style="margin-top:10px"></div></div>
+            <div class="panel"><span class="kicker">Style sweep</span><ul class="sweep" id="sweep" style="padding-left:18px;margin:8px 0 0"></ul></div>
+          </div>
+        </div>
+        <div class="editor" id="editor" hidden><div class="row" style="justify-content:space-between"><b id="editTitle"></b><div class="row"><button class="btn" id="editClaude" hidden>Redraft with Claude</button><button class="btn" id="editReset">Use the generated text</button><button class="btn primary" id="editDone">Done</button></div></div><p class="note">One paragraph per block, separated by a blank line. Use *italics* for annex references and quotations, and **bold** for the figures that matter.</p><textarea id="editText"></textarea></div>
+        <div class="nav"><button class="btn" data-go="6">Back</button><span></span></div>
+      </section>
+    </main>
+  </div>
+</div>
+<!--__BUILDER_ENGINE__-->
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CiO Evidence Desk</title>
+<!--__FONTS__-->
+<!--__SHELL__-->
+<style>
+.wrap{max-width:1280px;margin:0 auto;padding:22px 22px 80px}
+.intro{display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.intro h1{font-size:30px;font-weight:300;line-height:1.1}
+.intro p{color:var(--ink-3);font-size:13.5px;max-width:60ch;margin-top:6px}
+.intro .ctl{margin-left:auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.intro .ctl label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--ink-3);min-width:0;max-width:100%}
+.intro .ctl select{width:100%;max-width:360px}
+.lay{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px}
+.lay>aside,.lay>main{min-width:0}
+@media (max-width:900px){.lay{grid-template-columns:1fr}}
+.drop{display:block;border:1.5px dashed var(--line-2);border-radius:14px;padding:26px 18px;text-align:center;color:var(--ink-2);cursor:pointer;transition:border-color .2s,background .2s}
+.drop.over,.drop:hover{border-color:var(--teal);background:var(--teal-soft)}
+.drop b{display:block;font-weight:500;color:var(--ink);font-size:14px}
+.drop span{display:block;font-size:12px;color:var(--ink-3);margin-top:4px}
+.drop input{display:none}
+.docs{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.doc{display:grid;grid-template-columns:1fr auto;gap:2px 8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 11px;cursor:pointer;font-size:12.5px}
+.doc:hover{border-color:var(--line-2)} .doc.on{border-color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal)}
+.doc .n{font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;grid-column:1/3}
+.doc .m{color:var(--ink-3);font-family:var(--mono);font-size:11px}
+.doc .p{justify-self:end}
+.doc .x{grid-column:2;grid-row:1;background:none;border:0;color:var(--ink-3);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
+.doc .x:hover{color:var(--crit)}
+.empty{color:var(--ink-3);font-size:13px;line-height:1.55;padding:18px 4px}
+.tabs{margin-bottom:12px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.toolbar .sp{flex:1}
+.chron td:first-child{white-space:nowrap;font-family:var(--mono)}
+.chron td.ev{white-space:normal;min-width:260px}
+.chron td.ev input{width:100%;text-align:left;font-family:var(--body);padding:4px 6px}
+.chron td select{padding:3px 6px;font-size:12px}
+.chron tr.mention td{color:var(--ink-3);background:var(--hover)}
+.chron tr.mention td:first-child{padding-left:22px}
+.tag{display:inline-block;padding:1px 7px;border-radius:999px;font-size:10.5px;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line-2);color:var(--ink-2)}
+.tag.A{color:var(--teal);border-color:color-mix(in srgb,var(--teal) 50%,transparent)} .tag.B{color:var(--accent);border-color:var(--accent-line)} .tag.C{color:var(--s5);border-color:color-mix(in srgb,var(--s5) 50%,transparent)}
+.reader{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
+@media (max-width:1000px){.reader{grid-template-columns:1fr}}
+.text{white-space:pre-wrap;font-size:13px;line-height:1.6;color:var(--ink-2);max-height:70vh;overflow:auto;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.text mark{background:var(--accent-fill);color:var(--ink);border-radius:2px;padding:0 1px}
+.text mark.ref{background:var(--teal-soft);box-shadow:inset 0 -1px 0 var(--teal)}
+.text mark.cl{background:transparent;box-shadow:inset 0 -1px 0 var(--accent);}
+.facts{display:flex;flex-direction:column;gap:10px}
+.facts .f{display:grid;grid-template-columns:96px 1fr;gap:8px;font-size:12.5px;align-items:start}
+.facts .f span:first-child{color:var(--ink-3)}
+.facts .f input,.facts .f select{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chips i{font-style:normal;font-family:var(--mono);font-size:11px;padding:1px 7px;border:1px solid var(--line-2);border-radius:999px;color:var(--ink-2)}
+.dl{display:grid;grid-template-columns:auto 1fr auto;gap:8px 14px;align-items:center;font-size:13px}
+.dl .d{font-family:var(--mono);white-space:nowrap}
+.dl .s{font-family:var(--mono);font-size:11px}
+.dl .s.past{color:var(--crit)} .dl .s.soon{color:var(--warn)} .dl .s.ok{color:var(--good)}
+.dl .w{color:var(--ink-2)} .dl .w small{display:block;color:var(--ink-3)}
+.claude{border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:12px;padding:14px 16px;margin-top:14px}
+.claude .out{white-space:pre-wrap;font-size:13px;color:var(--ink-2);line-height:1.55;margin-top:10px}
+.busy{display:inline-block;width:12px;height:12px;border:2px solid var(--line-2);border-top-color:var(--teal);border-radius:50%;animation:cio-spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+</style>
+</head>
+<body>
+<script>const DATA=/*__CIO_DATA__*/null;</script>
+<!--__VENDOR:pdfjs-->
+<!--__VENDOR:pdfworker-->
+<!--__VENDOR:mammoth-->
+<header class="top">
+  <div class="brand"><svg class="logo" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="100" stroke-dasharray="62 38"/><circle class="orbit" cx="12" cy="2.5" r="1.6" fill="var(--teal)"/><circle class="core" cx="12" cy="12" r="4" fill="var(--accent)"/></svg>CiO Lab<small>Evidence Desk</small></div>
+  <nav class="switch"></nav>
+  <div class="vint" id="vint"></div>
+  <div class="seg theme" id="theme" role="group" aria-label="Colour theme" style="margin-left:14px"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
+</header>
+
+<div class="wrap">
+  <div class="intro reveal">
+    <div><span class="kicker">The paper trail</span><h1 style="margin-top:6px">Review the correspondence</h1><p>Add the letters, instructions and minutes on the matter. Each is read on this device; the dates, references and clauses are pulled into a chronology and an evidence register, and the notice deadlines under your form are marked.</p></div>
+    <div class="ctl">
+      <label>Form of contract<select id="form"></select></label>
+      <label>Today<input type="date" id="today"></label>
+    </div>
+  </div>
+
+  <div class="lay">
+    <aside>
+      <label class="drop" id="drop"><b>Drop files here, or click to choose</b><span>PDF and Word (.docx). Scanned PDFs without a text layer are listed but cannot be read.</span><input type="file" id="file" multiple accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></label>
+      <div class="docs" id="docs"></div>
+      <p class="note" id="docCount"></p>
+      <div class="row" style="margin-top:8px"><button class="btn" id="clearAll">Remove all</button></div>
+    </aside>
+
+    <main>
+      <div class="tabs" id="tabs">
+        <button data-t="chron" class="on">Chronology</button>
+        <button data-t="register">Evidence register</button>
+        <button data-t="deadlines">Notices &amp; deadlines</button>
+        <button data-t="reader">Reader</button>
+      </div>
+
+      <section class="tab on" id="tab-chron">
+        <div class="toolbar"><label style="display:flex;gap:6px;align-items:center;font-size:12.5px"><input type="checkbox" id="showMentions"> Show dates mentioned inside the letters</label><span class="sp"></span><button class="btn" id="addRow">Add a row</button><button class="btn" id="csvChron">Download CSV</button><button class="btn primary" id="toBuilder">Send to the claim builder</button></div>
+        <div class="tbl-wrap"><table class="chron wrap" id="chronTable"></table></div>
+        <p class="note">One row per document, in date order. Edit the event text to read as it should in the Statement of Facts; the annex reference follows the party you assign in the register.</p>
+      </section>
+
+      <section class="tab" id="tab-register">
+        <div class="toolbar"><span class="note" style="margin:0">Appendix A holds the Contractor's correspondence, B the Engineer's, C the Employer's and D everything else. Numbers run in date order within each appendix.</span><span class="sp"></span><button class="btn" id="csvReg">Download CSV</button></div>
+        <div class="tbl-wrap"><table class="wrap" id="regTable"></table></div>
+      </section>
+
+      <section class="tab" id="tab-deadlines">
+        <div class="panel"><div class="panel-head"><h3 id="dlTitle">Time limits under the selected form</h3><span class="sub" id="dlSub"></span></div><div class="dl" id="dlList"></div><p class="note" id="dlNote"></p></div>
+      </section>
+
+      <section class="tab" id="tab-reader">
+        <div class="reader">
+          <div><div class="toolbar"><input type="search" id="find" placeholder="Find in this document" style="flex:1"><span class="pill" id="findCount"></span></div><div class="text" id="text"><span class="muted">Choose a document on the left.</span></div></div>
+          <div class="panel facts" id="facts"></div>
+        </div>
+        <div class="claude" id="claudeBox" hidden>
+          <div class="row" style="justify-content:space-between"><div><span class="kicker">Read with Claude</span><p class="note" style="margin-top:2px">Sends the text of this document for a structured reading: what it says, the position taken, the clauses invoked and anything a claim would need to answer.</p></div><button class="btn primary" id="askClaude">Analyse this document</button></div>
+          <div class="out" id="claudeOut"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const D=DATA, L=D.claims;
+const el=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MON3=MONTHS.map(m=>m.slice(0,3).toLowerCase());
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate());
+const parse=s=>{if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,d));};
+const addDays=(d,n)=>new Date(d.getTime()+n*864e5);
+const long=d=>d?pad(d.getUTCDate())+' '+MONTHS[d.getUTCMonth()]+' '+d.getUTCFullYear():'';
+const between=(a,b)=>Math.round((b-a)/864e5);
+const m=D.manifest||{};
+if(m.n_months)el('vint').textContent='panel v'+(m.panel_version||'')+' · claims library';
+
+// ---------- theme
+const root=document.documentElement, tb=el('theme');
+function applyTheme(v){if(v==='light'||v==='dark')root.setAttribute('data-theme',v);else root.removeAttribute('data-theme');tb.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));}
+let th='auto';try{th=localStorage.getItem('cio-theme')||'auto'}catch(e){}applyTheme(th);
+tb.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;applyTheme(b.dataset.v);try{localStorage.setItem('cio-theme',b.dataset.v)}catch(err){}});
+
+// ---------- state
+const S={form:'red2017',today:iso(new Date()),docs:[],sel:null,mentions:false,prefixParty:{}};
+try{const s=JSON.parse(localStorage.getItem('cio-evidence')||'null');if(s&&s.docs){Object.assign(S,s);}}catch(e){}
+function save(){try{localStorage.setItem('cio-evidence',JSON.stringify({form:S.form,today:S.today,docs:S.docs,prefixParty:S.prefixParty,mentions:S.mentions}))}catch(e){}}
+el('form').innerHTML=L.forms.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
+el('form').value=S.form; el('today').value=S.today; el('showMentions').checked=!!S.mentions;
+el('form').onchange=()=>{S.form=el('form').value;save();renderAll();};
+el('today').onchange=()=>{S.today=el('today').value;save();renderAll();};
+el('showMentions').onchange=()=>{S.mentions=el('showMentions').checked;save();renderChron();};
+const form=()=>L.forms.find(f=>f.id===S.form)||L.forms[0];
+
+// ---------- extraction
+const DATE_RE=new RegExp('\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\\.?,?\\s+(\\d{4})\\b|\\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?,?\\s+(\\d{4})\\b|\\b(\\d{1,2})[/.](\\d{1,2})[/.](\\d{4})\\b|\\b(\\d{4})-(\\d{2})-(\\d{2})\\b','gi');
+function toDate(mm){
+  let d,mo,y;
+  if(mm[1]){d=+mm[1];mo=MON3.indexOf(mm[2].slice(0,3).toLowerCase());y=+mm[3];}
+  else if(mm[4]){d=+mm[5];mo=MON3.indexOf(mm[4].slice(0,3).toLowerCase());y=+mm[6];}
+  else if(mm[7]){d=+mm[7];mo=+mm[8]-1;y=+mm[9];}
+  else{y=+mm[10];mo=+mm[11]-1;d=+mm[12];}
+  if(mo<0||mo>11||d<1||d>31||y<1990||y>2100)return null;
+  return iso(new Date(Date.UTC(y,mo,d)));
+}
+const REF_RE=/\b(?=[A-Z0-9/-]*[A-Z])(?=[A-Z0-9/-]*\d)[A-Z0-9]{1,8}(?:[/-][A-Z0-9]{1,10}){2,6}\b/g;
+const CLAUSE_RE=/\b(?:((?:Sub-)?Clauses?)\s+(\d{1,2}(?:\.\d{1,2}){0,2})|(Sections?)\s+(\d{1,2}\.\d{1,2}(?:\.\d{1,2})?))(?:\s*(?:\(([a-z])\)))?(?:\s*\[([^\]]{2,60})\])?/g;
+const TYPES=[
+  ['Notice of claim',/notice of (?:a )?claim|notice of (?:delay|dissatisfaction)|sub-clause 20\.[12]|clause 20\.[12]|entitle(?:d|ment) to (?:an )?extension|extension of (?:the )?time/i],
+  ['Instruction',/\binstruct(?:s|ed|ion|ions)\b|variation order|sub-clause 13\.[135]|clause 13\.[135]/i],
+  ['Programme',/\bprogramme\b|\bschedule of works|sub-clause 8\.3|clause 8\.3|revised programme/i],
+  ['Objection or rejection',/\breject(?:s|ed|ion)?\b|not accept|does not agree|disagree|misconceived|without foundation|\bobject(?:s|ion)\b/i],
+  ['Request for instruction',/request(?:s|ed)? (?:for |that )?(?:the )?(?:necessary |requisite )?(?:instruction|nomination|approval|clarification)|kindly (?:provide|issue|confirm)|awaits? (?:the )?(?:requisite )?instruction/i],
+  ['Minutes of meeting',/minutes of (?:the )?(?:progress |site |coordination )?meeting|\bin attendance\b|\bpresent:/i],
+  ['Payment',/interim payment|payment certificate|\bIPC\b|invoice|statement at completion/i],
+  ['Suspension',/\bsuspen(?:d|ded|sion)\b/i],
+  ['Site access',/possession of (?:the )?site|access to (?:the )?site|right of access|sub-clause 2\.1|clause 2\.1/i],
+  ['Determination',/\bdetermin(?:e|ed|ation)\b.*(?:sub-clause 3\.[57]|clause 3\.[57])|agreement or determination/i],
+];
+function classify(text){
+  const head=text.slice(0,2500);
+  for(const [name,re] of TYPES){if(re.test(head))return name;}
+  return 'Letter';
+}
+function subjectOf(text){
+  const mm=text.slice(0,4000).match(/(?:^|\n)\s*(?:RE|Re|Ref|SUBJECT|Subject)\s*[:.\-–]\s*([^\n]{6,220})/);
+  if(mm)return mm[1].trim();
+  const lines=text.slice(0,3000).split('\n').map(s=>s.trim()).filter(s=>s.length>14&&s.length<200&&/[A-Za-z]/.test(s));
+  const caps=lines.find(s=>s===s.toUpperCase()&&/[A-Z]{4}/.test(s)&&!/REPUBLIC|MINISTRY|LTD|LIMITED|P\.?O\.? BOX|TEL|EMAIL/.test(s));
+  return caps||'';
+}
+function addresseeParty(text){
+  const head=text.slice(0,1800);
+  const to=(head.match(/(?:^|\n)\s*(?:To|Attn|Attention|For the attention of)\s*[:.]?\s*([^\n]{3,120})/i)||[])[1]||'';
+  const dear=(head.match(/\bDear\s+([^\n,]{2,80})/i)||[])[1]||'';
+  const t=(to+' '+dear).toLowerCase();
+  if(/engineer|resident engineer|project manager|consultant|supervis/.test(t))return 'Engineer';
+  if(/employer|client|corporation|ministry|authority|managing director|permanent secretary/.test(t))return 'Employer';
+  if(/contractor|project director|site agent|construction manager/.test(t))return 'Contractor';
+  return '';
+}
+function senderGuess(text){
+  const a=addresseeParty(text);
+  const body=text.slice(0,3000);
+  if(a==='Engineer'||a==='Employer')return 'Contractor';
+  if(a==='Contractor'){return /\bthe Engineer\b.*\b(?:we|our)\b/i.test(body)?'Engineer':'Engineer';}
+  if(/\bwe (?:hereby )?(?:instruct|confirm that the programme|reject|do not accept)/i.test(body))return 'Engineer';
+  if(/\b(?:we|the contractor) (?:hereby )?(?:give(?:s)? notice|request|submit|notif)/i.test(body))return 'Contractor';
+  return '';
+}
+function extract(name,text,pages){
+  const head=text.slice(0,2500);
+  let date=null; const dm=head.match(/(?:Date|Dated)\s*[:.]?\s*([^\n]{6,40})/i);
+  if(dm){DATE_RE.lastIndex=0;const x=DATE_RE.exec(dm[1]);if(x)date=toDate(x);}
+  if(!date){DATE_RE.lastIndex=0;let x;while((x=DATE_RE.exec(head))){const d=toDate(x);if(d){date=d;break;}}}
+  const refs=[...new Set((head.match(REF_RE)||[]).filter(r=>!/^\d/.test(r)||/[A-Z]/.test(r)))].slice(0,6);
+  const ref=refs[0]||'';
+  const clauses=[];CLAUSE_RE.lastIndex=0;let c;const seen=new Set();
+  while((c=CLAUSE_RE.exec(text))){const key=(c[3]?'ER ':'')+(c[2]||c[4])+(c[5]?'('+c[5]+')':'');if(!seen.has(key)){seen.add(key);clauses.push({ref:key,title:c[6]||''});}if(clauses.length>40)break;}
+  const mentions=[];DATE_RE.lastIndex=0;let x;const mseen=new Set();
+  while((x=DATE_RE.exec(text))){const d=toDate(x);if(!d||d===date)continue;const key=d+':'+Math.floor(x.index/300);if(mseen.has(key))continue;mseen.add(key);
+    const s=Math.max(0,text.lastIndexOf('.',x.index)+1), e=text.indexOf('.',x.index+x[0].length);
+    mentions.push({date:d,snippet:text.slice(s,e>0?Math.min(e+1,x.index+x[0].length+220):x.index+x[0].length+160).replace(/\s+/g,' ').trim().slice(0,260)});
+    if(mentions.length>120)break;}
+  const party=senderGuess(text);
+  return {id:'d'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,pages,chars:text.length,text:text.slice(0,250000),
+    date:date||'',ref,refs,subject:subjectOf(text).slice(0,200),type:classify(text),party,clauses,mentions,event:'',scan:text.trim().length<40};
+}
+function prefixOf(ref){return ref?ref.split(/[\/-]/)[0]:'';}
+
+// ---------- readers
+async function readPdf(buf){
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise; let out='';
+  for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p);const tc=await page.getTextContent();let lastY=null,line='';
+    for(const it of tc.items){if(!('str' in it))continue;const y=Math.round(it.transform[5]);if(lastY!==null&&Math.abs(y-lastY)>2){out+=line.trimEnd()+'\n';line='';}line+=it.str+(it.hasEOL?'\n':' ');lastY=y;}
+    out+=line+'\n\n';}
+  return {text:out,pages:pdf.numPages};
+}
+async function readDocx(buf){const r=await mammoth.extractRawText({arrayBuffer:buf});return {text:r.value,pages:null};}
+async function ingest(files){
+  for(const f of files){
+    const buf=await f.arrayBuffer();let r;
+    try{r=/\.docx$/i.test(f.name)?await readDocx(buf):await readPdf(buf);}catch(e){r={text:'',pages:null,err:String(e)};}
+    const d=extract(f.name,r.text||'',r.pages);if(r.err)d.err=r.err;
+    const pre=prefixOf(d.ref);if(pre&&S.prefixParty[pre])d.party=S.prefixParty[pre];
+    S.docs.push(d);S.sel=d.id;
+  }
+  save();renderAll();
+}
+const drop=el('drop');
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>ingest([...e.dataTransfer.files].filter(f=>/\.(pdf|docx)$/i.test(f.name))));
+el('file').addEventListener('change',e=>{ingest([...e.target.files]);e.target.value='';});
+el('clearAll').onclick=()=>{if(!S.docs.length)return;S.docs=[];S.sel=null;save();renderAll();};
+
+// ---------- helpers on the set
+const APPX={Contractor:'A',Engineer:'B',Employer:'C'};
+function sorted(){return [...S.docs].sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||a.name.localeCompare(b.name));}
+function annexes(){const n={A:0,B:0,C:0,D:0};const out={};for(const d of sorted()){const k=APPX[d.party]||'D';n[k]++;out[d.id]=k+'-'+n[k];}return out;}
+function setParty(d,party){d.party=party;const pre=prefixOf(d.ref);if(pre){S.prefixParty[pre]=party;for(const o of S.docs){if(o!==d&&prefixOf(o.ref)===pre&&!o.partyLocked)o.party=party;}}d.partyLocked=true;save();renderAll();}
+function docById(id){return S.docs.find(d=>d.id===id);}
+function citation(d,ax){const who=d.party==='Contractor'?'refer to Annex ':'Refer to Annex ';return (d.ref?'letter '+d.ref+' ':'')+'('+who+ax+')';}
+
+// ---------- render
+function renderDocs(){
+  const ax=annexes();
+  el('docs').innerHTML=sorted().map(d=>`<div class="doc${d.id===S.sel?' on':''}" data-id="${d.id}"><span class="n" title="${esc(d.name)}">${esc(d.subject||d.name)}</span><button class="x" data-x="${d.id}" title="Remove">×</button><span class="m">${d.date?long(parse(d.date)):'<span style="color:var(--warn)">date?</span>'}${d.scan?' · <span style="color:var(--warn)">no text</span>':''}</span><span class="p tag ${ax[d.id][0]}">${ax[d.id]}</span></div>`).join('');
+  el('docCount').textContent=S.docs.length?S.docs.length+' document'+(S.docs.length>1?'s':'')+' · '+S.docs.filter(d=>d.scan).length+' without a text layer':'';
+  if(!S.docs.length)el('docs').innerHTML='<p class="empty">Nothing on file yet. A typical set is the Contractor’s letters and notices, the Engineer’s instructions and responses, the Employer’s letters, and the minutes of progress meetings.</p>';
+}
+el('docs').addEventListener('click',e=>{const x=e.target.closest('[data-x]');if(x){S.docs=S.docs.filter(d=>d.id!==x.dataset.x);if(S.sel===x.dataset.x)S.sel=null;save();renderAll();return;}
+  const d=e.target.closest('.doc');if(d){S.sel=d.dataset.id;save();renderDocs();renderReader();if(!el('tab-reader').classList.contains('on'))showTab('reader');}});
+
+function renderChron(){
+  const ax=annexes();const rows=[];
+  for(const d of sorted()){rows.push({d,kind:'doc'});if(S.mentions)for(const mn of d.mentions.slice(0,12))rows.push({d,kind:'m',mn});}
+  if(!rows.length){el('chronTable').innerHTML='<tbody><tr><td class="muted">The chronology appears here once documents are on file.</td></tr></tbody>';return;}
+  el('chronTable').innerHTML='<thead><tr><th>Date</th><th>Event</th><th>From</th><th>Type</th><th>Reference</th><th>Annex</th></tr></thead><tbody>'+rows.map(r=>{
+    if(r.kind==='m')return `<tr class="mention"><td>${long(parse(r.mn.date))}</td><td class="ev" colspan="5">${esc(r.mn.snippet)}<span class="muted"> · mentioned in ${esc(r.d.ref||r.d.name)}</span></td></tr>`;
+    const d=r.d;const ev=d.event||defaultEvent(d);
+    return `<tr><td><input type="date" value="${d.date}" data-f="date" data-id="${d.id}" style="width:135px;font-family:var(--mono)"></td><td class="ev"><input value="${esc(ev)}" data-f="event" data-id="${d.id}"></td><td><select data-f="party" data-id="${d.id}">${['Contractor','Engineer','Employer','Other'].map(p=>`<option${(d.party||'Other')===p?' selected':''}>${p}</option>`).join('')}</select></td><td><select data-f="type" data-id="${d.id}">${[...TYPES.map(t=>t[0]),'Letter'].map(p=>`<option${d.type===p?' selected':''}>${p}</option>`).join('')}</select></td><td><input value="${esc(d.ref)}" data-f="ref" data-id="${d.id}" style="width:170px;text-align:left"></td><td><span class="tag ${ax[d.id][0]}">${ax[d.id]}</span></td></tr>`;}).join('')+'</tbody>';
+}
+function defaultEvent(d){
+  const who=d.party||'';const verb={ 'Notice of claim':'gave notice of a claim','Instruction':'issued an instruction','Programme':'submitted the programme','Objection or rejection':'rejected the position put to it','Request for instruction':'requested instructions','Minutes of meeting':'recorded in the minutes of the meeting','Payment':'addressed payment','Suspension':'addressed suspension of the Works','Site access':'addressed access to and possession of the Site','Determination':'issued a determination'}[d.type]||'wrote';
+  return `${!who||who==='Other'?'The sender':'The '+who} ${verb}${d.subject?' concerning '+d.subject.replace(/^(re|subject)\s*[:.-]\s*/i,''):''}${d.ref?' through letter '+d.ref:''}.`;
+}
+el('chronTable').addEventListener('change',e=>{const t=e.target;if(!t.dataset.f)return;const d=docById(t.dataset.id);if(!d)return;
+  if(t.dataset.f==='party'){setParty(d,t.value==='Other'?'':t.value);return;}
+  d[t.dataset.f]=t.value;save();if(t.dataset.f==='date')renderAll();else{renderDocs();renderReg();}});
+el('addRow').onclick=()=>{const d={id:'m'+Date.now().toString(36),name:'Manual entry',pages:null,chars:0,text:'',date:S.today,ref:'',refs:[],subject:'',type:'Letter',party:'',clauses:[],mentions:[],event:'',scan:false,manual:true};S.docs.push(d);save();renderAll();};
+
+function renderReg(){
+  const ax=annexes();const ds=sorted();
+  if(!ds.length){el('regTable').innerHTML='<tbody><tr><td class="muted">The register appears here once documents are on file.</td></tr></tbody>';return;}
+  el('regTable').innerHTML='<thead><tr><th>Annex</th><th>Date</th><th>Reference</th><th>From</th><th>Subject</th><th>Clauses cited</th><th>File</th></tr></thead><tbody>'+ds.map(d=>`<tr><td><span class="tag ${ax[d.id][0]}">${ax[d.id]}</span></td><td class="num">${d.date?long(parse(d.date)):'—'}</td><td class="num">${esc(d.ref||'—')}</td><td>${esc(d.party||'—')}</td><td>${esc(d.subject||'—')}</td><td><div class="chips">${d.clauses.slice(0,8).map(c=>`<i>${esc(c.ref)}</i>`).join('')}${d.clauses.length>8?'<i>+'+(d.clauses.length-8)+'</i>':''}</div></td><td class="muted">${esc(d.name)}${d.pages?' · '+d.pages+' pp':''}</td></tr>`).join('')+'</tbody>';
+}
+
+function renderDeadlines(){
+  const f=form(), today=parse(S.today), items=[];
+  const is2017=f.family==='2017';
+  for(const d of sorted()){if(!d.date)continue;const D0=parse(d.date);
+    if(d.type==='Notice of claim'&&d.party==='Contractor'){
+      items.push({d:addDays(D0,f.detail_days),w:'Fully detailed claim due',s:`${f.detail_days} days from the Notice ${d.ref||''} · Sub-Clause ${f.claim}`});
+      if(is2017)items.push({d:addDays(D0,f.response_days),w:`${f.admin} may give Notice that the claim Notice was late`,s:`${f.response_days} days · Sub-Clause 20.2.2; silence deems the Notice valid`});
+      items.push({d:addDays(addDays(D0,f.detail_days),f.engineer_days),w:`${f.admin}'s ${is2017?'agreement or determination':'response'} due`,s:`${f.engineer_days} days from the fully detailed claim · Sub-Clause ${f.determination}`});
+      if(!is2017)items.push({d:addDays(D0,28),w:'Next monthly update if the effect continues',s:'interim claims at monthly intervals · Sub-Clause '+f.claim});
+    }
+    if(['Instruction','Objection or rejection','Suspension','Site access','Determination'].includes(d.type)&&d.party!=='Contractor'){
+      items.push({d:addDays(D0,f.notice_days),w:`Contractor's Notice of claim due (if the ${d.type.toLowerCase()} gives rise to one)`,s:`${f.notice_days} days from awareness of ${d.ref||d.name} · Sub-Clause ${f.claim}`});
+      if(d.type==='Determination')items.push({d:addDays(D0,f.nod_days),w:'Notice of dissatisfaction with the determination',s:`${f.nod_days} days · Sub-Clause ${is2017?'3.7.5':'20.4'}`});
+    }
+    if(d.type==='Programme'&&d.party==='Contractor')items.push({d:addDays(D0,21),w:`${f.admin}'s notice of non-compliance with the programme`,s:'21 days · Sub-Clause 8.3; silence lets the programme stand'});
+  }
+  items.sort((a,b)=>a.d-b.d);
+  el('dlSub').textContent=f.short+' · claims under Sub-Clause '+f.claim+' · '+f.admin;
+  el('dlList').innerHTML=items.length?items.map(it=>{const n=between(today,it.d);const cls=n<0?'past':n<=14?'soon':'ok';const st=n<0?(-n)+' days ago':n===0?'today':'in '+n+' days';
+    return `<span class="d">${long(it.d)}</span><span class="w">${esc(it.w)}<small>${esc(it.s)}</small></span><span class="s ${cls}">${st}</span>`;}).join(''):'<span class="muted">Deadlines are computed from Notices of claim, instructions, rejections and determinations once they are on file and assigned to a party.</span>';
+  el('dlNote').textContent=is2017?'The 2017 family bars a late Notice for both Parties unless the Engineer’s 14-day objection is not given; the fully detailed claim follows within 84 days; agreement or determination runs 42 + 42 days under Sub-Clause 3.7. Dates run from when the claiming Party became aware, or should have become aware, of the event, which may be earlier than the letter date used here.':'The 1999 family and the MDB editions time-bar the Contractor only; the fully detailed claim follows within 42 days and the Engineer responds within 42 days of receiving it. Dates run from when the Contractor became aware, or should have become aware, of the event, which may be earlier than the letter date used here.';
+}
+
+function renderReader(){
+  const d=docById(S.sel);const box=el('text'),F=el('facts');
+  if(!d){box.innerHTML='<span class="muted">Choose a document on the left.</span>';F.innerHTML='';el('claudeBox').hidden=true;return;}
+  let t=esc(d.text||'');
+  if(d.scan)t='<span style="color:var(--warn)">This file has no text layer. It is probably a scan; the register still lists it, and the date and reference can be typed in here.</span>';
+  else{t=t.replace(new RegExp(REF_RE.source,'g'),m=>`<mark class="ref">${m}</mark>`);
+    t=t.replace(new RegExp(CLAUSE_RE.source,'g'),m=>`<mark class="cl">${m}</mark>`);
+    t=t.replace(new RegExp(DATE_RE.source,'gi'),m=>`<mark>${m}</mark>`);
+    const q=el('find').value.trim();if(q){const re=new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');let n=0;t=t.replace(re,m=>{n++;return `<mark style="background:var(--s5);color:#fff">${m}</mark>`;});el('findCount').textContent=n+' found';}else el('findCount').textContent='';}
+  box.innerHTML=t;
+  F.innerHTML=`<span class="kicker">What was read</span>
+    <div class="f"><span>Date</span><input type="date" value="${d.date}" data-f="date"></div>
+    <div class="f"><span>Reference</span><input value="${esc(d.ref)}" data-f="ref"></div>
+    <div class="f"><span>From</span><select data-f="party">${['Contractor','Engineer','Employer','Other'].map(p=>`<option${(d.party||'Other')===p?' selected':''}>${p}</option>`).join('')}</select></div>
+    <div class="f"><span>Type</span><select data-f="type">${[...TYPES.map(t=>t[0]),'Letter'].map(p=>`<option${d.type===p?' selected':''}>${p}</option>`).join('')}</select></div>
+    <div class="f"><span>Subject</span><input value="${esc(d.subject)}" data-f="subject"></div>
+    <div class="f"><span>Clauses</span><div class="chips">${d.clauses.length?d.clauses.map(c=>`<i title="${esc(c.title)}">${esc(c.ref)}</i>`).join(''):'<span class="muted">none found</span>'}</div></div>
+    <div class="f"><span>Other refs</span><div class="chips">${d.refs.slice(1).map(r=>`<i>${esc(r)}</i>`).join('')||'<span class="muted">—</span>'}</div></div>
+    <div class="f"><span>Dates inside</span><span>${d.mentions.length} mentioned</span></div>
+    <div class="f"><span>File</span><span class="muted">${esc(d.name)}${d.pages?' · '+d.pages+' pages':''} · ${(d.chars/1000).toFixed(0)}k characters</span></div>
+    <p class="note">Highlights: <mark>dates</mark>, <mark class="ref">references</mark>, <mark class="cl">clauses</mark>. Corrections here update the chronology and the register.</p>`;
+  el('claudeBox').hidden=!window.__cioClaude;
+  el('claudeOut').textContent=d.claude||'';
+}
+el('facts').addEventListener('change',e=>{const t=e.target;const d=docById(S.sel);if(!d||!t.dataset.f)return;if(t.dataset.f==='party'){setParty(d,t.value==='Other'?'':t.value);return;}d[t.dataset.f]=t.value;save();renderAll();});
+el('find').addEventListener('input',renderReader);
+
+// ---------- exports
+function csv(rows){return rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n');}
+function download(name,text){const blob=new Blob([text],{type:'text/csv'});if(window.__cioSave){window.__cioSave(name,blob).catch(e=>alert('Could not save: '+(e&&e.message||e)));return;}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();}
+el('csvChron').onclick=()=>{const ax=annexes();download('chronology.csv',csv([['Date','Event','From','Type','Reference','Annex'],...sorted().map(d=>[d.date,d.event||defaultEvent(d),d.party,d.type,d.ref,ax[d.id]])]));};
+el('csvReg').onclick=()=>{const ax=annexes();download('evidence_register.csv',csv([['Annex','Date','Reference','From','Subject','Clauses','File'],...sorted().map(d=>[ax[d.id],d.date,d.ref,d.party,d.subject,d.clauses.map(c=>c.ref).join('; '),d.name])]));};
+el('toBuilder').onclick=()=>{const ax=annexes();let s={};try{s=JSON.parse(localStorage.getItem('cio-claim')||'{}')||{};}catch(e){}
+  s.chronology=sorted().map(d=>({date:d.date,event:d.event||defaultEvent(d),party:d.party,type:d.type,ref:d.ref,annex:ax[d.id],subject:d.subject,clauses:d.clauses.map(c=>c.ref)}));
+  s.register=sorted().map(d=>({annex:ax[d.id],date:d.date,ref:d.ref,party:d.party,subject:d.subject,file:d.name}));
+  s.project=s.project||{};if(!s.project.form)s.project.form=S.form;s.savedAt=Date.now();
+  try{localStorage.setItem('cio-claim',JSON.stringify(s));}catch(e){alert('Could not hand over: browser storage is full or unavailable.');return;}
+  location.href='builder.html#chronology';};
+
+// ---------- tabs
+function showTab(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+t));}
+el('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.t);});
+
+// ---------- Claude (hosted version only)
+window.__cioClaudeAnalyse=async function(d,fn){const out=el('claudeOut');out.innerHTML='<span class="busy"></span>Reading…';try{const r=await fn(d);d.claude=r;save();out.textContent=r;}catch(e){out.textContent='Could not analyse: '+(e&&e.message||e);}};
+el('askClaude').onclick=()=>{const d=docById(S.sel);if(d&&window.__cioClaude)window.__cioClaudeAnalyse(d,window.__cioClaude);};
+
+function renderAll(){renderDocs();renderChron();renderReg();renderDeadlines();renderReader();}
+renderAll();
+})();
+</script>
+</body>
+</html>

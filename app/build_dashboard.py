@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-build_dashboard.py — assemble the CiO Phase 0 Explorer and Projection Workbench.
+build_dashboard.py — assemble the CiO Lab pages: Home, Cost projection (Workbench),
+Delay & clauses (Claims Desk), Claim builder, Evidence desk and the Phase 0 Data explorer.
 
 Reads the pipeline's processed outputs (panel, audit trail, diagnostics and the
 paper starter results) and writes a single self-contained HTML page,
-app/index.html, that opens in any browser without a server.
+app/*.html, that open in any browser without a server.
 
 Standard library only, so it runs wherever the pipeline runs:
 
-    python3 app/build_dashboard.py            # writes app/index.html
+    python3 app/build_dashboard.py            # writes app/*.html
     python3 app/build_dashboard.py --json     # also writes app/dashboard_data.json
 
 Re-run after ./run_phase0.sh or any estimation script so the page reflects the
@@ -451,6 +452,7 @@ def build_payload() -> dict:
     manifest = read_json(PROCESSED / "panel_manifest.json", {})
     return {
         "claims": read_json(APP / "claims_library.json", {}),
+        "style": read_json(APP / "claim_style.json", {}),
         "forecast": load_forecast(panel),
         "generated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "manifest": manifest,
@@ -467,24 +469,74 @@ def build_payload() -> dict:
     }
 
 
-PAGES = {  # template -> output, both under app/
-    "template.html": "index.html",
-    "workbench_template.html": "workbench.html",
-    "claims_template.html": "claims.html",
+# template -> (output, data subset). "full" embeds the whole payload (the data
+# pages); "claims" embeds only the claims library and metadata so the claim
+# tools stay small and open instantly.
+PAGES = {
+    "home_template.html": ("index.html", "claims"),
+    "workbench_template.html": ("workbench.html", "full"),
+    "claims_template.html": ("claims.html", "claims"),
+    "builder_template.html": ("builder.html", "claims"),
+    "evidence_template.html": ("evidence.html", "claims"),
+    "explorer_template.html": ("explorer.html", "full"),
 }
 
+# One navigation for every page, marked active by output name.
+NAV = [
+    ("index.html", "Home"),
+    ("workbench.html", "Cost projection"),
+    ("claims.html", "Delay & clauses"),
+    ("builder.html", "Claim builder"),
+    ("evidence.html", "Evidence"),
+    ("explorer.html", "Data explorer"),
+]
+
+# Vendored libraries, inlined on demand: <!--__VENDOR:name--> in a template.
+VENDOR_LIBS = {
+    "echarts": ("echarts.min.js", "https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"),
+    "pdfjs": ("pdf.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"),
+    "pdfworker": ("pdf.worker.min.js", "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"),
+    "mammoth": ("mammoth.browser.min.js", "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"),
+    "jszip": ("jszip.min.js", "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"),
+}
 
 DEFAULT_FONT = "Inter"   # vendored faces: app/vendor/<name>.css (Inter, Montserrat)
+
+# Rules every page shares beyond its own stylesheet (the navigation must fit a phone).
+SHELL_EXTRA = ("<style>.top{gap:14px}.top nav{overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}"
+               ".top nav::-webkit-scrollbar{display:none}.top nav a{white-space:nowrap}"
+               ".top .brand{flex:none}.top .vint{flex:none}@media (max-width:1450px){.top .vint{display:none}}@media (max-width:760px){.top{flex-wrap:wrap;gap:8px 12px;padding:10px 16px}"
+               ".top .vint{display:none}.top nav{order:3;flex-basis:100%;margin-left:0}.top .theme{margin-left:auto!important}}"
+               ".tabs{overflow-x:auto;scrollbar-width:none}.tabs button{white-space:nowrap}select{max-width:100%}"
+               "@media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)!important}.intro .ctl{width:100%}}</style>")
+
+
+USE_CDN = False   # --cdn: reference libraries from cdnjs instead of inlining (smaller hosted copies)
+
+
+def vendor_tag(name: str) -> str:
+    fname, cdn = VENDOR_LIBS[name]
+    path = APP / "vendor" / fname
+    if path.exists() and not USE_CDN:
+        return "<script>" + path.read_text(encoding="utf-8") + "</script>"
+    return f'<script src="{cdn}"></script>'   # fall back to the CDN copy if the vendored file is absent
+
+
+def nav_html(active_out: str) -> str:
+    links = "".join(('<a class="on" href="%s">%s</a>' if out == active_out else '<a href="%s">%s</a>') % (out, label)
+                    for out, label in NAV)
+    return f'<nav class="switch">{links}</nav>'
+
+
+def subset(payload: dict, kind: str) -> dict:
+    if kind == "full":
+        return payload
+    return {k: payload[k] for k in ("claims", "style", "generated_utc", "manifest") if k in payload}
 
 
 def render(payload: dict, template_name: str, font: str = DEFAULT_FONT) -> str:
     template = (APP / template_name).read_text(encoding="utf-8")
-    vendor = APP / "vendor" / "echarts.min.js"
-    if vendor.exists():
-        lib = "<script>" + vendor.read_text(encoding="utf-8") + "</script>"
-    else:  # fall back to the CDN copy if the vendored file is absent
-        lib = ('<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/'
-               'echarts.min.js"></script>')
+    out_name, kind = PAGES[template_name]
     fonts = APP / "vendor" / f"{font.lower()}.css"
     if fonts.exists():  # typeface embedded as base64 @font-face so the pages need no font host
         font_tag = "<style>" + fonts.read_text(encoding="utf-8") + "</style>"
@@ -494,29 +546,45 @@ def render(payload: dict, template_name: str, font: str = DEFAULT_FONT) -> str:
     display = APP / "vendor" / "clash-grotesk.css"   # display face for headings and figures
     if display.exists():
         font_tag = "<style>" + display.read_text(encoding="utf-8") + "</style>" + font_tag
-    data = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
-    return (template.replace("<!--__ECHARTS__-->", lib)
-                    .replace("<!--__FONTS__-->", font_tag)
+    shell = APP / "shell.css"   # tokens, type, top bar, panels shared by the tool pages
+    shell_tag = "<style>" + shell.read_text(encoding="utf-8") + "</style>" if shell.exists() else ""
+    data = json.dumps(subset(payload, kind), separators=(",", ":")).replace("</", "<\\/")
+    html = (template.replace("<!--__ECHARTS__-->", vendor_tag("echarts"))
+                    .replace("<!--__FONTS__-->", font_tag + SHELL_EXTRA)
+                    .replace("<!--__SHELL__-->", shell_tag)
                     .replace("__FONT__", font)
                     .replace("/*__CIO_DATA__*/null", data))
+    html = re.sub(r"<!--__VENDOR:(\w+)-->", lambda m: vendor_tag(m.group(1)), html)
+    engine = APP / "builder_engine.js"   # the Claim builder's drafting engine and Word writer
+    if "<!--__BUILDER_ENGINE__-->" in html and engine.exists():
+        html = html.replace("<!--__BUILDER_ENGINE__-->",
+                            "<script>" + engine.read_text(encoding="utf-8").replace("</script", "<\\/script") + "</script>")
+    html = re.sub(r'<nav class="switch">.*?</nav>', nav_html(out_name), html, count=1, flags=re.S)
+    return html
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--json", action="store_true", help="also write app/dashboard_data.json")
     ap.add_argument("--font", default=DEFAULT_FONT, help="typeface to embed (Inter or Montserrat)")
+    ap.add_argument("--cdn", action="store_true", help="load ECharts, pdf.js, mammoth and JSZip from cdnjs instead of inlining")
+    ap.add_argument("--out", default=None, help="write the pages to this directory instead of app/")
     args = ap.parse_args()
+    global USE_CDN
+    USE_CDN = args.cdn
+    out_dir = Path(args.out) if args.out else APP
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     payload = build_payload()
     if args.json:
         (APP / "dashboard_data.json").write_text(json.dumps(payload, indent=1), encoding="utf-8")
     m = payload["manifest"]
-    for template_name, out_name in PAGES.items():
+    for template_name, (out_name, _kind) in PAGES.items():
         if not (APP / template_name).exists():
             continue
         html = render(payload, template_name, args.font)
-        (APP / out_name).write_text(html, encoding="utf-8")
-        print(f"wrote app/{out_name} ({len(html)/1e6:.2f} MB)")
+        (out_dir / out_name).write_text(html, encoding="utf-8")
+        print(f"wrote {out_dir.name}/{out_name} ({len(html)/1e6:.2f} MB)")
     print(f"panel v{m.get('panel_version')} — {m.get('n_months')} months × {m.get('n_series')} series; "
           f"forecast parameters for {len(payload['forecast']['series'])} series")
 

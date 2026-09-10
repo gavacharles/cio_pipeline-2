@@ -1,34 +1,60 @@
-# CiO dashboard pages
+# CiO Lab pages
 
-Three self-contained pages, generated from the pipeline's own artefacts. All follow
+Six self-contained pages, generated from the pipeline's own artefacts. All follow
 the viewer's light/dark setting and carry an Auto / Light / Dark switch, and share
-one product shell (top bar with the Explorer · Workbench · Claims Desk switcher). Open
-either in any browser — no server, no build tooling, no network needed (Inter is
-embedded in the page).
+one product shell (`shell.css` and the top bar with the Home · Cost projection ·
+Delay & clauses · Claim builder · Evidence · Data explorer switcher). Open any of
+them in any browser: no server, no build tooling, no network needed (Inter, Clash
+Grotesk and every library are embedded in the page).
 
-- `app/index.html` — **Phase 0 Explorer**: the presentation page. What was
+- `app/index.html` — **Home**: what would you like to work on? One card per task,
+  and a "continue the claim" strip when a claim is in progress on this device.
+- `app/workbench.html` — **Cost projection**: describe the project (type of works,
+  contract value, award month, duration, target margin) and read the verdict:
+  cost projection with a confidence band and contingency; works-programme
+  escalation by phase; a Dynamic Adjustment Mechanism simulator; procurement
+  windows. The basket and the model settings sit under "More options".
+- `app/claims.html` — **Delay & clauses**: delay and entitlement calculator
+  following the SCL Delay and Disruption Protocol (2nd ed., 2017); a notice
+  timeline for the selected FIDIC form; a clause explainer with cross-form
+  equivalents; the six delay-analysis methods with a fit test; the 22 Core
+  Principles. Its figures are offered to the claim builder.
+- `app/evidence.html` — **Evidence desk**: drop in letters, instructions and
+  minutes (PDF or Word). They are read in the browser with pdf.js and mammoth;
+  dates, letter references, clauses cited, subject and sender are pulled out into
+  a chronology and an evidence register (Appendix A for the Contractor, B for the
+  Engineer, C for the Employer, D for the rest, numbered in date order), with the
+  notice deadlines of the selected form marked. Scanned PDFs without a text layer
+  are listed but cannot be read. CSV export and a hand-off to the claim builder.
+- `app/builder.html` — **Claim builder**: eight steps (contract, event,
+  chronology, mitigation, legal basis, delay, quantum, review) drafted into the
+  house form of a FIDIC claim: executive summary, project and contract
+  particulars, statement of facts with the chronology, mitigation, contractual
+  and legal basis, delay analysis, quantum, conclusion and formal request, and
+  the appendix index. Every section can be edited in place; a style sweep flags
+  dashes, banned vocabulary and gaps left to fill. Export is a Word document in
+  Helvetica Neue 11 pt, 1.5 line spacing, decimal numbering linked to the
+  headings, table of contents, header and page numbers (`builder_engine.js`
+  writes the WordprocessingML directly; JSZip packs it). A worked example loads
+  the full Claim No. 1 set of inputs.
+- `app/explorer.html` — **Data explorer**: the presentation page. What was
   harvested, how the panel was built and audited, and the current results of the
   P3, P4, P6, P8 and P9 starter models.
-- `app/workbench.html` — **Projection Workbench**: the working tool. A user
-  describes a project (template or custom input basket, contract value, award
-  month, duration, spend profile) and gets, live in the browser:
-  cost projection with a confidence band and contingency; works-programme
-  escalation by phase; a Dynamic Adjustment Mechanism simulator (forecast paths
-  or historical replay); and procurement-window recommendations.
-- `app/claims.html` — **Claims Desk**: delay and entitlement calculator following
-  the SCL Delay and Disruption Protocol (2nd ed., 2017) — EOT net of float,
-  concurrency handled per Core Principles 10 and 14, prolongation cost, Emden and
-  Eichleay overhead formulae; a notice timeline for the selected FIDIC form
-  (28 / 84 / 42 + 42 days for the 2017 family, 28 / 42 / 42 for 1999 and the MDB
-  editions); a clause explainer with cross-form equivalents; the Protocol's six
-  delay-analysis methods with a fit test; and the 22 Core Principles.
 
-## Claims library
+Nothing typed or uploaded leaves the browser; state is kept in `localStorage`
+(`cio-claim`, `cio-evidence`, `cio-delay`, `cio-theme`). The hosted copies add
+"Redraft with Claude" (claim builder) and "Analyse this document" (evidence desk)
+through the artifact runtime; the repo pages work without them.
+
+## Claims library and house style
 
 `app/claims_library.json` holds the FIDIC form register, the causes of delay, the
 clause entries and the method table. Clause entries are written from the Red Book
 2017 General Conditions; other forms are clause mappings and are labelled
-"mapping only" on the page until their text is added. Edit the JSON and rebuild.
+"mapping only" on the page until their text is added. `app/claim_style.json`
+holds the house writing style the claim builder drafts in and sweeps against
+(voice, fixed formulae, banned punctuation, words and phrases). Edit either JSON
+and rebuild.
 
 ## How the Workbench forecasts
 
@@ -50,7 +76,8 @@ from that model into the payload; the page needs no change.
 ## Regenerating after a pipeline run
 
 ```bash
-python3 app/build_dashboard.py          # rewrites app/index.html and app/workbench.html
+python3 app/build_dashboard.py          # rewrites the six app/*.html pages
+python3 app/build_dashboard.py --cdn --out hosted   # smaller copies loading libraries from cdnjs
 python3 app/build_dashboard.py --font Montserrat   # same, set in Montserrat
 python3 app/build_dashboard.py --json   # also dumps app/dashboard_data.json for inspection
 ```
@@ -73,12 +100,20 @@ column appears.
 
 ## Files
 
-- `template.html` — Explorer markup, styles and chart code (ECharts).
-- `workbench_template.html` — Workbench markup, styles, simulation engine and tools.
-- `claims_template.html` — Claims Desk markup, styles and calculator; `claims_library.json` is its content.
-- `build_dashboard.py` — reads the artefacts, injects the data and the vendored
-  chart library, writes `index.html`.
-- `vendor/echarts.min.js` — Apache ECharts 5.4.3, inlined so the page works offline.
+- `home_template.html`, `explorer_template.html`, `workbench_template.html`,
+  `claims_template.html`, `evidence_template.html`, `builder_template.html` — one
+  template per page (markup, page-specific styles and script).
+- `shell.css` — the shared tokens, type, top bar, panels and tables.
+- `builder_engine.js` — the claim builder's form, drafting engine and Word writer,
+  inlined into `builder.html` at build time.
+- `claims_library.json`, `claim_style.json` — the content the claim tools draw on.
+- `build_dashboard.py` — reads the artefacts, injects the data, the shell and the
+  vendored libraries, rewrites the navigation, and writes the six pages.
+- `vendor/echarts.min.js` — Apache ECharts 5.4.3; `vendor/pdf.min.js` and
+  `vendor/pdf.worker.min.js` — pdf.js 3.11.174; `vendor/mammoth.browser.min.js` —
+  mammoth 1.6.0; `vendor/jszip.min.js` — JSZip 3.10.1. All inlined so the pages
+  work offline (`--cdn` loads them from cdnjs instead).
 - `vendor/inter.css`, `vendor/montserrat.css` — typefaces (SIL Open Font License, variable weight 400–800) as base64 `@font-face`, inlined so they render offline and inside sandboxed viewers. Inter is the default body face; `--font Montserrat` switches. `vendor/clash-grotesk.css` — Clash Grotesk 300/400/500 (Indian Type Foundry Free Font License, via Fontshare) is the display face for headings and figures.
-- `index.html`, `workbench.html`, `claims.html` — the generated pages. Commit them alongside
-  data changes so the repository always carries pages that match the current artefacts.
+- `index.html`, `workbench.html`, `claims.html`, `evidence.html`, `builder.html`,
+  `explorer.html` — the generated pages. Commit them alongside data changes so the
+  repository always carries pages that match the current artefacts.
