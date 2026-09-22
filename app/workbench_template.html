@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CiO Projection Workbench</title>
+<!--__FONTS__-->
+<style>
+:root{
+  color-scheme:dark;
+  --page:#0a0a0b; --surface:#121214; --surface-2:#1a1a1d; --surface-3:#232326; --line:#232326; --line-2:#333338;
+  --ink:#f5f5f2; --ink-2:#c9c9c4; --ink-3:#8b8b88;
+  --accent:#ffc21a; --accent-ink:#141108; --accent-soft:rgba(255,194,26,.10); --accent-line:rgba(255,194,26,.40); --accent-fill:rgba(255,194,26,.14);
+  --teal:#12a9ba; --teal-ink:#ffffff; --teal-soft:rgba(18,169,186,.14);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#4fae4f; --s7:#9085e9; --s8:#e66767;
+  --good:#3fb950; --warn:#fab219; --crit:#e05c5c;
+  --tip-bg:#141416; --tip-label:#2a2a2e; --hover:rgba(255,255,255,.025); --band:rgba(224,164,88,.16);
+  --display:"Clash Grotesk","__FONT__",system-ui,sans-serif; --body:"__FONT__",system-ui,sans-serif; --mono:"__FONT__",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  color-scheme:light;
+  --page:#f4f7fa; --surface:#ffffff; --surface-2:#eef2f6; --surface-3:#e3e9ef; --line:#e1e6ec; --line-2:#c9d1da;
+  --ink:#0e0f11; --ink-2:#44474c; --ink-3:#71757b;
+  --accent:#9a7200; --accent-ink:#ffffff; --accent-soft:rgba(255,194,26,.12); --accent-line:rgba(255,194,26,.7); --accent-fill:rgba(255,194,26,.22);
+  --teal:#029fb0; --teal-ink:#ffffff; --teal-soft:rgba(2,159,176,.12);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --good:#0a8a0a; --warn:#b07500; --crit:#c93636;
+  --tip-bg:#ffffff; --tip-label:#e6eaef; --hover:rgba(0,0,0,.03); --band:rgba(179,114,31,.18);
+}}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --page:#f4f7fa; --surface:#ffffff; --surface-2:#eef2f6; --surface-3:#e3e9ef; --line:#e1e6ec; --line-2:#c9d1da;
+  --ink:#0e0f11; --ink-2:#44474c; --ink-3:#71757b;
+  --accent:#9a7200; --accent-ink:#ffffff; --accent-soft:rgba(255,194,26,.12); --accent-line:rgba(255,194,26,.7); --accent-fill:rgba(255,194,26,.22);
+  --teal:#029fb0; --teal-ink:#ffffff; --teal-soft:rgba(2,159,176,.12);
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --good:#0a8a0a; --warn:#b07500; --crit:#c93636;
+  --tip-bg:#ffffff; --tip-label:#e6eaef; --hover:rgba(0,0,0,.03); --band:rgba(179,114,31,.18);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+h1,h2,h3,h4{font-family:var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:22px;font-weight:500}
+h2{font-size:20px;font-weight:400}
+h3{font-size:15px;font-weight:500}
+p{margin:0}
+.kicker{font-family:var(--body);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:500}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3)}
+button{font-family:inherit}
+input,select{font-family:var(--body);font-size:13px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line-2);border-radius:5px;padding:5px 8px;min-width:0}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{font-family:var(--mono);text-align:right;width:100%}
+input[type=range]{accent-color:var(--accent);width:100%;padding:0;background:transparent;border:0}
+label{color:var(--ink-2);font-size:12.5px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:22px;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5}
+.top .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:500;font-size:18px}
+/* animated mark: arc rotates, a teal node orbits, the core breathes */
+.logo{display:inline-block;overflow:visible}
+.logo .ring{transform-origin:12px 12px;animation:cio-spin 9s linear infinite}
+.logo .orbit{transform-origin:12px 12px;animation:cio-spin 4.5s linear infinite reverse}
+.logo .core{transform-origin:12px 12px;animation:cio-breathe 3.2s ease-in-out infinite}
+@keyframes cio-spin{to{transform:rotate(360deg)}}
+@keyframes cio-breathe{0%,100%{transform:scale(1)}50%{transform:scale(.82)}}
+.reveal{animation:cio-rise .55s cubic-bezier(.2,.7,.2,1) both}
+.reveal.d1{animation-delay:.08s}.reveal.d2{animation-delay:.16s}.reveal.d3{animation-delay:.24s}.reveal.d4{animation-delay:.32s}
+@keyframes cio-rise{from{transform:translateY(10px)}to{transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.logo .ring,.logo .orbit,.logo .core,.reveal{animation:none}}
+.tile,.panel{transition:border-color .25s,transform .25s}
+.tile:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.tile .v,.kpi .v{transition:opacity .25s}
+.tab.on{animation:cio-rise .35s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.tile:hover{transform:none}.tab.on{animation:none}}
+.top .brand small{font-family:var(--body);font-weight:400;color:var(--ink-3);font-size:12px;margin-left:6px}
+.top nav{display:flex;gap:4px;margin-left:8px}
+.top nav a{padding:6px 12px;border-radius:6px;color:var(--ink-2);font-size:13px}
+.top nav a{border-radius:999px}
+.top nav a.on{background:var(--surface-3);color:var(--ink)}
+.top .vint{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+
+/* KPI strip */
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.kpi{background:var(--surface);padding:12px 18px;display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:end;min-width:0}
+.kpi .l{grid-column:1/3;color:var(--ink-3);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v{font-family:var(--display);font-size:30px;font-weight:300;line-height:1.02;letter-spacing:0}
+.kpi .v small{font-size:12px;color:var(--ink-3);font-weight:400;margin-left:3px}
+.kpi .d{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.kpi .d.up{color:var(--crit)}.kpi .d.dn{color:var(--good)}
+.kpi .spark{grid-column:1/3;height:26px;width:100%}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
+
+/* workspace */
+.ws{display:grid;grid-template-columns:330px 1fr;gap:0;min-height:calc(100vh - 140px)}
+.side{border-right:1px solid var(--line);background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:53px;height:calc(100vh - 53px);overflow:auto}
+.main{padding:16px 20px 60px;min-width:0}
+@media (max-width:980px){.ws{grid-template-columns:1fr}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}}
+.fld{display:grid;grid-template-columns:1fr 130px;gap:6px 10px;align-items:center}
+.fld.full{grid-template-columns:1fr}
+.block{display:flex;flex-direction:column;gap:8px}
+.block .kicker{display:flex;justify-content:space-between;align-items:baseline}
+.block .kicker b{color:var(--ink-2);font-weight:400;font-family:var(--mono);letter-spacing:0;text-transform:none}
+.basket{display:grid;grid-template-columns:1fr 64px 26px;gap:4px 8px;align-items:center;font-size:12.5px}
+.basket .m{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.basket input{padding:3px 6px;font-size:12px}
+.basket .x{background:none;border:0;color:var(--ink-3);cursor:pointer;font-size:14px;padding:0;line-height:1}
+.basket .x:hover{color:var(--crit)}
+.sum{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);padding-top:4px;border-top:1px solid var(--line)}
+.sum.bad{color:var(--warn)}
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--line-2);border-radius:6px;padding:2px;gap:2px}
+.seg button{flex:1;background:transparent;border:0;color:var(--ink-2);padding:5px 6px;border-radius:4px;font-size:12px;cursor:pointer}
+.seg button.on{background:var(--teal-soft);color:var(--ink);box-shadow:inset 0 0 0 1px var(--teal)}
+.seg.theme button{flex:none;padding:4px 9px;font-size:11.5px}
+.btn{background:var(--surface-2);border:1px solid var(--line-2);color:var(--ink);padding:6px 10px;border-radius:6px;font-size:12.5px;cursor:pointer}
+.btn:hover{border-color:var(--ink-3)}
+.btn{border-radius:999px}
+.btn.primary{background:var(--teal);color:var(--teal-ink);border-color:var(--teal);font-weight:500}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tabs button{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--ink-3);padding:10px 14px;font-size:13.5px;cursor:pointer;margin-bottom:-1px}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button{font-weight:500}
+.tab{display:none}.tab.on{display:block}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.span2{grid-column:span 2}
+@media (max-width:1250px){.g4,.g5{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:820px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}.span2{grid-column:auto}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.tile .l{color:var(--ink-3);font-size:11.5px}
+.tile .v{font-family:var(--display);font-size:30px;font-weight:300;line-height:1.02;letter-spacing:0}
+.tile .v small{font-size:12px;color:var(--ink-3);font-weight:400;margin-left:3px}
+.tile .d{font-size:12px;color:var(--ink-2)}
+.tile.hi{border-color:var(--accent-line);background:linear-gradient(180deg,var(--accent-soft),var(--surface) 70%)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.panel-head .sub{color:var(--ink-3);font-size:12px}
+.chart{width:100%;height:300px}
+.chart.tall{height:380px}.chart.short{height:200px}
+.note{color:var(--ink-3);font-size:12px;line-height:1.5;margin-top:8px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:400;background:var(--surface)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+td input{width:70px;padding:3px 6px;font-size:12px}
+td input.wide{width:150px;text-align:left;font-family:var(--body)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:1px 8px;border-radius:999px;font-size:11px;font-family:var(--mono);border:1px solid var(--line-2);color:var(--ink-2)}
+.pill.good{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}.pill.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}.pill.crit{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 45%,transparent)}
+.pill.acc{color:var(--accent);border-color:var(--accent-line)}
+.bar{height:8px;background:var(--surface-3);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--s1)}
+.gauge{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.explain{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;font-size:12.5px;color:var(--ink-2)}
+.explain b{color:var(--ink);font-weight:600}
+@media (max-width:820px){.explain{grid-template-columns:1fr}}
+.warnbox{border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 6%,transparent);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<!--__ECHARTS__-->
+<script>const DATA=/*__CIO_DATA__*/null;</script>
+
+<header class="top">
+  <div class="brand"><svg class="logo" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle class="ring" cx="12" cy="12" r="9.5" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" pathLength="100" stroke-dasharray="62 38"/><circle class="orbit" cx="12" cy="2.5" r="1.6" fill="var(--teal)"/><circle class="core" cx="12" cy="12" r="4" fill="var(--accent)"/></svg>CiO Lab<small>Projection Workbench</small></div>
+  <nav><a href="index.html">Explorer</a><a class="on" href="workbench.html">Workbench</a></nav>
+  <div class="vint" id="vint"></div>
+  <div class="seg theme" id="theme" role="group" aria-label="Colour theme" style="margin-left:14px"><button data-v="auto">Auto</button><button data-v="light">Light</button><button data-v="dark">Dark</button></div>
+</header>
+<div class="kpis reveal" id="kpis"></div>
+
+<div class="ws">
+<aside class="side">
+  <div class="block">
+    <span class="kicker">Project</span>
+    <div class="fld"><label>Template</label><select id="tpl"><option value="road">Road</option><option value="building">Building</option><option value="water">Water scheme</option><option value="custom">Custom basket</option></select></div>
+    <div class="fld"><label>Contract value</label><div class="row" style="gap:4px"><input type="number" id="value" value="12" min="0.01" step="0.5" style="width:78px"><span class="muted" style="font-size:12px">UGX bn</span></div></div>
+    <div class="fld"><label>Award / start</label><input type="month" id="start" value="2026-10"></div>
+    <div class="fld"><label>Duration</label><div class="row" style="gap:4px"><input type="number" id="dur" value="18" min="3" max="60" step="1" style="width:78px"><span class="muted" style="font-size:12px">months</span></div></div>
+    <div class="fld"><label>Spend profile</label><select id="profile"><option value="programme">From programme</option><option value="even">Even</option><option value="front">Front-loaded</option><option value="back">Back-loaded</option></select></div>
+    <div class="fld"><label>Target margin</label><div class="row" style="gap:4px"><input type="number" id="margin" value="12" min="0" max="50" step="0.5" style="width:78px"><span class="muted" style="font-size:12px">%</span></div></div>
+  </div>
+
+  <div class="block">
+    <div class="kicker"><span>Input basket</span><b id="basketSum"></b></div>
+    <div class="basket" id="basket"></div>
+    <div class="row"><select id="addMat" style="flex:1"></select><button class="btn" id="addBtn">Add</button></div>
+    <div class="sum" id="sumLine"></div>
+  </div>
+
+  <div class="block">
+    <span class="kicker">Scenario</span>
+    <div class="seg" id="scen"><button data-v="base" class="on">Base</button><button data-v="fx">FX shock</button><button data-v="replay">2022 replay</button></div>
+    <div class="fld" id="fxRow"><label>Shilling depreciation, next 12 m</label><div class="row" style="gap:4px"><input type="number" id="fxPct" value="10" min="-30" max="60" step="1" style="width:78px"><span class="muted" style="font-size:12px">%</span></div></div>
+    <div class="fld"><label>Drift assumption</label><select id="drift"><option value="recent">Recent (24-month half-life)</option><option value="full">Full-sample average</option><option value="zero">No drift (volatility only)</option></select></div>
+    <div class="fld"><label>Confidence band</label><select id="band"><option value="80">P10 – P90</option><option value="50">P25 – P75</option><option value="90">P5 – P95</option></select></div>
+    <div class="fld"><label>Simulations</label><select id="nsim"><option value="300">300</option><option value="600" selected>600</option><option value="1500">1,500</option></select></div>
+  </div>
+  <p class="note">Forecasts are re-computed in this page from the parameters estimated in <code>build_dashboard.py</code>: exponentially-weighted drift and volatility of monthly log-returns, lag-1 persistence, calendar seasonality and exchange-rate pass-through per material, with a common market factor across materials. Every figure updates as you change an input.</p>
+</aside>
+
+<main class="main">
+  <div class="tabs" id="tabs">
+    <button data-t="cost" class="on">Cost projection</button>
+    <button data-t="prog">Works programme</button>
+    <button data-t="dam">DAM contract</button>
+    <button data-t="proc">Procurement windows</button>
+    <button data-t="method">Method</button>
+  </div>
+
+  <!-- COST -->
+  <section class="tab on" id="tab-cost">
+    <div class="grid g5" id="costTiles"></div>
+    <div style="height:12px"></div>
+    <div class="grid g2">
+      <div class="panel span2"><div class="panel-head"><h3>Basket cost index over the programme</h3><span class="sub" id="costSub"></span></div><div class="chart tall" id="costChart"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Monthly spend: at award prices vs projected</h3><span class="sub">UGX million</span></div><div class="chart" id="spendChart"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Where the escalation comes from</h3><span class="sub">contribution by material, median scenario</span></div><div class="chart" id="contribChart"></div></div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="panel"><div class="panel-head"><h3>Material detail</h3><span class="sub">forecast from the last published index month</span></div><div class="tbl-wrap"><table id="matTable"></table></div></div>
+  </section>
+
+  <!-- PROGRAMME -->
+  <section class="tab" id="tab-prog">
+    <div class="grid g4" id="progTiles"></div>
+    <div style="height:12px"></div>
+    <div class="panel"><div class="panel-head"><h3>Programme against the projected price path</h3><span class="sub">bars are phases; colour is the phase's own basket escalation at its mid-point</span></div><div class="chart tall" id="ganttChart"></div></div>
+    <div style="height:12px"></div>
+    <div class="panel"><div class="panel-head"><h3>Phases</h3><span class="sub">edit share, start and duration (percent of programme); baskets follow the template</span></div><div class="tbl-wrap"><table id="phaseTable"></table></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="addPhase">Add phase</button><button class="btn" id="resetPhases">Reset to template</button></div></div>
+  </section>
+
+  <!-- DAM -->
+  <section class="tab" id="tab-dam">
+    <div class="grid g3" style="grid-template-columns:300px 1fr 1fr">
+      <div class="panel"><div class="panel-head"><h3>Clause parameters</h3></div>
+        <div class="block">
+          <div class="fld"><label>Trigger (WMVI z-score)</label><input type="number" id="damZ" value="1.0" step="0.1" min="0" max="3"></div>
+          <div class="fld"><label>Cap per revision</label><div class="row" style="gap:4px"><input type="number" id="damCap" value="5" step="0.5" min="0" max="20" style="width:70px"><span class="muted">%</span></div></div>
+          <div class="fld"><label>Pass-through share</label><div class="row" style="gap:4px"><input type="number" id="damPass" value="80" step="5" min="0" max="100" style="width:70px"><span class="muted">%</span></div></div>
+          <div class="fld"><label>Review interval</label><div class="row" style="gap:4px"><input type="number" id="damEvery" value="1" step="1" min="1" max="6" style="width:70px"><span class="muted">months</span></div></div>
+          <div class="fld full"><label>Test against</label><div class="seg" id="damMode"><button data-v="forecast" class="on">Forecast paths</button><button data-v="history">Historical replay</button></div></div>
+          <div class="fld" id="damHistRow" style="display:none"><label>Replay start</label><input type="month" id="damHistStart" value="2022-03"></div>
+        </div>
+        <p class="note">The Weighted Macro-Volatility Index is the basket's rolling six-month volatility plus exchange-rate volatility scaled by the basket's pass-through, standardised against its own history. When it breaches the trigger the contract sum is revised towards realised cost, capped per revision, and the revision persists.</p>
+      </div>
+      <div class="grid g2 span2" id="damTiles" style="align-content:start"></div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="grid g2">
+      <div class="panel"><div class="panel-head"><h3>Contract sum vs realised cost</h3><span class="sub" id="damSub"></span></div><div class="chart" id="damChart"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Contractor margin through the programme</h3><span class="sub">fixed price vs DAM</span></div><div class="chart" id="marginChart"></div></div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="panel"><div class="panel-head"><h3>Final margin across simulations</h3><span class="sub">distribution of the end-of-contract margin, fixed price vs DAM</span></div><div class="chart short" id="damDist"></div></div>
+  </section>
+
+  <!-- PROCUREMENT -->
+  <section class="tab" id="tab-proc">
+    <div class="grid g4" style="grid-template-columns:300px 1fr 1fr 1fr">
+      <div class="panel"><div class="panel-head"><h3>Constraints</h3></div>
+        <div class="block">
+          <div class="fld"><label>Buy up to</label><div class="row" style="gap:4px"><input type="number" id="procEarly" value="6" min="0" max="18" step="1" style="width:70px"><span class="muted">months early</span></div></div>
+          <div class="fld"><label>Holding cost</label><div class="row" style="gap:4px"><input type="number" id="procHold" value="0.5" min="0" max="5" step="0.1" style="width:70px"><span class="muted">% / month</span></div></div>
+          <div class="fld"><label>Decide on</label><select id="procQ"><option value="50">median forecast</option><option value="80">P80 (cautious)</option></select></div>
+        </div>
+        <p class="note">Need month for each material is the value-weighted centre of the phases that use it. The finder compares buying at need against buying earlier, net of holding cost, along the chosen forecast path.</p>
+      </div>
+      <div class="grid g3 span2" id="procTiles" style="grid-column:span 3;align-content:start"></div>
+    </div>
+    <div style="height:12px"></div>
+    <div class="panel"><div class="panel-head"><h3>Recommended purchase windows</h3><span class="sub">index at need vs best window; savings on the material's share of the contract</span></div><div class="tbl-wrap"><table id="procTable"></table></div></div>
+    <div style="height:12px"></div>
+    <div class="grid g3" id="procSparks"></div>
+  </section>
+
+  <!-- METHOD -->
+  <section class="tab" id="tab-method">
+    <div class="panel"><div class="panel-head"><h3>How the projections are made</h3><span class="sub">transparent by design; every parameter is in the page</span></div>
+      <div class="explain">
+        <div><b>Data.</b> UBOS Construction Input Price Index material series, spliced across rebasings (panel v1.0), monthly to <span id="mLast"></span>. Months between then and the project start are themselves forecast.</div>
+        <div><b>Per-material model.</b> Monthly log-return = drift + calendar-month seasonal + pass-through × shilling return + shock, where the shock has lag-1 persistence φ and volatility σ. Drift and σ are exponentially weighted (24-month half-life) so recent behaviour counts more; the full-sample alternative is selectable.</div>
+        <div><b>Joint simulation.</b> Materials share a common market factor (loading from the average pairwise return correlation, <span id="mCorr"></span>), so basket risk is not understated by treating materials as independent. Percentiles are taken across simulated paths of the basket, not per material.</div>
+        <div><b>Scenarios.</b> <em>Base</em>: drift and volatility only. <em>FX shock</em>: an additional depreciation of the shilling spread over the next twelve months, passed through with each material's estimated elasticity. <em>2022 replay</em>: each material's actual monthly returns from March 2022 to March 2023 are replayed from the project's first month, with noise on top.</div>
+        <div><b>Escalation.</b> Contract value is spread over the programme by the spend profile; each month's spend is scaled by the basket index relative to the award month. Escalation is the sum of those differences. Contingency is the escalation at the upper band.</div>
+        <div><b>Limitations.</b> Bitumen and fuel are not yet in the panel (diesel stands in for both); labour is UBOS's published series. The model is statistical, not structural — it does not know about policy or supply events that have not appeared in the index yet. Charles's GRU/LSTM forecaster (paper P9) can replace the per-material model by writing the same parameter file.</div>
+      </div>
+      <div style="height:14px"></div>
+      <div class="tbl-wrap"><table id="paramTable"></table></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script>
+(function(){
+'use strict';
+const D=DATA, F=D.forecast, P=D.panel;
+const tok=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+let SER,INK,LINE,LINE2,ACC,GOOD,CRIT,WARN,FONT,MONO,base;
+function readTokens(){
+  SER=[tok('--s1'),tok('--s2'),tok('--s3'),tok('--s4'),tok('--s5'),tok('--s6'),tok('--s7'),tok('--s8')];
+  INK={1:tok('--ink'),2:tok('--ink-2'),3:tok('--ink-3')}; LINE=tok('--line'); LINE2=tok('--line-2'); ACC=tok('--accent'); GOOD=tok('--good'); CRIT=tok('--crit'); WARN=tok('--warn');
+  FONT=tok('--body').replace(/"/g,''); MONO=tok('--mono').replace(/"/g,'');
+  base={textStyle:{fontFamily:FONT,color:INK[2]},animationDuration:300,
+    grid:{left:8,right:16,top:32,bottom:8,containLabel:true},
+    tooltip:{trigger:'axis',backgroundColor:tok('--tip-bg'),borderColor:LINE2,borderWidth:1,textStyle:{color:INK[1],fontSize:12,fontFamily:FONT},axisPointer:{type:'line',lineStyle:{color:LINE2},label:{backgroundColor:tok('--tip-label'),color:INK[1],fontFamily:MONO,fontSize:11}}},
+    legend:{top:0,left:0,icon:'roundRect',itemWidth:10,itemHeight:10,itemGap:14,textStyle:{color:INK[2],fontSize:12}}};
+}
+readTokens();
+const el=id=>document.getElementById(id);
+const h=(t,c,html)=>{const e=document.createElement(t);if(c)e.className=c;if(html!=null)e.innerHTML=html;return e;};
+const fmt=(v,d=1)=>v==null||isNaN(v)?'—':Number(v).toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(v,d=1,sign=false)=>v==null||isNaN(v)?'—':(sign&&v>0?'+':'')+(v*100).toFixed(d)+'%';
+const ugx=v=>{ if(v==null||isNaN(v)) return '—'; const a=Math.abs(v); const s=v<0?'−':''; if(a>=1e9) return s+'UGX '+fmt(a/1e9,2)+' bn'; if(a>=1e7) return s+'UGX '+fmt(a/1e6,0)+' m'; if(a>=1e5) return s+'UGX '+fmt(a/1e6,1)+' m'; return s+'UGX '+fmt(a,0); };
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ymLabel=ym=>{const [y,m]=ym.split('-');return MON[+m-1]+' '+y;};
+const addMonths=(ym,k)=>{let [y,m]=ym.split('-').map(Number); m+=k; y+=Math.floor((m-1)/12); m=((m-1)%12+12)%12+1; return y+'-'+String(m).padStart(2,'0');};
+const monthsBetween=(a,b)=>{const [ya,ma]=a.split('-').map(Number),[yb,mb]=b.split('-').map(Number);return (yb-ya)*12+(mb-ma);};
+const charts={}; function mk(id){ if(charts[id]) return charts[id]; const c=echarts.init(el(id)); charts[id]=c; return c; }
+function disposeCharts(){ Object.values(charts).forEach(c=>c.dispose()); for(const k in charts) delete charts[k]; }
+const axX=e=>Object.assign({type:'category',boundaryGap:false,axisLine:{lineStyle:{color:LINE2}},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,hideOverlap:true}},e||{});
+const axY=e=>Object.assign({type:'value',scale:true,splitLine:{lineStyle:{color:LINE}},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11}},e||{});
+
+/* ---------------- materials available to the workbench ---------------- */
+const covOK=new Set(D.coverage.filter(c=>c.pct_missing<50).map(c=>c.code));
+const MATS=P.groups.materials.filter(m=>F.series[m]&&covOK.has(m));
+const LBL=P.labels;
+const FS=F.series;
+const LAST=FS.CIPI_ALL.last_date;                 // last published month
+const F0=addMonths(LAST,1);                        // first forecast month
+const colourOf=new Proxy({}, {get:(_,m)=>SER[MATS.indexOf(m)%8]});
+
+/* ---------------- templates ---------------- */
+const TPL={
+  road:{name:'Road',basket:{AGG:40,DIESEL:30,CEM:10,LABOUR:20},
+    phases:[['Mobilisation & site establishment',5,0,10,{LABOUR:60,DIESEL:40}],['Earthworks & formation',25,5,35,{AGG:50,DIESEL:30,LABOUR:20}],['Drainage & structures',20,30,35,{CEM:35,STEEL:25,AGG:15,LABOUR:25}],['Pavement layers & surfacing',40,55,40,{AGG:35,DIESEL:35,CEM:10,LABOUR:20}],['Finishing, signage & handover',10,90,10,{PAINT:30,STEEL:20,LABOUR:50}]]},
+  building:{name:'Building',basket:{CEM:25,STEEL:20,SAND:10,TIMBER:10,PAINT:5,LABOUR:30},
+    phases:[['Substructure',15,0,25,{CEM:35,STEEL:25,SAND:15,AGG:10,LABOUR:15}],['Superstructure',35,20,40,{CEM:30,STEEL:30,SAND:10,TIMBER:10,LABOUR:20}],['Envelope & roofing',20,50,25,{BRICK:30,STEEL:20,TIMBER:15,LABOUR:35}],['Services',15,65,25,{PIPES:40,STEEL:20,LABOUR:40}],['Finishes',15,80,20,{PAINT:30,TILES:30,TIMBER:10,LABOUR:30}]]},
+  water:{name:'Water scheme',basket:{CEM:20,STEEL:25,PIPES:25,DIESEL:10,LABOUR:20},
+    phases:[['Intake & civil works',25,0,35,{CEM:35,STEEL:25,AGG:15,LABOUR:25}],['Pipeline',45,25,55,{PIPES:50,DIESEL:15,LABOUR:35}],['Treatment & reservoirs',20,50,40,{CEM:30,STEEL:30,PIPES:15,LABOUR:25}],['Commissioning',10,85,15,{LABOUR:70,PIPES:30}]]},
+  custom:{name:'Custom',basket:{CEM:30,STEEL:20,SAND:10,AGG:10,DIESEL:10,LABOUR:20},phases:[['Phase 1',30,0,35,null],['Phase 2',40,30,45,null],['Phase 3',30,70,30,null]]},
+};
+const S={tpl:'road',basket:{},phases:[],scen:'base',damMode:'forecast',tab:'cost'};
+function loadTemplate(k){ S.tpl=k; S.basket={}; for(const [m,v] of Object.entries(TPL[k].basket)) if(MATS.includes(m)) S.basket[m]=v; S.phases=TPL[k].phases.map(p=>({name:p[0],share:p[1],start:p[2],dur:p[3],basket:p[4]?Object.assign({},p[4]):null})); }
+loadTemplate('road');
+
+/* ---------------- RNG ---------------- */
+function rng(seed){ let a=seed>>>0; return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function normals(r){ // Box-Muller pair
+  let u=0,v=0; while(u===0)u=r(); v=r(); const m=Math.sqrt(-2*Math.log(u)); return [m*Math.cos(2*Math.PI*v), m*Math.sin(2*Math.PI*v)]; }
+
+/* ---------------- simulation engine ---------------- */
+let simCache={key:null,paths:null};
+function allMats(){ const set=new Set(Object.keys(S.basket)); S.phases.forEach(p=>{ if(p.basket) Object.keys(p.basket).forEach(m=>set.add(m)); }); return [...set].filter(m=>FS[m]&&MATS.includes(m)); }
+function inputs(){
+  return {value:+el('value').value*1e9, start:el('start').value||'2026-10', dur:Math.max(3,Math.min(60,+el('dur').value||18)),
+    profile:el('profile').value, margin:(+el('margin').value||0)/100, scen:S.scen, fxPct:(+el('fxPct').value||0)/100, drift:el('drift').value, band:+el('band').value, nsim:+el('nsim').value};
+}
+function horizonFor(inp){ // months from F0 to end of programme (+ buffer for procurement look-ahead)
+  const off=monthsBetween(F0,inp.start); return Math.max(1,off+inp.dur+2); }
+function simulate(inp){
+  const mats=allMats();
+  const H=horizonFor(inp); const N=inp.nsim;
+  const key=JSON.stringify([mats,H,N,inp.scen,inp.fxPct,inp.drift]);
+  if(simCache.key===key) return simCache.paths;
+  const rho=Math.sqrt(F.common_corr||0), rhoC=Math.sqrt(1-rho*rho);
+  const fxMonthly=Math.log(1+inp.fxPct)/12;
+  const paths={}; mats.forEach(m=>paths[m]=new Array(N));
+  const r=rng(20260903);
+  const par={}; mats.forEach(m=>{const s=FS[m]; par[m]={mu:inp.drift==='recent'?s.mu:inp.drift==='full'?s.mu_full:0, sig:inp.drift==='full'?s.sigma_full:s.sigma, phi:s.phi, seas:s.seasonal, beta:s.fx_beta||0, shock:s.shock_2022||[]};});
+  const m0=+F0.split('-')[1]-1;
+  for(let n=0;n<N;n++){
+    const e={}; mats.forEach(m=>e[m]=0);
+    const cum={}; mats.forEach(m=>cum[m]=0);
+    const out={}; mats.forEach(m=>out[m]=new Float64Array(H+1)); // index 0 = last published (ratio 1)
+    for(let t=1;t<=H;t++){
+      const [zc,]=normals(r);
+      const cal=(m0+t-1)%12;
+      for(const m of mats){
+        const p=par[m]; const [zi,]=normals(r); const z=rho*zc+rhoC*zi;
+        e[m]=p.phi*e[m]+p.sig*Math.sqrt(1-p.phi*p.phi)*z;
+        let ret=p.mu+p.seas[cal]+e[m];
+        if(inp.scen==='fx' && t<=12) ret+=p.beta*fxMonthly;
+        if(inp.scen==='replay'){ const off=monthsBetween(F0,inp.start); const k=t-off-1; if(k>=0&&k<p.shock.length) ret=p.shock[k]+e[m]*0.5; }
+        cum[m]+=ret; out[m][t]=Math.exp(cum[m]);
+      }
+    }
+    mats.forEach(m=>{ out[m][0]=1; paths[m][n]=out[m]; });
+  }
+  simCache={key,paths}; return paths;
+}
+function quantile(arr,q){ const a=Float64Array.from(arr).sort(); const i=(a.length-1)*q; const lo=Math.floor(i),hi=Math.ceil(i); return a[lo]+(a[hi]-a[lo])*(i-lo); }
+function weightsNorm(b){ const mats=Object.keys(b).filter(m=>FS[m]&&b[m]>0); const tot=mats.reduce((s,m)=>s+b[m],0); const w={}; mats.forEach(m=>w[m]=b[m]/tot); return w; }
+// basket ratio path per sim relative to award month: returns array[N] of Float64Array(dur+1) index t=0..dur
+function basketPaths(paths,w,inp){
+  const mats=Object.keys(w); const off=monthsBetween(F0,inp.start); const N=paths[mats[0]].length; const out=new Array(N);
+  for(let n=0;n<N;n++){ const a=new Float64Array(inp.dur+1);
+    for(let t=0;t<=inp.dur;t++){ let s=0; for(const m of mats){ const p=paths[m][n]; const i0=off, i1=off+t; s+=w[m]*(i1>=0?p[i1]:1)/(i0>=0?p[i0]:1);} a[t]=s; }
+    out[n]=a; }
+  return out;
+}
+function spendProfile(inp){
+  const T=inp.dur; const s=new Float64Array(T);
+  if(inp.profile==='programme' && S.phases.length){
+    for(const ph of S.phases){ const a=Math.round(ph.start/100*T), d=Math.max(1,Math.round(ph.dur/100*T)); for(let t=a;t<Math.min(T,a+d);t++) s[t]+=ph.share/100/d; }
+    const tot=s.reduce((x,y)=>x+y,0); if(tot>0){ for(let t=0;t<T;t++) s[t]/=tot; return s; }
+  }
+  const k=inp.profile==='front'?0.7:inp.profile==='back'?1.6:1.0; // beta-ish S-curve exponents
+  for(let t=0;t<T;t++){ const x=(t+0.5)/T; s[t]=Math.pow(x,k-1)*Math.pow(1-x,inp.profile==='front'?1.6-1:inp.profile==='back'?0.7-1:0)+ (inp.profile==='even'?1:0); }
+  if(inp.profile==='even'){ s.fill(1/T); return s; }
+  const tot=s.reduce((x,y)=>x+y,0); for(let t=0;t<T;t++) s[t]/=tot; return s;
+}
+const qs=b=>({lo:(1-b/100)/2, hi:1-(1-b/100)/2});
+
+/* ---------------- KPI strip ---------------- */
+function kpis(){ el('kpis').innerHTML='';
+  const c=FS.CIPI_ALL, ml=F.macro_latest;
+  const hist=P.series.CIPI_ALL.slice(-36);
+  // 12-month-ahead headline from its own parameters (deterministic drift + seasonal, analytic band)
+  const m0=+F0.split('-')[1]-1; let cum=0, v=0; for(let t=1;t<=12;t++){ cum+=c.mu+c.seasonal[(m0+t-1)%12]; }
+  const sd=c.sigma*Math.sqrt(12*(1+c.phi)/(1-c.phi));
+  const items=[
+    {l:`CIPI headline · ${ymLabel(c.last_date)}`,v:fmt(c.last,1),d:pct(c.change_12m,1,true)+' y/y',cls:c.change_12m>0?'up':'dn',spark:hist},
+    {l:`Projected headline · ${ymLabel(addMonths(LAST,12))}`,v:fmt(c.last*Math.exp(cum),1),d:`P10 ${fmt(c.last*Math.exp(cum-1.2816*sd),0)} – P90 ${fmt(c.last*Math.exp(cum+1.2816*sd),0)}`},
+    {l:'UGX per USD',v:fmt(ml.exchange_rate?.value,0),d:pct(ml.exchange_rate?.change_12m,1,true)+' y/y',cls:ml.exchange_rate?.change_12m>0?'up':'dn'},
+    {l:'Central bank rate',v:fmt(ml.central_bank_rate?.value,2)+'<small>%</small>',d:(ml.central_bank_rate?.delta_12m>=0?'+':'')+fmt(ml.central_bank_rate?.delta_12m,2)+' pp y/y'},
+    {l:'Consumer inflation',v:pct(ml.cpi?.change_12m,1),d:'CPI '+fmt(ml.cpi?.value,1)},
+    {l:'Most systemic input (P4)',v:'Cement',d:'net spillover '+fmt(D.papers.p4.simi[0]?.net,0)+'%'},
+  ];
+  const wrap=el('kpis');
+  items.forEach((it,i)=>{ const k=h('div','kpi'); k.innerHTML=`<div class="l">${it.l}</div><div class="v">${it.v}</div><div class="d ${it.cls||''}">${it.d}</div>${it.spark?'<div class="spark" id="spark'+i+'"></div>':''}`; wrap.append(k);
+    if(it.spark){ setTimeout(()=>{ const ch=echarts.init(el('spark'+i)); ch.setOption({animation:false,grid:{left:0,right:0,top:2,bottom:0},xAxis:{type:'category',show:false,data:it.spark.map((_,j)=>j)},yAxis:{type:'value',show:false,scale:true},series:[{type:'line',data:it.spark,showSymbol:false,lineStyle:{width:1.5,color:SER[0]},areaStyle:{opacity:.15,color:SER[0]}}]}); },0); }
+  });
+  el('vint').textContent=`panel v${D.manifest.panel_version} · data to ${ymLabel(LAST)} · page ${D.generated_utc.slice(0,10)}`;
+  el('mLast').textContent=ymLabel(LAST); el('mCorr').textContent='ρ = '+fmt(F.common_corr,2);
+}
+
+/* ---------------- sidebar: basket editor ---------------- */
+function renderBasket(){
+  const wrap=el('basket'); wrap.innerHTML='';
+  const mats=Object.keys(S.basket);
+  for(const m of mats){
+    wrap.append(h('div','m',`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${colourOf[m]};margin-right:6px"></span>${LBL[m]}`));
+    const inp=h('input'); inp.type='number'; inp.min=0; inp.max=100; inp.step=1; inp.value=S.basket[m]; inp.addEventListener('input',()=>{S.basket[m]=+inp.value||0; sumLine(); recompute();}); wrap.append(inp);
+    const x=h('button','x','×'); x.title='Remove'; x.addEventListener('click',()=>{delete S.basket[m]; renderBasket(); recompute();}); wrap.append(x);
+  }
+  const sel=el('addMat'); sel.innerHTML=''; MATS.filter(m=>!(m in S.basket)).forEach(m=>{const o=h('option');o.value=m;o.textContent=LBL[m];sel.append(o);});
+  sumLine();
+}
+function sumLine(){ const tot=Object.values(S.basket).reduce((a,b)=>a+(+b||0),0); const bad=Math.abs(tot-100)>0.5; el('sumLine').className='sum'+(bad?' bad':''); el('sumLine').innerHTML=`<span>total weight</span><span>${fmt(tot,0)}%${bad?' · normalised to 100':''}</span>`; el('basketSum').textContent=Object.keys(S.basket).length+' inputs'; }
+el('addBtn').addEventListener('click',()=>{const m=el('addMat').value; if(m){S.basket[m]=5; renderBasket(); recompute();}});
+el('tpl').addEventListener('change',e=>{loadTemplate(e.target.value); renderBasket(); renderPhases(); recompute();});
+el('scen').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; S.scen=b.dataset.v; [...el('scen').children].forEach(x=>x.classList.toggle('on',x===b)); el('fxRow').style.opacity=S.scen==='fx'?1:.45; recompute();});
+['value','start','dur','profile','margin','fxPct','drift','band','nsim'].forEach(id=>el(id).addEventListener('change',recompute));
+['value','dur','margin','fxPct'].forEach(id=>el(id).addEventListener('input',recompute));
+el('fxRow').style.opacity=.45;
+
+/* ---------------- tabs ---------------- */
+el('tabs').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; S.tab=b.dataset.t; [...el('tabs').children].forEach(x=>x.classList.toggle('on',x===b)); document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+S.tab)); Object.values(charts).forEach(c=>c.resize()); recompute();});
+
+/* ---------------- phases ---------------- */
+function renderPhases(){
+  const t=el('phaseTable');
+  t.innerHTML=`<thead><tr><th>Phase</th><th class="num">Share of value %</th><th class="num">Start %</th><th class="num">Duration %</th><th>Basket</th><th class="num">Escalation</th><th class="num">UGX</th><th></th></tr></thead><tbody>`+
+    S.phases.map((p,i)=>`<tr data-i="${i}"><td><input class="wide" data-k="name" value="${p.name.replace(/"/g,'&quot;')}"></td><td class="num"><input type="number" data-k="share" value="${p.share}" min="0" max="100"></td><td class="num"><input type="number" data-k="start" value="${p.start}" min="0" max="100"></td><td class="num"><input type="number" data-k="dur" value="${p.dur}" min="1" max="100"></td><td class="muted" style="font-size:11.5px;white-space:normal;max-width:260px">${p.basket?Object.entries(p.basket).map(([m,w])=>`${LBL[m]} ${w}%`).join(', '):'project basket'}</td><td class="num" data-out="esc"></td><td class="num" data-out="ugx"></td><td><button class="x btn" data-del="${i}" style="padding:2px 8px">×</button></td></tr>`).join('')+`</tbody>`;
+  t.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{const i=+inp.closest('tr').dataset.i; const k=inp.dataset.k; S.phases[i][k]=k==='name'?inp.value:(+inp.value||0); recompute();}));
+  t.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{S.phases.splice(+b.dataset.del,1); renderPhases(); recompute();}));
+}
+el('addPhase').addEventListener('click',()=>{S.phases.push({name:'New phase',share:10,start:0,dur:20,basket:null}); renderPhases(); recompute();});
+el('resetPhases').addEventListener('click',()=>{const b=S.basket; loadTemplate(S.tpl); S.basket=b; renderPhases(); recompute();});
+
+/* ---------------- DAM & procurement controls ---------------- */
+['damZ','damCap','damPass','damEvery','damHistStart','procEarly','procHold','procQ'].forEach(id=>el(id).addEventListener('change',recompute));
+el('damMode').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; S.damMode=b.dataset.v; [...el('damMode').children].forEach(x=>x.classList.toggle('on',x===b)); el('damHistRow').style.display=S.damMode==='history'?'':'none'; recompute();});
+
+/* ---------------- main recompute ---------------- */
+let raf=null;
+function recompute(){ if(raf) cancelAnimationFrame(raf); raf=requestAnimationFrame(()=>{raf=null; compute();}); }
+function compute(){
+  const inp=inputs(); const w=weightsNorm(S.basket); const mats=Object.keys(w);
+  if(!mats.length){ return; }
+  const paths=simulate(inp);
+  const bp=basketPaths(paths,w,inp);
+  const N=bp.length, T=inp.dur; const q=qs(inp.band);
+  const months=[...Array(T+1).keys()].map(t=>addMonths(inp.start,t));
+  const p50=[],plo=[],phi=[]; const tmp=new Float64Array(N);
+  for(let t=0;t<=T;t++){ for(let n=0;n<N;n++) tmp[n]=bp[n][t]; p50.push(quantile(tmp,.5)); plo.push(quantile(tmp,q.lo)); phi.push(quantile(tmp,q.hi)); }
+  const sp=spendProfile(inp);
+  // escalation per sim
+  const escN=new Float64Array(N); for(let n=0;n<N;n++){ let e=0; for(let t=0;t<T;t++) e+=sp[t]*(bp[n][t+1]-1); escN[n]=e*inp.value; }
+  const esc50=quantile(escN,.5), escLo=quantile(escN,q.lo), escHi=quantile(escN,q.hi), esc80=quantile(escN,.8);
+  const ctx={inp,w,mats,paths,bp,months,p50,plo,phi,sp,escN,esc50,escLo,escHi,esc80,q};
+  if(S.tab==='cost') renderCost(ctx);
+  if(S.tab==='prog') renderProg(ctx);
+  if(S.tab==='dam') renderDAM(ctx);
+  if(S.tab==='proc') renderProc(ctx);
+  if(S.tab==='method') renderMethod(ctx);
+}
+
+/* ---------------- COST tab ---------------- */
+function tile(v,l,d,hi){ const t=h('div','tile'+(hi?' hi':'')); t.innerHTML=`<div class="l">${l}</div><div class="v">${v}</div><div class="d">${d||''}</div>`; return t; }
+function renderCost(c){
+  const {inp,w,mats,months,p50,plo,phi,sp,esc50,escLo,escHi,esc80,q}=c;
+  const V=inp.value; const T=inp.dur;
+  const peak=p50.reduce((b,v,i)=>v>p50[b]?i:b,0);
+  const marginAtRisk=esc50/V; // share of contract value
+  el('costTiles').innerHTML='';
+  el('costTiles').append(
+    tile(pct(esc50/V,1,true),'Projected escalation','over the programme, median · '+ugx(esc50),true),
+    tile(ugx(V+esc50),'Cost at completion (median)',`band ${ugx(V+escLo)} – ${ugx(V+escHi)}`),
+    tile(pct(esc80/V,1),'Contingency for P80 cover',ugx(esc80)+' on top of the award sum'),
+    tile(fmt(p50[T]*100,1),'Basket index at completion','award month = 100 · peak '+fmt(p50[peak]*100,1)+' in '+ymLabel(months[peak])),
+    tile(pct(inp.margin-marginAtRisk,1),'Margin after escalation, fixed price',`target ${pct(inp.margin,1)} · ${marginAtRisk>inp.margin?'<span style="color:var(--crit)">escalation exceeds margin</span>':'margin survives the median path'}`)
+  );
+  el('costSub').textContent=`${TPL[S.tpl].name} basket · ${S.scen==='base'?'base scenario':S.scen==='fx'?`shilling −${fmt(inp.fxPct*100,0)}% over 12 months`:'2022 shock replayed from award'} · ${inp.nsim} simulations`;
+  // history before award: basket from panel (relative to last published), then forecast to award
+  const histM=24; const hist=[];
+  for(let k=histM;k>=1;k--){ const i=P.dates.length-k; let s=0,ok=true; for(const m of mats){ const v=P.series[m][i], v0=P.series[m][P.dates.length-1]; if(v==null||v0==null){ok=false;break;} s+=w[m]*v/v0; } hist.push([P.dates[i],ok?s:null]); }
+  // scale history so award month = 100: need basket ratio at award relative to last published = median path at offset
+  const off=monthsBetween(F0,inp.start); const tmp=new Float64Array(c.bp.length);
+  let awardRel=1; if(off>=0){ for(let n=0;n<c.bp.length;n++){ let s=0; for(const m of mats) s+=w[m]*c.paths[m][n][off]; tmp[n]=s; } awardRel=quantile(tmp,.5); }
+  const histSeries=hist.map(([d,v])=>[d,v==null?null:+(v/awardRel*100).toFixed(2)]);
+  // bridge months (forecast between last published and award)
+  const bridge=[]; for(let t=0;t<=off;t++){ for(let n=0;n<c.bp.length;n++){ let s=0; for(const m of mats) s+=w[m]*c.paths[m][n][t]; tmp[n]=s; } bridge.push([addMonths(LAST,t),+(quantile(tmp,.5)/awardRel*100).toFixed(2)]); }
+  const xs=[...histSeries.map(x=>x[0]),...bridge.slice(1).map(x=>x[0]),...months];
+  const cat=[...new Set(xs)];
+  const at=(arr)=>cat.map(d=>{const f=arr.find(x=>x[0]===d); return f?f[1]:null;});
+  const fan50=months.map((d,t)=>[d,+(p50[t]*100).toFixed(2)]), fanLo=months.map((d,t)=>[d,+(plo[t]*100).toFixed(2)]), fanHi=months.map((d,t)=>[d,+(phi[t]*100).toFixed(2)]);
+  const loArr=at(fanLo), hiArr=at(fanHi);
+  mk('costChart').setOption({...base,grid:{left:8,right:60,top:36,bottom:8,containLabel:true},
+    legend:{...base.legend,data:['Published index','Forecast to award','Median projection',`${inp.band}% band`]},
+    tooltip:{...base.tooltip,valueFormatter:v=>v==null?'—':fmt(v,1)},
+    xAxis:axX({data:cat}),yAxis:axY(),
+    series:[
+      {name:`${inp.band}% band`,type:'line',data:loArr,lineStyle:{opacity:0},stack:'band',symbol:'none',silent:true,itemStyle:{color:ACC}},
+      {name:`${inp.band}% band`,type:'line',data:hiArr.map((v,i)=>v==null||loArr[i]==null?null:+(v-loArr[i]).toFixed(2)),lineStyle:{opacity:0},stack:'band',areaStyle:{color:tok('--band')},symbol:'none',silent:true,itemStyle:{color:ACC}},
+      {name:'Published index',type:'line',data:at(histSeries),showSymbol:false,lineStyle:{width:2,color:SER[0]},itemStyle:{color:SER[0]}},
+      {name:'Forecast to award',type:'line',data:at(bridge),showSymbol:false,lineStyle:{width:2,color:SER[0],type:'dotted'},itemStyle:{color:SER[0]}},
+      {name:'Median projection',type:'line',data:at(fan50),showSymbol:false,lineStyle:{width:2.5,color:ACC},itemStyle:{color:ACC},endLabel:{show:true,formatter:p=>fmt(p.value,0),color:ACC,fontFamily:MONO,fontSize:11},
+        markLine:{silent:true,symbol:'none',lineStyle:{color:LINE2,type:'dashed'},label:{show:true,formatter:'award',color:INK[3],fontFamily:MONO,fontSize:10,position:'insideEndTop'},data:[{xAxis:inp.start}]}},
+    ]},true);
+  // spend chart
+  const spA=Array.from(sp); const spendAward=spA.map(s=>+(s*V/1e6).toFixed(1)), spendProj=spA.map((s,t)=>+(s*V*p50[t+1]/1e6).toFixed(1));
+  mk('spendChart').setOption({...base,tooltip:{...base.tooltip,valueFormatter:v=>'UGX '+fmt(v,0)+' m'},legend:{...base.legend,data:['At award prices','Projected (median)']},
+    xAxis:axX({data:months.slice(1),boundaryGap:true}),yAxis:axY({scale:false}),
+    series:[{name:'At award prices',type:'bar',data:spendAward,itemStyle:{color:SER[0],borderRadius:[3,3,0,0]},barGap:'-100%',barWidth:'60%'},
+            {name:'Projected (median)',type:'bar',data:spendProj,itemStyle:{color:'transparent',borderColor:ACC,borderWidth:1.5,borderRadius:[3,3,0,0]},barWidth:'60%'}]},true);
+  // contribution by material (median path per material)
+  const contrib=mats.map(m=>{ let e=0; const N=c.paths[m].length; const t2=new Float64Array(N); for(let t=0;t<T;t++){ for(let n=0;n<N;n++){ const p=c.paths[m][n]; t2[n]=(off+t+1>=0?p[off+t+1]:1)/(off>=0?p[off]:1);} e+=sp[t]*(quantile(t2,.5)-1);} return {m,v:e*w[m]*V}; }).sort((a,b)=>b.v-a.v);
+  mk('contribChart').setOption({...base,grid:{left:130,right:60,top:8,bottom:8,containLabel:false},legend:{show:false},tooltip:{...base.tooltip,axisPointer:{type:'none'},valueFormatter:v=>ugx(v*1e6)},
+    xAxis:axY({axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,formatter:v=>fmt(v,0)+' m'}}),yAxis:{type:'category',inverse:true,data:contrib.map(x=>LBL[x.m]),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[2],fontSize:12}},
+    series:[{type:'bar',data:contrib.map(x=>({value:+(x.v/1e6).toFixed(1),itemStyle:{color:x.v>=0?colourOf[x.m]:CRIT,borderRadius:x.v>=0?[0,3,3,0]:[3,0,0,3]}})),barWidth:14,label:{show:true,position:'right',formatter:p=>ugx(p.value*1e6),color:INK[3],fontFamily:MONO,fontSize:11}}]},true);
+  // material table
+  const rows=mats.map(m=>{ const s=FS[m]; const N=c.paths[m].length; const t12=new Float64Array(N), tEnd=new Float64Array(N); const iA=Math.max(0,off), i12=off+12, iE=off+T;
+    for(let n=0;n<N;n++){ const p=c.paths[m][n]; t12[n]=(i12<p.length?p[i12]:p[p.length-1])/p[iA]; tEnd[n]=(iE<p.length?p[iE]:p[p.length-1])/p[iA]; }
+    return {m,w:w[m],last:s.last,ch12:s.change_12m,mu:s.mu,sig:s.sigma,beta:s.fx_beta,f12:quantile(t12,.5)-1,f12lo:quantile(t12,q.lo)-1,f12hi:quantile(t12,q.hi)-1,fend:quantile(tEnd,.5)-1,share:contrib.find(x=>x.m===m)?.v||0}; });
+  el('matTable').innerHTML=`<thead><tr><th>Material</th><th class="num">Weight</th><th class="num">Index ${ymLabel(LAST)}</th><th class="num">Last 12 m</th><th class="num">Drift / m</th><th class="num">Volatility / m</th><th class="num">FX pass-through</th><th class="num">12 m from award (median)</th><th class="num">Band</th><th class="num">To completion</th><th class="num">Escalation share</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${colourOf[r.m]};margin-right:6px"></span>${LBL[r.m]}</td><td class="num">${pct(r.w,0)}</td><td class="num">${fmt(r.last,1)}</td><td class="num">${pct(r.ch12,1,true)}</td><td class="num">${pct(r.mu,2,true)}</td><td class="num">${pct(r.sig,2)}</td><td class="num">${r.beta==null?'—':fmt(r.beta,2)}</td><td class="num">${pct(r.f12,1,true)}</td><td class="num muted">${pct(r.f12lo,1,true)} … ${pct(r.f12hi,1,true)}</td><td class="num">${pct(r.fend,1,true)}</td><td class="num">${ugx(r.share)}</td></tr>`).join('')+`</tbody>`;
+}
+
+/* ---------------- PROGRAMME tab ---------------- */
+function phaseStats(c){
+  const {inp,paths,q}=c; const T=inp.dur, off=monthsBetween(F0,inp.start), V=inp.value;
+  return S.phases.map(ph=>{
+    const w=weightsNorm(ph.basket||S.basket); const mats=Object.keys(w);
+    const a=Math.min(T-1,Math.round(ph.start/100*T)), d=Math.max(1,Math.round(ph.dur/100*T)), b=Math.min(T,a+d);
+    const N=paths[mats[0]]?.length||0; const esc=new Float64Array(N); const mid=new Float64Array(N);
+    for(let n=0;n<N;n++){ let e=0; for(let t=a;t<b;t++){ let s=0; for(const m of mats){ const p=paths[m][n]; s+=w[m]*p[off+t+1]/p[Math.max(0,off)]; } e+=(s-1)/(b-a); } esc[n]=e; let s=0; const tm=Math.floor((a+b)/2); for(const m of mats){ const p=paths[m][n]; s+=w[m]*p[off+tm]/p[Math.max(0,off)]; } mid[n]=s-1; }
+    return {ph,a,b,w,esc50:quantile(esc,.5),escHi:quantile(esc,q.hi),mid50:quantile(mid,.5),ugx:quantile(esc,.5)*ph.share/100*V,ugxHi:quantile(esc,q.hi)*ph.share/100*V};
+  });
+}
+function renderProg(c){
+  const {inp,months,p50}=c; const V=inp.value; const st=phaseStats(c);
+  const shareTot=S.phases.reduce((s,p)=>s+p.share,0);
+  const totEsc=st.reduce((s,x)=>s+x.ugx,0), totHi=st.reduce((s,x)=>s+x.ugxHi,0);
+  const worst=st.reduce((b,x)=>x.esc50>(b?.esc50??-1)?x:b,null);
+  const late=st.filter(x=>x.a>=inp.dur*0.5).reduce((s,x)=>s+x.ugx,0);
+  el('progTiles').innerHTML='';
+  el('progTiles').append(
+    tile(ugx(totEsc),'Escalation across phases (median)',pct(totEsc/V,1)+' of contract value · P'+Math.round(c.q.hi*100)+' '+ugx(totHi),true),
+    tile(worst?LBL_short(worst.ph.name):'—','Most exposed phase',worst?`${pct(worst.esc50,1,true)} average over its window · ${ugx(worst.ugx)}`:''),
+    tile(pct(late/Math.max(1,totEsc),0),'Escalation landing in the second half','of the programme — the part a fixed price cannot see at award'),
+    tile(fmt(shareTot,0)+'<small>%</small>','Value allocated to phases',Math.abs(shareTot-100)>0.5?'<span style="color:var(--warn)">shares do not sum to 100</span>':'shares sum to 100')
+  );
+  // gantt as custom bars on a time axis with price path overlay
+  const cat=months;
+  const bars=st.map((x,i)=>({name:x.ph.name,value:[i,x.a,x.b,x.mid50,x.ph.share],itemStyle:{color:escColour(x.mid50)}}));
+  mk('ganttChart').setOption({...base,grid:{left:230,right:60,top:32,bottom:30,containLabel:false},legend:{...base.legend,data:['Basket index (median)']},
+    tooltip:{...base.tooltip,trigger:'item',formatter:p=>p.seriesType==='custom'?`<b>${p.name}</b><br>${ymLabel(cat[p.value[1]])} – ${ymLabel(cat[Math.max(p.value[1],p.value[2]-1)])}<br>share ${fmt(p.value[4],0)}% · basket ${pct(p.value[3],1,true)} at mid-point`:`${p.name}: ${fmt(p.value,1)}`},
+    xAxis:[axX({data:cat,boundaryGap:true,position:'bottom'})],
+    yAxis:[{type:'category',data:st.map(x=>x.ph.name),inverse:true,axisLine:{show:false},axisTick:{show:false},axisLabel:{color:INK[2],fontSize:12,width:210,overflow:'truncate'}},
+           axY({position:'right',splitLine:{show:false},axisLabel:{color:ACC,fontFamily:MONO,fontSize:11},name:'index',nameTextStyle:{color:INK[3],fontFamily:MONO,fontSize:10}})],
+    series:[{type:'custom',name:'phases',data:bars,yAxisIndex:0,renderItem:(params,api)=>{const y=api.value(0),a=api.value(1),b=api.value(2); const s=api.coord([a,y]),e=api.coord([b,y]); const hgt=api.size([0,1])[1]*0.55; return {type:'rect',shape:{x:s[0],y:s[1]-hgt/2,width:Math.max(2,e[0]-s[0]),height:hgt,r:3},style:api.style()};},encode:{x:[1,2],y:0}},
+            {type:'line',name:'Basket index (median)',yAxisIndex:1,data:p50.map(v=>+(v*100).toFixed(1)),showSymbol:false,lineStyle:{width:2,color:ACC},itemStyle:{color:ACC},z:3}]},true);
+  // table outputs
+  const rows=el('phaseTable').querySelectorAll('tbody tr');
+  rows.forEach((tr,i)=>{ const x=st[i]; if(!x) return; tr.querySelector('[data-out=esc]').innerHTML=`<span class="pill ${x.esc50>0.08?'crit':x.esc50>0.03?'warn':'good'}">${pct(x.esc50,1,true)}</span>`; tr.querySelector('[data-out=ugx]').textContent=ugx(x.ugx); });
+}
+function LBL_short(s){ return s.length>26?s.slice(0,24)+'…':s; }
+function escColour(v){ return v>0.08?CRIT:v>0.03?WARN:SER[2]; }
+
+/* ---------------- DAM tab ---------------- */
+function wmviHistory(w){ // historical WMVI series of this basket from the panel (for standardisation)
+  const mats=Object.keys(w); const n=P.dates.length; const rets={}; mats.forEach(m=>{const v=P.series[m]; rets[m]=v.map((x,i)=>i>0&&x&&v[i-1]?Math.log(x/v[i-1]):null);});
+  const fx=P.series.exchange_rate; const fxr=fx.map((x,i)=>i>0&&x&&fx[i-1]?Math.log(x/fx[i-1]):null);
+  const beta=mats.reduce((s,m)=>s+w[m]*(FS[m].fx_beta||0),0);
+  const out=[]; for(let i=6;i<n;i++){ let s=0; for(const m of mats){ const win=rets[m].slice(i-5,i+1).filter(x=>x!=null); if(win.length<4){s=null;break;} s+=w[m]*sd(win);} if(s==null){out.push(null);continue;} const fw=fxr.slice(i-5,i+1).filter(x=>x!=null); out.push(s+beta*(fw.length>=4?sd(fw):0)); }
+  const vals=out.filter(x=>x!=null); const mean=vals.reduce((a,b)=>a+b,0)/vals.length; const std=sd(vals); return {series:out,mean,std,beta};
+}
+function sd(a){ const m=a.reduce((x,y)=>x+y,0)/a.length; return Math.sqrt(a.reduce((x,y)=>x+(y-m)**2,0)/Math.max(1,a.length-1)); }
+function runDAM(costIdx,wmviZ,cfg){ // costIdx[t] relative to award (t=0..T), wmviZ[t]
+  const T=costIdx.length-1; let dam=1; const fixedM=[],damM=[],sums=[]; let nrev=0;
+  for(let t=0;t<=T;t++){ const rc=costIdx[t]; if(t>0 && t%cfg.every===0 && wmviZ[t]>cfg.z){ const gap=Math.max(0,rc-dam); const rev=Math.min(cfg.cap,cfg.pass*gap); if(rev>0){dam+=rev;nrev++;} } sums.push(dam); fixedM.push(cfg.margin-(rc-1)); damM.push(cfg.margin+(dam-1)-(rc-1)); }
+  return {sums,fixedM,damM,nrev};
+}
+function renderDAM(c){
+  const {inp,w,mats,paths,months,q}=c; const T=inp.dur, off=monthsBetween(F0,inp.start);
+  const cfg={z:+el('damZ').value,cap:(+el('damCap').value)/100,pass:(+el('damPass').value)/100,every:Math.max(1,+el('damEvery').value),margin:inp.margin};
+  const WH=wmviHistory(w);
+  let runs=[], label='', xcat=months, costMed=null;
+  if(S.damMode==='history'){
+    const s0=P.dates.indexOf(el('damHistStart').value); const ok=s0>=0 && s0+T<P.dates.length;
+    if(!ok){ el('damSub').textContent='Replay window falls outside the published panel — choose an earlier start.'; }
+    else {
+      const idx=[]; for(let t=0;t<=T;t++){ let s=0; for(const m of mats){ s+=w[m]*(P.series[m][s0+t]/P.series[m][s0]); } idx.push(s); }
+      const z=[]; for(let t=0;t<=T;t++){ const v=WH.series[s0+t-6]; z.push(v==null?0:(v-WH.mean)/WH.std); }
+      runs=[runDAM(idx,z,cfg)]; costMed=idx; xcat=P.dates.slice(s0,s0+T+1); label=`historical replay ${ymLabel(xcat[0])} – ${ymLabel(xcat[T])}`;
+    }
+  } else {
+    const N=paths[mats[0]].length; const beta=WH.beta; const fxs=FS.exchange_rate;
+    for(let n=0;n<N;n++){
+      const idx=[]; const rets={}; mats.forEach(m=>{rets[m]=[];});
+      for(let t=0;t<=T;t++){ let s=0; for(const m of mats){ const p=paths[m][n]; s+=w[m]*p[off+t]/p[Math.max(0,off)]; if(t>0) rets[m].push(Math.log(p[off+t]/p[off+t-1])); } idx.push(s); }
+      const z=[]; for(let t=0;t<=T;t++){ if(t<6){ z.push(0); continue; } let s=0; for(const m of mats){ s+=w[m]*sd(rets[m].slice(t-6,t)); } s+=beta*fxs.sigma; z.push((s-WH.mean)/WH.std); }
+      runs.push(runDAM(idx,z,cfg));
+      if(n===0) costMed=idx;
+    }
+    // median cost path for chart
+    const tmp=new Float64Array(N); costMed=[]; for(let t=0;t<=T;t++){ for(let n=0;n<N;n++){ let s=0; for(const m of mats){ const p=paths[m][n]; s+=w[m]*p[off+t]/p[Math.max(0,off)]; } tmp[n]=s; } costMed.push(quantile(tmp,.5)); }
+    label=`${runs.length} simulated paths · ${S.scen==='base'?'base':S.scen==='fx'?'FX shock':'2022 replay'} scenario`;
+  }
+  if(!runs.length) return;
+  const N=runs.length; const fin=runs.map(r=>r.fixedM[T]), dfin=runs.map(r=>r.damM[T]);
+  const fx50=quantile(fin,.5), dm50=quantile(dfin,.5), fxLo=quantile(fin,q.lo), dmLo=quantile(dfin,q.lo);
+  const nrev=quantile(runs.map(r=>r.nrev),.5); const pTrig=runs.filter(r=>r.nrev>0).length/N;
+  const sumEnd=quantile(runs.map(r=>r.sums[T]),.5);
+  const varF=sd(fin), varD=sd(dfin);
+  el('damTiles').innerHTML='';
+  el('damTiles').append(
+    tile(pct(dm50-fx50,1,true),'Margin protected by the DAM',`final margin ${pct(fx50,1)} fixed → ${pct(dm50,1)} with DAM (median)`,true),
+    tile(pct(dmLo,1),`Downside margin (P${Math.round(q.lo*100)})`,`vs ${pct(fxLo,1)} under a fixed price`),
+    tile(fmt(nrev,0),'Contract-sum revisions (median)',`clause triggered in ${pct(pTrig,0)} of paths · sum ends at ${fmt(sumEnd*100,1)}% of award`),
+    tile(N>1?fmt(varF/Math.max(1e-9,varD),2)+'<small>×</small>':'—','Margin variance reduction',N>1?`spread of final margin ${pct(varF,1)} fixed vs ${pct(varD,1)} DAM`:'single historical path')
+  );
+  el('damSub').textContent=label;
+  const med=i=>{ const t=new Float64Array(N); return [...Array(T+1).keys()].map(k=>{ for(let n=0;n<N;n++) t[n]=runs[n][i][k]; return quantile(t,.5); }); };
+  const sums=med('sums'), fm=med('fixedM'), dmm=med('damM');
+  mk('damChart').setOption({...base,tooltip:{...base.tooltip,valueFormatter:v=>fmt(v,1)},legend:{...base.legend,data:['Realised cost (median)','DAM contract sum','Fixed contract sum']},
+    xAxis:axX({data:xcat}),yAxis:axY(),
+    series:[{name:'Realised cost (median)',type:'line',data:costMed.map(v=>+(v*100).toFixed(1)),showSymbol:false,lineStyle:{width:2,color:SER[1]},itemStyle:{color:SER[1]}},
+            {name:'DAM contract sum',type:'line',step:'end',data:sums.map(v=>+(v*100).toFixed(1)),showSymbol:false,lineStyle:{width:2,color:ACC},itemStyle:{color:ACC}},
+            {name:'Fixed contract sum',type:'line',data:xcat.map(()=>100),showSymbol:false,lineStyle:{width:1.5,color:INK[3],type:'dashed'},itemStyle:{color:INK[3]}}]},true);
+  mk('marginChart').setOption({...base,tooltip:{...base.tooltip,valueFormatter:v=>fmt(v,1)+'%'},legend:{...base.legend,data:['Fixed price','With DAM']},
+    xAxis:axX({data:xcat}),yAxis:axY({axisLabel:{color:INK[3],fontFamily:MONO,fontSize:11,formatter:v=>v+'%'}}),
+    series:[{name:'Fixed price',type:'line',data:fm.map(v=>+(v*100).toFixed(1)),showSymbol:false,lineStyle:{width:2,color:INK[3]},itemStyle:{color:INK[3]},areaStyle:{opacity:.08,color:CRIT}},
+            {name:'With DAM',type:'line',data:dmm.map(v=>+(v*100).toFixed(1)),showSymbol:false,lineStyle:{width:2.5,color:ACC},itemStyle:{color:ACC},
+             markLine:{silent:true,symbol:'none',lineStyle:{color:LINE2},data:[{yAxis:0}],label:{show:false}}}]},true);
+  // distribution
+  if(N>1){
+    const all=[...fin,...dfin]; const lo=Math.min(...all), hi=Math.max(...all); const B=24; const step=(hi-lo)/B||1; const bins=[...Array(B).keys()].map(i=>lo+i*step);
+    const hist=arr=>{const c=new Array(B).fill(0); arr.forEach(v=>{c[Math.min(B-1,Math.floor((v-lo)/step))]++;}); return c;};
+    mk('damDist').setOption({...base,grid:{left:8,right:16,top:30,bottom:8,containLabel:true},tooltip:{...base.tooltip,axisPointer:{type:'shadow'}},legend:{...base.legend,data:['Fixed price','With DAM']},
+      xAxis:{type:'category',data:bins.map(b=>(b*100).toFixed(0)+'%'),axisLine:{lineStyle:{color:LINE2}},axisTick:{show:false},axisLabel:{color:INK[3],fontFamily:MONO,fontSize:10}},yAxis:axY({scale:false}),
+      series:[{name:'Fixed price',type:'bar',data:hist(fin),itemStyle:{color:INK[3],opacity:.6},barGap:'-100%'},{name:'With DAM',type:'bar',data:hist(dfin),itemStyle:{color:ACC,opacity:.75}}]},true);
+  } else { mk('damDist').clear(); }
+}
+
+/* ---------------- PROCUREMENT tab ---------------- */
+function renderProc(c){
+  const {inp,w,mats,paths,months,q}=c; const T=inp.dur, off=monthsBetween(F0,inp.start), V=inp.value;
+  const early=+el('procEarly').value, hold=(+el('procHold').value)/100, useQ=+el('procQ').value/100;
+  const STORE={LABOUR:0,CEM:3,LIME:3,PAINT:6,DIESEL:6}; // practical storage limits in months; others limited only by the 'buy up to' setting
+  // need month per material: value-weighted centre of phases using it
+  const need={}; for(const m of mats){ let num=0,den=0; for(const ph of S.phases){ const b=weightsNorm(ph.basket||S.basket); if(!b[m]) continue; const a=Math.round(ph.start/100*T), d=Math.max(1,Math.round(ph.dur/100*T)); const mid=a+d/2; const wt=ph.share*b[m]; num+=wt*mid; den+=wt; } need[m]=den>0?Math.min(T,Math.max(0,Math.round(num/den))):Math.round(T/2); }
+  const N=paths[mats[0]].length; const tmp=new Float64Array(N);
+  const qpath=(m,i)=>{ for(let n=0;n<N;n++) tmp[n]=paths[m][n][Math.max(0,i)]/paths[m][n][Math.max(0,off)]; return quantile(tmp,useQ); };
+  const rows=mats.map(m=>{
+    const tn=need[m]; const atNeed=qpath(m,off+tn); let best={t:tn,cost:atNeed}; const cand=[];
+    const maxEarly=Math.min(early,STORE[m]??99); for(let t=Math.max(0,tn-maxEarly);t<=tn;t++){ const idx=qpath(m,off+t); const eff=idx*Math.pow(1+hold,tn-t); cand.push({t,idx,eff}); if(eff<best.cost-1e-9) best={t,cost:eff,idx}; }
+    const share=w[m]*V; const saving=(atNeed-best.cost)/atNeed; return {m,tn,atNeed,best,cand,share,saving,savingUgx:saving*share*atNeed};
+  }).sort((a,b)=>b.savingUgx-a.savingUgx);
+  const totSave=rows.reduce((s,r)=>s+Math.max(0,r.savingUgx),0); const nEarly=rows.filter(r=>r.best.t<r.tn).length;
+  el('procTiles').innerHTML='';
+  el('procTiles').append(
+    tile(ugx(totSave),'Saving from timing purchases',pct(totSave/V,2)+' of contract value along the '+(useQ===0.5?'median':'P80')+' path',true),
+    tile(nEarly+'<small>/ '+rows.length+'</small>','Inputs worth buying early','the rest are cheapest at the month of need'),
+    tile(rows[0]&&rows[0].savingUgx>0?LBL[rows[0].m]:'None','Largest single opportunity',rows[0]&&rows[0].savingUgx>0?`${ugx(rows[0].savingUgx)} by buying ${rows[0].tn-rows[0].best.t} month(s) early`:'along this path no early purchase beats the holding cost — try the FX-shock or 2022-replay scenario')
+  );
+  el('procTable').innerHTML=`<thead><tr><th>Material</th><th class="num">Share of value</th><th>Needed</th><th>Buy</th><th class="num">Storable</th><th class="num">Index at need</th><th class="num">Index at buy</th><th class="num">Net saving</th><th class="num">UGX</th><th>Advice</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${colourOf[r.m]};margin-right:6px"></span>${LBL[r.m]}</td><td class="num">${pct(r.share/V,0)}</td><td>${ymLabel(months[r.tn])}</td><td>${r.best.t<r.tn?`<span class="pill acc">${ymLabel(months[r.best.t])}</span>`:'<span class="pill">at need</span>'}</td><td class="num">${(STORE[r.m]??99)===0?'no':(STORE[r.m]??99)>=99?'yes':STORE[r.m]+' m'}</td><td class="num">${fmt(r.atNeed*100,1)}</td><td class="num">${fmt((r.best.idx||r.atNeed)*100,1)}</td><td class="num">${pct(r.saving,2,true)}</td><td class="num">${ugx(r.savingUgx)}</td><td class="muted" style="white-space:normal;max-width:320px">${r.best.t<r.tn?`Forecast rises ${pct(r.atNeed/(r.best.idx)-1,1)} between the window and need; exceeds ${pct(hold*(r.tn-r.best.t),1)} holding cost.`:((STORE[r.m]??99)===0?'Not storable; buy to programme.':'No window beats holding cost; buy to programme.')}</td></tr>`).join('')+`</tbody>`;
+  // sparklines
+  const wrap=el('procSparks'); wrap.innerHTML='';
+  rows.slice(0,6).forEach((r,i)=>{ const d=h('div','panel'); d.innerHTML=`<div class="panel-head"><h3>${LBL[r.m]}</h3><span class="sub">index vs award, ${useQ===0.5?'median':'P80'}</span></div><div class="chart short" id="pspark${i}"></div>`; wrap.append(d);
+    const xs=months; const ys=xs.map((_,t)=>+(qpath(r.m,off+t)*100).toFixed(1));
+    mk('pspark'+i).setOption({...base,grid:{left:8,right:16,top:8,bottom:8,containLabel:true},legend:{show:false},tooltip:{...base.tooltip,valueFormatter:v=>fmt(v,1)},
+      xAxis:axX({data:xs}),yAxis:axY(),
+      series:[{type:'line',data:ys,showSymbol:false,lineStyle:{width:2,color:colourOf[r.m]},itemStyle:{color:colourOf[r.m]},
+        markPoint:{symbolSize:34,data:[{name:'buy',coord:[r.best.t,ys[r.best.t]],itemStyle:{color:ACC},label:{formatter:'buy',color:tok('--accent-ink'),fontSize:9,fontFamily:MONO}},{name:'need',coord:[r.tn,ys[r.tn]],itemStyle:{color:INK[3]},label:{formatter:'need',color:'#fff',fontSize:9,fontFamily:MONO}}]}}]},true);
+  });
+}
+
+/* ---------------- METHOD tab ---------------- */
+function renderMethod(){
+  const rows=Object.keys(FS).filter(k=>covOK.has(k)||k==='CIPI_ALL'||k==='CIPI_MAT'||k==='exchange_rate'||k==='cpi');
+  el('paramTable').innerHTML=`<thead><tr><th>Series</th><th class="num">Last</th><th class="num">Returns used</th><th class="num">Drift / m (recent)</th><th class="num">Drift / m (full)</th><th class="num">σ / m (recent)</th><th class="num">σ / m (full)</th><th class="num">φ</th><th class="num">FX β</th><th class="num">Seasonal range</th><th class="num">2022 replay, 12 m</th></tr></thead><tbody>`+
+    rows.map(k=>{const s=FS[k]; const sr=Math.max(...s.seasonal)-Math.min(...s.seasonal); const sh=s.shock_2022.reduce((a,b)=>a+b,0); return `<tr><td>${LBL[k]||k}</td><td class="num">${fmt(s.last,1)}</td><td class="num">${s.n_returns}</td><td class="num">${pct(s.mu,2,true)}</td><td class="num">${pct(s.mu_full,2,true)}</td><td class="num">${pct(s.sigma,2)}</td><td class="num">${pct(s.sigma_full,2)}</td><td class="num">${fmt(s.phi,2)}</td><td class="num">${s.fx_beta==null?'—':fmt(s.fx_beta,2)}</td><td class="num">${pct(sr,2)}</td><td class="num">${pct(Math.exp(sh)-1,1,true)}</td></tr>`;}).join('')+`</tbody>`;
+}
+
+/* ---------------- boot ---------------- */
+let themePref='auto'; try{ themePref=localStorage.getItem('cio-theme')||'auto'; }catch(e){}
+function applyTheme(v){ themePref=v; if(v==='auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',v); try{ localStorage.setItem('cio-theme',v); }catch(e){} [...el('theme').children].forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
+function rethemed(){ readTokens(); disposeCharts(); kpis(); renderBasket(); compute(); }
+applyTheme(themePref);
+el('theme').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; applyTheme(b.dataset.v); rethemed();});
+if(window.matchMedia){ window.matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{ if(themePref==='auto') rethemed(); }); }
+renderPhases(); rethemed();
+let rt; window.addEventListener('resize',()=>{clearTimeout(rt); rt=setTimeout(()=>Object.values(charts).forEach(c=>c.resize()),120);});
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>rethemed());
+})();
+</script>
+</body>
+</html>
