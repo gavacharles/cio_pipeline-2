@@ -21,6 +21,24 @@ Country focus: Uganda (UGA).
 | UBOS datasets | manual | CIPI Excel Tables | CIPI_HEADLINE | ubos_cipi_headline | monthly | manual | manual-only source; series quoted in registry |
 | UBOS datasets | manual | PPI Manufacturing and Utilities Excel Tables | PPI_MANUFACTURING | ubos_ppi_manufacturing | monthly | manual | manual-only source; series quoted in registry |
 | UBOS datasets | manual | CPI Excel Tables | CPI_HEADLINE | ubos_cpi_headline | monthly | manual | manual-only source; series quoted in registry |
+| FRED (IMF Primary Commodity Prices) | manual | POILBREUSDM | POILBREUSDM | brent_crude_usd | monthly | ok | 106/106 rows over panel window (2017-07 to 2026-04) |
+| FRED (IMF Primary Commodity Prices) | manual | PIORECRUSDM | PIORECRUSDM | iron_ore_usd | monthly | ok | 106/106 rows over panel window; global iron ore benchmark, parallel to Brent for the IRON/IRONSTEEL/STEEL sub-indices |
+| NY Fed Research (GSCPI) | manual | GSCPI Monthly Data | GSCPI | gscpi_supply_chain_pressure | monthly | ok | 106/106 rows over panel window; standardized global shipping/supply-chain pressure proxy (Uganda is landlocked; no domestic freight-cost series exists in this pipeline) |
+
+Note on regional peer comparison (Kenya/Tanzania construction indices): investigated and **not included**.
+KNBS (Kenya) publishes a Construction Input Price Index, but only **quarterly**, not monthly — forcing it
+onto this monthly panel would mean holding it flat for 2 months then stepping, which would distort
+volatility/spillover estimation rather than provide a clean comparison. FRED's Kenya CPI series
+(`KENPCPIPCPPPT`) is annual, not monthly, and is a growth rate, not a level. No clean, freely-available,
+monthly regional construction-price comparator was found; a genuine regional comparison would require either
+manually transcribing KNBS's quarterly PDF releases and explicitly modeling the frequency mismatch, or
+running a separate quarterly-frequency side analysis rather than folding it into this monthly node set.
+
+Note on MoFPED coverage: the MoFPED Macro Data Portal (https://mepd.finance.go.ug/apps/macro-data-portal/,
+verified live) exposes >5000 series across real/external/financial/fiscal sectors and BoP/trade tables, but
+it does not publish a global oil benchmark price. Brent is therefore sourced externally from FRED series
+POILBREUSDM (IMF Primary Commodity Prices, global Brent spot, USD/barrel) and treated as an auxiliary
+global node alongside `exchange_rate`, not as a MoFPED-sourced series.
 
 Artifacts:
 - data/raw/global_series_registry.csv
