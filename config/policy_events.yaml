@@ -1,0 +1,73 @@
+# Known policy measures that change construction input prices, applied by the
+# forecaster (src/forecast/model.py) as one-off shocks in the month they take effect.
+#
+# pct      : price effect at FULL pass-through, % (null = size unknown; documented only)
+# match    : CIPI component labels the shock applies to (substring match, lower case)
+# status   : enacted (applied) | dropped | proposed (not applied)
+# The forecast applies pct x pass_through; baseline pass_through is set in
+# forecast_model.yaml. History is mixed: the Jul-2021 diesel excise rise coincided with
+# a +6.7% diesel month, the Jul-2024 one with -1.4%. So full pass-through is not assumed.
+#
+# Verify against the Excise Duty (Amendment) Acts and URA notices before relying on these.
+
+events:
+  - date: 2021-07
+    measure: Fuel excise +Shs100/litre (diesel 1,030 -> 1,130)
+    match: [diesel]
+    pct: null
+    status: enacted
+    sources:
+      - https://nation.africa/kenya/news/africa/govt-proposes-more-tax-on-fuel-3375884
+      - https://observer.ug/business/ugandans-to-pay-more-for-fuel-sugar-cement-as-excise-duty-bill-passes/
+
+  - date: 2024-07
+    measure: Fuel excise +Shs100/litre (diesel 1,130 -> 1,230)
+    match: [diesel]
+    pct: null
+    status: enacted
+    sources:
+      - https://www.independent.co.ug/full-speech-the-2024-25-uganda-budget-ugbudget24/
+      - "https://bills.parliament.ug/attachments/Minority Report on the Excise Duty (Amendment) Bill, 2024.pdf"
+
+  - date: 2024-07
+    measure: New excise duty on white cement, lime, adhesives and grout (aligned with cement)
+    match: [lime]
+    pct: null
+    status: enacted
+    sources:
+      - https://www.independent.co.ug/full-speech-the-2024-25-uganda-budget-ugbudget24/
+
+  - date: 2025-07
+    measure: Proposed fuel excise rise (diesel +Shs150) — withdrawn by government
+    match: [diesel]
+    pct: null
+    status: dropped
+    sources:
+      - https://www.monitor.co.ug/uganda/news/national/govt-proposes-to-increase-tax-on-fuel-4989870
+
+  - date: 2026-07
+    measure: Fuel excise +Shs200/litre (diesel 1,230 -> 1,430), Excise Duty (Amendment) Act 2026
+    match: [diesel]
+    pct: 3.1          # 200 / ~6,500 pump price (Q2-2026 range Shs6,300-6,700)
+    status: enacted
+    sources:
+      - https://www.independent.co.ug/bracing-for-new-excise-duty-rates-as-fy-2026-27-approaches/
+      - https://ugandaradionetwork.net/story/unoc-secures-fuel-supply-as-ugx200-levy-fuels-cost-of-living-fears
+      - https://www.globalpetrolprices.com/Uganda/diesel_prices/
+
+  - date: 2026-07
+    measure: Cement excise per 50kg bag Shs500 -> Shs750 (Pulse) or Shs1,000 (Independent); sources conflict
+    match: [cement]
+    pct: 1.2          # +250..+500 on an ASSUMED ~Shs32,000 bag (no 2026 price found) = 0.8-1.6%; midpoint
+    status: enacted
+    sources:
+      - https://www.pulse.ug/story/full-list-of-products-government-slaps-hefty-taxes-on-alcohol-fuel-cement-paint-2026061114174618527
+      - https://www.independent.co.ug/bracing-for-new-excise-duty-rates-as-fy-2026-27-approaches/
+
+  - date: 2026-07
+    measure: New excise on paints and varnishes (local 3% or Shs50/litre; imported varnish Shs2,000/litre)
+    match: [paints]
+    pct: 3.0          # the ad valorem rate on locally made paint
+    status: enacted
+    sources:
+      - https://www.pulse.ug/story/full-list-of-products-government-slaps-hefty-taxes-on-alcohol-fuel-cement-paint-2026061114174618527

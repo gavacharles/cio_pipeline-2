@@ -38,7 +38,17 @@ src/ingest/pull_global_catalog.py source/dataset/series registry + multi-source 
 src/index/build_panel.py     splice vintages + join macro + diagnostics -> panel_v1.0
 src/index/reconcile_cipi.py  CIPI-vs-CPI/PPI overlap diagnostics
 tests/test_pipeline.py       pytest regression suite (parser + splicer)
+src/market/                  construction-cost forecasting market (play money): country
+                             config, first-print settlement, nowcast, LMSR, ledger, CLI
+tests/test_market.py         market tests (settlement, LMSR, ledger, config)
+src/forecast/                structural CIPI forecaster: recovers UBOS's weights, forecasts the
+                             29 components from macro drivers, re-aggregates (docs/FORECAST_MODEL.md)
+tests/test_forecast.py       forecaster tests (exact rebuild, no look-ahead, coherence, scenarios)
+config/forecast_model.yaml   driver groups, shrinkage, simulation and scenarios
+config/policy_events.yaml    sourced tax measures (fuel, cement, paint excise) applied as known shocks
+src/ingest/build_rainfall_block.py  monthly rainfall driver (ERA5, five towns) -> data/raw/
 config/series_map.yaml       editable dataset/series codes
+config/countries/*.yaml      per-country market config (Uganda pilot, Kenya planned)
 config/global_series_2015_2026.json quoted 2015-2026 source/dataset/series catalog
 data/raw/                    inputs (CIPI xlsx + macro pulls) — frozen, never edited
 data/processed/              panel_v1.0.{parquet,csv}, splice_log.csv, coverage_report.csv,
@@ -51,5 +61,9 @@ data/processed/              panel_v1.0.{parquet,csv}, splice_log.csv, coverage_
 - `splice_log.csv` — every rebasing splice factor (P1 methodology requires this)
 - `reconciliation_report.csv` — CIPI vs CPI/PPI overlap diagnostics
 - `coverage_report.csv` / `panel_manifest.json` — provenance & missingness
+
+## Forecasting market
+`docs/MARKET_DESIGN.md` covers the contract rules, legal position, backtest and how to add a
+country. Quick start: `python src/market/run_market.py backtest`, then `open`, `board`, `settle`.
 
 Deposit `data/processed/` to Zenodo and cite the version DOI in every paper.
