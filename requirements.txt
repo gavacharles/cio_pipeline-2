@@ -13,3 +13,4 @@ scikit-learn>=1.3      # k-medoids, t-SNE, ridge baselines (P3, P9)
 torch>=2.1             # LSTM/GRU forecasting (P9) [optional; ridge fallback provided]
 matplotlib>=3.7        # figures
 pytest>=7.4            # test suite
+pyyaml>=6.0            # country configs for the forecasting market (src/market)

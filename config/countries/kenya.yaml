@@ -1,0 +1,34 @@
+# Planned second country. Not runnable yet: the settlement adapter does not exist.
+# KNBS publishes its Construction Input Price Index QUARTERLY (see
+# docs/GLOBAL_DATA_CATALOG_2015_2026.md), so Kenyan contracts settle on the
+# quarter-on-quarter change and the nowcast must be fitted at quarterly frequency.
+country: Kenya
+iso3: KEN
+status: planned
+currency: KES
+regulation:
+  mode: play_money
+  regulators:
+    - "Capital Markets Authority (CMA) Kenya: operates a regulatory sandbox"
+    - "Betting Control and Licensing Board: real-money event bets may be betting"
+  note: Same rule as Uganda; play money only until a legal opinion is in hand.
+
+settlement:
+  statistics_office: Kenya National Bureau of Statistics (KNBS)
+  publication: Construction Input Price Index, quarterly
+  url: https://www.knbs.or.ke/
+  parser: knbs_cipi_quarterly  # TODO: write the adapter (KNBS releases are PDF tables)
+  raw_dirs: [data/raw/knbs]
+  frequency: quarterly
+  quantity: qoq_pct_change
+  decimals: 2
+  void_after_days: 180
+  excluded_participants:
+    - KNBS staff involved in index compilation
+
+exchange:
+  starting_points: 1000
+  liquidity_b: 100
+  probability_floor: 0.02
+
+markets: []                    # fill once the KNBS series labels are confirmed
