@@ -1,21 +1,32 @@
 """
 app.py — participant web app for the CiO construction-cost forecasting pilot.
 
-Run:   CIO_ADMIN_KEY=change-me uvicorn --app-dir src/webapp app:app --host 0.0.0.0 --port 8000
-       (from the repo root; CIO_DB overrides data/market/exchange.sqlite)
+Run:   CIO_ADMIN_KEY=<long-secret> uvicorn --app-dir src/webapp app:app --host 127.0.0.1 --port 8000 \
+           --proxy-headers --forwarded-allow-ips 127.0.0.1      (behind Caddy; see docs/DEPLOY.md)
+Environment:
+  CIO_DB               sqlite file (default data/market/exchange.sqlite)
+  CIO_ADMIN_KEY        organiser password for /admin (admin is disabled when unset)
+  CIO_SECURE_COOKIES   1 (default) = cookies only over HTTPS; set 0 for local http testing
+  CIO_DEMO             1 = show a "demo data" banner on every page
 
 Participants join with an invite code from the organiser, then:
   - report the prices they pay each week (feeds the weekly note's crowd prices),
   - trade play-money contracts on the next official index print (LMSR market maker),
   - read the weekly forecast note and the leaderboard.
-Organiser: /admin?key=$CIO_ADMIN_KEY to create invite codes. Markets are opened and
-settled by src/market/cycle.py, not from the browser.
+Organiser: /admin (password = CIO_ADMIN_KEY) to create invite codes. Markets are opened
+and settled by src/market/cycle.py, not from the browser.
 """
 from __future__ import annotations
 
+import contextvars
+import hashlib
+import hmac
 import html
 import os
 import sys
+import threading
+import time
+from collections import defaultdict, deque
 from pathlib import Path
 
 import numpy as np
@@ -34,17 +45,74 @@ from reports import Participants, ReportError           # noqa: E402
 DB = Path(os.environ.get("CIO_DB", ROOT / "data" / "market" / "exchange.sqlite"))
 NOTES = ROOT / "data" / "processed" / "notes"
 COOKIE = "cio_token"
+ADMIN_COOKIE = "cio_admin"
+SECURE = os.environ.get("CIO_SECURE_COOKIES", "1") != "0"
+DEMO = os.environ.get("CIO_DEMO") == "1"
 
 app = FastAPI(title="CiO construction cost pilot", docs_url=None, redoc_url=None)
 COUNTRIES = {c: load_country(c) for c in list_countries()}
 
 
+# Connections opened while handling a request are closed when the response is done.
+_open: contextvars.ContextVar[list | None] = contextvars.ContextVar("cio_open", default=None)
+
+
+def _track(obj):
+    reg = _open.get()
+    if reg is not None:
+        reg.append(obj)
+    return obj
+
+
 def ex() -> Exchange:
-    return Exchange(DB, 1000)
+    return _track(Exchange(DB, 1000))
 
 
 def people() -> Participants:
-    return Participants(DB)
+    return _track(Participants(DB))
+
+
+@app.middleware("http")
+async def per_request(request: Request, call_next):
+    reg: list = []
+    token = _open.set(reg)
+    try:
+        response = await call_next(request)
+    finally:
+        _open.reset(token)
+        for obj in reg:
+            obj.close()
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "same-origin"
+    return response
+
+
+class Limiter:
+    """At most `limit` failed attempts per client IP per `window` seconds (in memory)."""
+
+    def __init__(self, limit: int = 10, window: int = 900):
+        self.limit, self.window = limit, window
+        self.fails: dict[str, deque] = defaultdict(deque)
+        self.lock = threading.Lock()
+
+    def blocked(self, ip: str) -> bool:
+        with self.lock:
+            q = self.fails[ip]
+            while q and q[0] < time.time() - self.window:
+                q.popleft()
+            return len(q) >= self.limit
+
+    def fail(self, ip: str) -> None:
+        with self.lock:
+            self.fails[ip].append(time.time())
+
+
+LIMIT = Limiter()
+
+
+def _ip(request: Request) -> str:
+    return request.client.host if request.client else "?"
 
 
 def me(request: Request) -> dict | None:
@@ -77,8 +145,13 @@ def page(title: str, body: str, user: dict | None = None) -> HTMLResponse:
     return HTMLResponse(f"<!doctype html><html lang=en><head><meta charset=utf-8>"
                         f"<meta name=viewport content='width=device-width,initial-scale=1'><title>{e(title)}</title>"
                         f"<style>{CSS}</style></head><body><header><div><b>CiO</b> construction cost pilot {who}</div>"
-                        f"{nav}</header><main>{body}<p class=mut>Play money only: points have no cash value.</p>"
+                        f"{nav}</header><main>{DEMO_BANNER if DEMO else ''}{body}"
+                        f"<p class=mut>Play money only: points have no cash value.</p>"
                         f"</main></body></html>")
+
+
+DEMO_BANNER = ("<div class=card style='border-color:var(--acc)'><b>Demo.</b> Participants, trades and "
+               "prices here are illustrative sample data, not real reports.</div>")
 
 
 def need_login(request: Request):
@@ -100,15 +173,18 @@ official index print, and get the weekly cost note. Uganda, Kenya and Rwanda.</p
 
 
 @app.post("/login")
-def login(code: str = Form(...)):
+def login(request: Request, code: str = Form(...)):
+    if LIMIT.blocked(_ip(request)):
+        return RedirectResponse("/?err=Too+many+attempts.+Try+again+in+15+minutes", status_code=303)
     try:
         token = people().redeem(code)
     except ReportError:
+        LIMIT.fail(_ip(request))
         return RedirectResponse("/?err=That+invite+code+was+not+recognised", status_code=303)
     user = people().by_token(token)
     ex().open_account(user["handle"])
     r = RedirectResponse("/home", status_code=303)
-    r.set_cookie(COOKIE, token, httponly=True, samesite="lax", max_age=60 * 60 * 24 * 180)
+    r.set_cookie(COOKIE, token, httponly=True, samesite="lax", secure=SECURE, max_age=60 * 60 * 24 * 180)
     return r
 
 
@@ -270,31 +346,63 @@ current prices. Good forecasters rise as contracts settle.</p><div class=tw><tab
 
 
 # ---------------------------------------------------------------- admin --
-def _admin_ok(key: str) -> bool:
-    expected = os.environ.get("CIO_ADMIN_KEY")
-    return bool(expected) and key == expected
+def _admin_token() -> str | None:
+    """Stateless admin session: an HMAC of a fixed label under the admin password, so the
+    password itself never sits in a cookie or a URL, and changing it logs everyone out."""
+    key = os.environ.get("CIO_ADMIN_KEY")
+    return hmac.new(key.encode(), b"cio-admin-session", hashlib.sha256).hexdigest() if key else None
+
+
+def _is_admin(request: Request) -> bool:
+    expected = _admin_token()
+    return bool(expected) and hmac.compare_digest(request.cookies.get(ADMIN_COOKIE, ""), expected)
 
 
 @app.get("/admin", response_class=HTMLResponse)
-def admin(key: str = "", made: str = ""):
-    if not _admin_ok(key):
-        return HTMLResponse("Forbidden", status_code=403)
+def admin(request: Request, made: str = "", err: str = ""):
+    if not _admin_token():
+        return HTMLResponse("Admin is disabled (CIO_ADMIN_KEY not set)", status_code=403)
+    if not _is_admin(request):
+        msg = f"<p class=err>{e(err)}</p>" if err else ""
+        return page("Organiser login", f"""<div class=card><h1>Organiser login</h1>
+<form method=post action=/admin/login><label>Admin password</label><input name=key type=password required>
+<p><button>Log in</button></p></form>{msg}</div>""")
     opts = "".join(f"<option value={c}>{e(v['country'])}</option>" for c, v in COUNTRIES.items())
     rows = "".join(f"<tr><td>{e(p['name'])}</td><td>{e(p['org'] or '')}</td><td>{e(p['country'])}</td>"
                    f"<td><code>{e(p['invite_code'])}</code></td><td>{'yes' if p['active'] else ''}</td></tr>"
                    for p in people().all())
     flash = f"<p class=ok>Invite code: <b>{e(made)}</b></p>" if made else ""
     return page("Admin", f"""<div class=card><h1>Invite a participant</h1>
-<form method=post action='/admin/invite?key={e(key)}'><div class=row><div><label>Name</label><input name=name required></div>
+<form method=post action=/admin/invite><div class=row><div><label>Name</label><input name=name required></div>
 <div><label>Organisation</label><input name=org></div></div><label>Country</label><select name=country>{opts}</select>
-<p><button>Create invite code</button></p></form>{flash}</div>
+<p><button>Create invite code</button></p></form>{flash}<p><a href=/admin/logout>Log out of admin</a></p></div>
 <div class=card><h2>Participants</h2><div class=tw><table><tr><th>Name</th><th>Organisation</th><th>Country</th>
 <th>Code</th><th>Joined</th></tr>{rows}</table></div></div>""")
 
 
+@app.post("/admin/login")
+def admin_login(request: Request, key: str = Form(...)):
+    expected = os.environ.get("CIO_ADMIN_KEY")
+    if LIMIT.blocked(_ip(request)):
+        return RedirectResponse("/admin?err=Too+many+attempts.+Try+again+in+15+minutes", status_code=303)
+    if not expected or not hmac.compare_digest(key, expected):
+        LIMIT.fail(_ip(request))
+        return RedirectResponse("/admin?err=Wrong+password", status_code=303)
+    r = RedirectResponse("/admin", status_code=303)
+    r.set_cookie(ADMIN_COOKIE, _admin_token(), httponly=True, samesite="strict", secure=SECURE, max_age=60 * 60 * 12)
+    return r
+
+
+@app.get("/admin/logout")
+def admin_logout():
+    r = RedirectResponse("/admin", status_code=303)
+    r.delete_cookie(ADMIN_COOKIE)
+    return r
+
+
 @app.post("/admin/invite")
-def invite(key: str = "", name: str = Form(...), org: str = Form(""), country: str = Form(...)):
-    if not _admin_ok(key) or country not in COUNTRIES:
+def invite(request: Request, name: str = Form(...), org: str = Form(""), country: str = Form(...)):
+    if not _is_admin(request) or country not in COUNTRIES:
         return HTMLResponse("Forbidden", status_code=403)
     code = people().invite(name, org, country)
-    return RedirectResponse(f"/admin?key={key}&made={code}", status_code=303)
+    return RedirectResponse(f"/admin?made={code}", status_code=303)

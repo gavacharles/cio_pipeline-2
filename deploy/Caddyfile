@@ -1,0 +1,7 @@
+# /etc/caddy/Caddyfile — Caddy obtains and renews the HTTPS certificate automatically.
+# Replace the domain; its DNS A record must point at this server first.
+pilot.example.com {
+    encode gzip
+    reverse_proxy 127.0.0.1:8000
+    header Strict-Transport-Security "max-age=31536000"
+}

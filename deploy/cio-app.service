@@ -1,0 +1,18 @@
+# systemd unit for the participant app. Install: see docs/DEPLOY.md
+[Unit]
+Description=CiO construction cost pilot (participant app)
+After=network-online.target
+
+[Service]
+User=cio
+WorkingDirectory=/srv/cio_pipeline-2
+EnvironmentFile=/etc/cio/cio.env
+ExecStart=/srv/cio_pipeline-2/.venv/bin/uvicorn --app-dir src/webapp app:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips 127.0.0.1 --workers 2
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

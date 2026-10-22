@@ -56,10 +56,21 @@ class Exchange:
     def __init__(self, path: str | Path = ":memory:", starting_points: float = 1000.0):
         if str(path) != ":memory:":
             Path(path).parent.mkdir(parents=True, exist_ok=True)
-        self.db = sqlite3.connect(str(path))
+        self.db = sqlite3.connect(str(path), timeout=10, check_same_thread=False)
+        if str(path) != ":memory:":
+            self.db.execute("PRAGMA journal_mode=WAL")   # readers do not block the writer
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
         self.starting_points = starting_points
+
+    def close(self) -> None:
+        self.db.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self.close()
 
     # ------------------------------------------------------------ accounts --
     def open_account(self, name: str) -> None:

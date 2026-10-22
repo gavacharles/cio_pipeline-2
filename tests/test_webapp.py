@@ -42,15 +42,19 @@ def test_crowd_summary_uses_one_median_per_reporter():
 def test_app_flow(tmp_path, monkeypatch):
     monkeypatch.setenv("CIO_DB", str(tmp_path / "x.sqlite"))
     monkeypatch.setenv("CIO_ADMIN_KEY", "k")
+    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")       # the test client speaks plain http
     import importlib
     import app as webapp
     importlib.reload(webapp)
     from fastapi.testclient import TestClient
     from ledger import Exchange
     c = TestClient(webapp.app)
-    assert c.get("/admin?key=wrong").status_code == 403
-    r = c.post("/admin/invite?key=k", data={"name": "Jane Okello", "org": "Okello Builders", "country": "uganda"},
+    assert c.post("/admin/invite", data={"name": "x", "country": "uganda"}).status_code == 403
+    assert "Wrong password" in c.post("/admin/login", data={"key": "wrong"}).text
+    c.post("/admin/login", data={"key": "k"})
+    r = c.post("/admin/invite", data={"name": "Jane Okello", "org": "Okello Builders", "country": "uganda"},
                follow_redirects=False)
+    assert "key=" not in r.headers["location"]
     code = r.headers["location"].split("made=")[1]
     mid = Exchange(tmp_path / "x.sqlite").create_market(
         "uganda", "CEM", "cement", "Cement", "2099-01", [0.0], ["down", "up"], [0.5, 0.5], 100,
@@ -65,6 +69,20 @@ def test_app_flow(tmp_path, monkeypatch):
     assert "Jane Okello" in c.get("/leaderboard").text
     c.get("/logout")
     assert c.get("/home", follow_redirects=False).status_code == 303
+    assert r.headers.get("x-frame-options") == "DENY" or c.get("/").headers["x-frame-options"] == "DENY"
+
+
+def test_login_rate_limit(tmp_path, monkeypatch):
+    monkeypatch.setenv("CIO_DB", str(tmp_path / "y.sqlite"))
+    monkeypatch.setenv("CIO_SECURE_COOKIES", "0")
+    import importlib
+    import app as webapp
+    importlib.reload(webapp)
+    from fastapi.testclient import TestClient
+    c = TestClient(webapp.app)
+    for _ in range(10):
+        assert "not+recognised" in c.post("/login", data={"code": "BAD"}, follow_redirects=False).headers["location"]
+    assert "Too+many" in c.post("/login", data={"code": "BAD"}, follow_redirects=False).headers["location"]
 
 
 KNBS = ROOT / "data" / "raw" / "knbs" / "Construction-Input-Price-Indices-for-Fourth-Quarter-2024.pdf"

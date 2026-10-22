@@ -1,9 +1,9 @@
-# CiO pilot — install with `crontab -e` on the server that runs the participant app.
-# Times are East Africa Time if the server clock is set to Africa/Kampala.
+# CiO pilot — install as the `cio` user with `crontab -e`. Server clock: Africa/Kampala.
 REPO=/srv/cio_pipeline-2
+PY=/srv/cio_pipeline-2/.venv/bin/python
 # Daily 06:30: harvest UBOS/KNBS, settle published contracts, refit on a new release, open next ones.
-30 6 * * *  cd $REPO && python3 src/market/cycle.py daily  >> data/market/cron.log 2>&1
-# Monday 05:00: refresh Brent, exchange rates and rainfall; write the weekly note.
-0 5 * * 1   cd $REPO && python3 src/market/cycle.py weekly >> data/market/cron.log 2>&1
-# The app itself (or use a systemd unit / process manager):
-# @reboot   cd $REPO && CIO_ADMIN_KEY=... uvicorn --app-dir src/webapp app:app --host 0.0.0.0 --port 8000
+30 6 * * *  cd $REPO && $PY src/market/cycle.py daily  >> data/market/cron.log 2>&1
+# Monday 05:00: refresh rainfall, Brent and exchange rates; write the Uganda, Kenya and Rwanda notes.
+0 5 * * 1   cd $REPO && $PY src/market/cycle.py weekly >> data/market/cron.log 2>&1
+# Nightly 02:00: database backup.
+0 2 * * *   cd $REPO && deploy/backup.sh >> data/market/cron.log 2>&1
