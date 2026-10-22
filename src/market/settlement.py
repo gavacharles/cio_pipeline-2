@@ -45,11 +45,30 @@ def _ubos_cipi_files(raw_dirs: list[str]) -> list[Path]:
     return files
 
 
+def chained_first_prints(releases: pd.DataFrame, label: str, step_months: int = 1, as_of=None) -> pd.Series:
+    """A level series (first value 100) built by chaining each release's own change on the
+    previous period: immune to rebasing and reweighting between releases (Stats SA)."""
+    rel = releases[releases.series_label == label]
+    if as_of is not None:
+        rel = rel[rel.release_month <= as_of]
+    out = {}
+    for ref in sorted(rel.release_month.unique()):
+        fp = first_print(rel, label, ref, decimals=6, step_months=step_months)
+        if fp:
+            out[pd.Timestamp(ref)] = 1 + fp["value"] / 100
+    if not out:
+        return pd.Series(dtype=float)
+    g = pd.Series(out).sort_index()
+    return (100 * g.cumprod()).asfreq("MS" if step_months == 1 else "QS-JAN")
+
+
 def history(releases: pd.DataFrame, label: str, cfg: dict, as_of=None) -> pd.Series:
-    """series_history with the country's frequency and history rule
-    (settlement.history: newest_release (default; safe across rebasings) | combine_releases)."""
-    return series_history(releases, label, as_of, period_step(cfg)[0],
-                          cfg["settlement"].get("history") == "combine_releases")
+    """series_history with the country's frequency and history rule (settlement.history:
+    newest_release (default; safe across rebasings) | combine_releases | chain_first_prints)."""
+    rule = cfg["settlement"].get("history")
+    if rule == "chain_first_prints":
+        return chained_first_prints(releases, label, period_step(cfg)[1], as_of)
+    return series_history(releases, label, as_of, period_step(cfg)[0], rule == "combine_releases")
 
 
 def period_step(cfg: dict) -> tuple[str, int]:
@@ -69,12 +88,26 @@ def _knbs_releases(cfg: dict) -> pd.DataFrame:
     return rel[["source_file", "series_label", "date", "index_value", "release_month"]]
 
 
+def _statssa_releases(cfg: dict) -> pd.DataFrame:
+    """Stats SA P0151.1 PDFs (src/ingest/statssa_p01511.py); falls back to the committed
+    parsed table when the PDFs are not on disk (fresh clone)."""
+    import statssa_p01511
+    files = [f for d in cfg["settlement"]["raw_dirs"] for f in (ROOT / d).glob("*.pdf")]
+    rel, _ = statssa_p01511.parse_all(files) if files else (pd.DataFrame(), [])
+    if rel.empty:
+        rel = pd.read_csv(ROOT / "data" / "processed" / "statssa_p01511_long.csv",
+                          parse_dates=["date", "release_month"])
+    return rel[["source_file", "series_label", "date", "index_value", "release_month"]]
+
+
 def load_releases(cfg: dict) -> pd.DataFrame:
     """Parse every release for the country into one long frame.
     Adds `release_month` = the latest period a release contains (its reference period)."""
     parser = cfg["settlement"]["parser"]
     if parser == "knbs_cipi_quarterly":
         return _knbs_releases(cfg)
+    if parser == "statssa_p01511":
+        return _statssa_releases(cfg)
     if parser != "ubos_cipi":
         raise NotImplementedError(f"no settlement adapter for parser {parser!r} yet")
     frames = []

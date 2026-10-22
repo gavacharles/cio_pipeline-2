@@ -18,7 +18,7 @@ Brent in francs has moved **+35.8%** over 13 weeks. For scale, in the neighbouri
 
 ## Prices reported by participants
 
-_No price reports in the last 12 weeks._
+_No price reports yet. Participants report the prices they pay in the app each week._
 
 ## Open forecasting contracts
 

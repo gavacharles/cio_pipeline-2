@@ -5,6 +5,7 @@ country: Uganda
 iso3: UGA
 status: pilot            # pilot | planned
 currency: UGX
+fx_code: ugx
 regulation:
   mode: play_money       # play_money | sandbox | licensed — no real money until a regulator signs off
   regulators:

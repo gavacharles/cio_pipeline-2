@@ -51,7 +51,9 @@ src/ingest/build_weekly_drivers.py  weekly Brent + UGX/KES/RWF readings for the 
 src/ingest/pull_knbs_cipi.py, parse_knbs_cipi.py  Kenya KNBS quarterly CIPI PDFs
 src/forecast/weekly_note.py  weekly construction-cost notes per country (data/processed/notes/)
 src/forecast/quarterly_model.py  Kenya quarterly forecaster (KNBS indices)
-src/ingest/build_fx_history.py  IMF monthly KES/RWF/UGX per USD
+src/ingest/build_fx_history.py  IMF monthly exchange rates for every configured country
+src/ingest/statssa_p01511.py  South Africa Stats SA P0151.1 harvester + parser
+config/countries/            18 countries; see docs/COUNTRIES.md
 src/webapp/app.py            participant app: invites, contracts, price reports, note, leaderboard
 src/market/cycle.py          daily/weekly automation (deploy/crontab.example); see docs/OPERATIONS.md
 config/series_map.yaml       editable dataset/series codes

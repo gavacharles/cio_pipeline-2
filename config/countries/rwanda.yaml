@@ -6,6 +6,7 @@ country: Rwanda
 iso3: RWA
 status: reporting
 currency: RWF
+fx_code: rwf
 regulation:
   mode: play_money
   regulators:

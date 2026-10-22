@@ -146,3 +146,31 @@ def test_rwanda_note_builds_offline(tmp_path, monkeypatch):
     assert "Rwanda construction cost note" in md and "Brent in RWF" in md
     assert (tmp_path / md.splitlines()[0] if False else tmp_path).exists()
     assert any(p.suffix == ".html" for p in tmp_path.iterdir())
+
+
+def test_chained_history_survives_rebasing():
+    from settlement import chained_first_prints, first_print
+    rows = []
+    # release A (base 1): Jan 100, Feb 102; release B rebased x0.5: Feb 51, Mar 52.02
+    for src, rm, vals in [("A", "2024-02-01", {"2024-01-01": 100, "2024-02-01": 102}),
+                          ("B", "2024-03-01", {"2024-02-01": 51, "2024-03-01": 52.02})]:
+        for d, v in vals.items():
+            rows.append({"source_file": src, "series_label": "x", "date": pd.Timestamp(d), "index_value": v,
+                         "release_month": pd.Timestamp(rm)})
+    rel = pd.DataFrame(rows)
+    h = chained_first_prints(rel, "x")
+    assert h.iloc[0] == pytest.approx(102) and h.iloc[1] == pytest.approx(102 * 1.02)
+    assert first_print(rel, "x", "2024-03-01")["value"] == 2.0
+
+
+def test_all_country_configs_and_generic_note(tmp_path, monkeypatch):
+    from country import load_country, list_countries
+    cs = list_countries()
+    assert {"south_africa", "nigeria", "ghana", "zimbabwe"} <= set(cs)
+    assert all(load_country(c)["fx_code"] and load_country(c).get("price_items") for c in cs)
+    if not (ROOT / "data" / "raw" / "weekly_drivers.csv").exists():
+        pytest.skip("no weekly drivers")
+    import weekly_note
+    monkeypatch.setattr(weekly_note, "NOTES", tmp_path)
+    md = weekly_note.build("nigeria", fetch=False, db_path=tmp_path / "none.sqlite").read_text()
+    assert "Nigeria construction cost note" in md and "Official construction price index" in md

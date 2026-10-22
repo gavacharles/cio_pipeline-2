@@ -1,0 +1,55 @@
+# South Africa: monthly contracts on Stats SA P0151.1 construction materials price indices.
+# Table 3 (construction input price index, whole industry, weighted) and Table 6 (civil
+# engineering materials). Stats SA rebases (Dec 2021=100, Dec 2023=100) and reweights
+# annually, so history chains each release's own month-on-month change, and contracts settle
+# on that same within-release change (first print). 68 releases Jan 2021 - Aug 2026 parsed.
+# Stats SA blocks non-browser downloads; src/ingest/statssa_p01511.py sends browser headers.
+country: South Africa
+iso3: ZAF
+status: pilot
+currency: ZAR
+fx_code: zar
+regulation:
+  mode: play_money
+  regulators:
+    - "Financial Sector Conduct Authority (FSCA): index-linked contracts may be derivatives"
+    - "National Gambling Board / provincial gambling boards: real-money event bets may be gambling"
+  note: Points have no cash value. Real money needs a legal opinion first.
+
+settlement:
+  statistics_office: Statistics South Africa (Stats SA)
+  publication: P0151.1 Construction materials price indices, monthly PDF
+  url: https://www.statssa.gov.za/?page_id=1854&PPN=P0151.1
+  parser: statssa_p01511
+  raw_dirs: [data/raw/statssa]
+  frequency: monthly
+  history: chain_first_prints        # rebased and reweighted over time
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants:
+    - Stats SA staff involved in compiling P0151.1
+
+exchange:
+  starting_points: 1000
+  liquidity_b: 100
+  probability_floor: 0.02
+  nowcast_min_train: 24
+
+markets:
+  - { code: ZA_CIPI,    label: "cipi|total construction",                   title: Construction input prices (whole industry), cuts: [-0.25, 0.0, 0.25, 0.75] }
+  - { code: ZA_CEM,     label: "cipi|cement",                               title: Cement,                     cuts: [-1.0, 0.0, 0.01, 1.0] }
+  - { code: ZA_READY,   label: "cipi|ready-mix concrete",                   title: Ready-mix concrete,         cuts: [-1.0, 0.0, 0.01, 1.0] }
+  - { code: ZA_REBAR,   label: "cipi|reinforcing metal work",               title: Reinforcing steel,          cuts: [-1.0, 0.0, 0.01, 1.0] }
+  - { code: ZA_STONE,   label: "cipi|construction stone and sand",          title: Construction stone and sand, cuts: [-1.0, 0.0, 0.01, 1.0] }
+  - { code: ZA_CIVIL,   label: "civil|civil engineering material - total",  title: Civil engineering materials, cuts: [-0.5, 0.0, 0.5, 1.0] }
+
+price_items:
+  - { code: cement_50kg,  name: "Cement, 50 kg bag",              unit: bag }
+  - { code: rebar_tonne,  name: "Reinforcing steel, per tonne",   unit: tonne }
+  - { code: readymix_m3,  name: "Ready-mix concrete 25 MPa, per m3", unit: m3 }
+  - { code: diesel,       name: "Diesel, pump price",             unit: litre }
+  - { code: sand,         name: "Building sand, per m3",          unit: m3 }
+  - { code: stone,        name: "19 mm stone, per m3",            unit: m3 }
+  - { code: brick_1000,   name: "Clay stock bricks, per 1,000",   unit: thousand }
+  - { code: builder_day,  name: "Builder / bricklayer, daily wage", unit: day }

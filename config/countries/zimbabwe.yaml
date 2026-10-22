@@ -1,0 +1,41 @@
+# Zimbabwe: weekly note and price reports; contracts wait for an official settlement series.
+# Official construction price index (researched 2026-10-22): available: ZimStat monthly building materials (BMPI) and civil engineering materials (CEMPI) indices; adapter next
+country: Zimbabwe
+iso3: ZWE
+status: reporting
+currency: ZWG
+fx_code: zwg                     # currency-api code; IMF history from ZWE.XDC_USD.PA_RT.M
+regulation:
+  mode: play_money
+  regulators:
+    - "Capital markets / financial conduct regulator: index-linked contracts may be derivatives"
+    - "Gaming / lotteries regulator: real-money event bets may be gambling"
+  note: Points have no cash value. Confirm the regulators and get a legal opinion before any prize or cash element.
+
+settlement:
+  statistics_office: "ZimStat"
+  publication: "available: ZimStat monthly building materials (BMPI) and civil engineering materials (CEMPI) indices; adapter next"
+  parser: none
+  raw_dirs: []
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange:
+  starting_points: 1000
+  liquidity_b: 100
+  probability_floor: 0.02
+
+markets: []
+
+price_items:
+  - { code: cement_50kg,  name: "Cement, 50 kg bag",             unit: bag }
+  - { code: rebar_y12,    name: "Rebar 12 mm, 12 m bar",          unit: bar }
+  - { code: roof_sheet,   name: "Roofing sheet, 3 m",             unit: sheet }
+  - { code: diesel,       name: "Diesel, pump price",             unit: litre }
+  - { code: sand,         name: "Sand, per tonne",                unit: tonne }
+  - { code: aggregate,    name: "Aggregate / stone, per tonne",   unit: tonne }
+  - { code: block,        name: "Concrete block or brick",        unit: piece }
+  - { code: mason_day,    name: "Mason, daily wage",              unit: day }

@@ -33,24 +33,11 @@ July 2026 excise changes (fuel +Shs200/l, cement, paint) are included at 50% pas
 
 ## Prices reported by participants
 
-_No price reports in the last 12 weeks._
+_No price reports yet. Participants report the prices they pay in the app each week._
 
 ## Open forecasting contracts
 
-| Contract | Period | Crowd expects | Model expected | Closes |
-|---|---|---|---|---|
-| Aggregate and hardcore | 2026-10 | +0.26% | +0.26% | 2026-11-01 |
-| Concrete blocks | 2026-10 | -0.01% | -0.01% | 2026-11-01 |
-| Cement | 2026-10 | +0.05% | +0.05% | 2026-11-01 |
-| Overall construction input prices | 2026-10 | +0.30% | +0.30% | 2026-11-01 |
-| Diesel | 2026-10 | +0.18% | +0.18% | 2026-11-01 |
-| Construction labour | 2026-10 | +0.15% | +0.15% | 2026-11-01 |
-| Paints | 2026-10 | +0.09% | +0.09% | 2026-11-01 |
-| Plastic pipes | 2026-10 | +0.12% | +0.12% | 2026-11-01 |
-| Reinforcement steel bars | 2026-10 | +0.18% | +0.18% | 2026-11-01 |
-| Steel roofing sheets | 2026-10 | +0.04% | +0.04% | 2026-11-01 |
-| Sand | 2026-10 | +0.16% | +0.16% | 2026-11-01 |
-| Timber | 2026-10 | +0.21% | +0.21% | 2026-11-01 |
+_No open contracts._
 
 ## Sources
 

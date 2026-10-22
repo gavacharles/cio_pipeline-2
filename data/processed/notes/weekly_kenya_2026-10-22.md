@@ -39,19 +39,11 @@ Quarterly model driven by the shilling and Brent in shillings, conditioned on th
 
 ## Prices reported by participants
 
-_No price reports in the last 12 weeks._
+_No price reports yet. Participants report the prices they pay in the app each week._
 
 ## Open forecasting contracts
 
-| Contract | Period | Crowd expects | Model expected | Closes |
-|---|---|---|---|---|
-| Building cost index | 2026-10 | +0.69% | +0.69% | 2026-11-15 |
-| Cement | 2026-10 | +0.53% | +0.53% | 2026-11-15 |
-| Overall construction input prices | 2026-10 | +0.78% | +0.78% | 2026-11-15 |
-| Civil engineering cost index | 2026-10 | +0.75% | +0.75% | 2026-11-15 |
-| Fuel and lubricants | 2026-10 | +1.24% | +1.24% | 2026-11-15 |
-| Construction labour | 2026-10 | +0.44% | +0.44% | 2026-11-15 |
-| Steel and reinforcement bars | 2026-10 | +0.43% | +0.43% | 2026-11-15 |
+_No open contracts._
 
 ## Sources
 

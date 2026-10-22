@@ -15,8 +15,9 @@ One note per country: data/processed/notes/weekly_<country>_<date>.{md,html}
   - uganda: structural model (monthly, UBOS weights) conditioned on new Brent/UGX readings
   - kenya:  quarterly model for the KNBS overall/building/civil indices, conditioned on
             observed Brent and KES quarters; bands from walk-forward backtest errors
-  - rwanda: no official construction index — drivers (RWF, Brent in RWF), crowd prices,
-            and Uganda/Kenya pass-through as a labelled reference
+  - south_africa: latest Stats SA P0151.1 readings and next-month contract expectations
+  - rwanda and every other configured country without a wired-in index: drivers (local
+            currency, Brent in local currency), crowd prices, and the official-index status
 The participant app shows the latest note for the participant's country.
 
     python src/forecast/weekly_note.py [--country uganda|kenya|rwanda|all] [--no-fetch] [--db ...]
@@ -61,13 +62,22 @@ def _fmt(x, nd=1, pct=False):
     return f"{x:+.{nd}f}%" if pct else f"{x:,.{nd}f}"
 
 
-CCY = {"uganda": ("UGX", "ugx_per_usd"), "kenya": ("KES", "kes_per_usd"), "rwanda": ("RWF", "rwf_per_usd")}
+def ccy(country: str) -> tuple[str, str]:
+    """(currency code, weekly-drivers column) from the country config."""
+    from country import load_country
+    cfg = load_country(country)
+    return cfg["currency"], f"{cfg['fx_code']}_per_usd"
 
 
 def drivers_section(weekly: pd.DataFrame, country: str) -> list[str]:
-    ccy, col = CCY[country]
+    ccy_code, col = ccy(country)
+    if col not in weekly.columns or weekly[col].dropna().empty:
+        return [f"_No exchange-rate readings for {ccy_code} yet; Brent in USD only._", "",
+                f"Brent crude: {_fmt(weekly['brent_usd'].dropna().iloc[-1])} USD/bbl "
+                f"({_fmt(_chg(weekly['brent_usd'], 91), pct=True)} over 13 weeks)."]
+    ccy_ = ccy_code
     w = weekly.assign(oil_local=weekly["brent_usd"] * weekly[col])
-    rows = [("Brent crude (USD/bbl)", "brent_usd"), (f"{ccy} per USD", col), (f"Brent in {ccy}", "oil_local")]
+    rows = [("Brent crude (USD/bbl)", "brent_usd"), (f"{ccy_} per USD", col), (f"Brent in {ccy_}", "oil_local")]
     out = ["| Driver | Latest | 1 week | 4 weeks | 13 weeks | 52 weeks |", "|---|---|---|---|---|---|"]
     for name, c in rows:
         s = w[c]
@@ -222,7 +232,48 @@ def rwanda_body(weekly) -> list[str]:
             "estimate: prices reported here will build the Rwanda series."]
 
 
-BODIES = {"uganda": uganda_body, "kenya": kenya_body, "rwanda": rwanda_body}
+def south_africa_body(weekly) -> list[str]:
+    from country import load_country
+    from settlement import load_releases, history, first_print
+    from nowcast import mom_changes, predictive_probs, expected_change
+    cfg = load_country("south_africa")
+    rel = load_releases(cfg)
+    latest = rel.release_month.max()
+    nxt = latest + pd.DateOffset(months=1)
+    lines = ["## Latest Stats SA readings", "",
+             f"Stats SA P0151.1 construction materials price indices, latest release **{latest:%B %Y}** "
+             "(monthly). Changes are computed inside each release, so rebasing does not distort them.", "",
+             "| Series | Change on previous month | Change on a year earlier | Expected next month |",
+             "|---|---|---|---|"]
+    for m in cfg["markets"]:
+        fp = first_print(rel, m["label"], latest)
+        yr = rel[(rel.series_label == m["label"]) & (rel.release_month == latest)].set_index("date")["index_value"]
+        y1 = (yr.iloc[-1] / yr.iloc[0] - 1) * 100 if len(yr) >= 3 else np.nan
+        h = history(rel, m["label"], cfg)
+        r = mom_changes(h)
+        exp = expected_change(predictive_probs(r, nxt, m["cuts"], 1, 0.02), m["cuts"]) if len(r) > 24 else np.nan
+        lines.append(f"| {m['title']} | {_fmt(fp['value'] if fp else None, 2, pct=True)} | "
+                     f"{_fmt(y1, pct=True)} | {_fmt(exp, 2, pct=True)} |")
+    lines += ["", f"Expected = the opening price of the {nxt:%B %Y} contract (recent change patterns; backtest over "
+              "43 months beat plain frequencies for 7 of 12 contract-horizons, none significantly). A driver-based "
+              "South Africa model is next."]
+    return lines
+
+
+def generic_body(weekly, country: str) -> list[str]:
+    from country import load_country
+    cfg = load_country(country)
+    ccy_code, col = ccy(country)
+    q13 = _chg((weekly["brent_usd"] * weekly[col]) if col in weekly.columns else weekly["brent_usd"], 91)
+    return ["## Cost pressure", "",
+            f"Official construction price index: {cfg['settlement']['publication']}.", "",
+            f"Until an official series is wired in, this note tracks the imported-cost drivers and the prices "
+            f"participants report. Brent in {ccy_code} has moved **{_fmt(q13, pct=True)}** over 13 weeks; in the "
+            "official East African indices a sustained 1% rise in oil in local currency has passed through about "
+            "0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate."]
+
+
+BODIES = {"uganda": uganda_body, "kenya": kenya_body, "rwanda": rwanda_body, "south_africa": south_africa_body}
 
 
 def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_DB) -> Path:
@@ -235,7 +286,7 @@ def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_D
     today = date.today()
     lines = [f"# {cfg['country']} construction cost note — week of {today:%d %B %Y}", "", HEADER, "",
              "## This week's drivers", ""] + drivers_section(weekly, country) + [""]
-    lines += BODIES[country](weekly)
+    lines += BODIES[country](weekly) if country in BODIES else generic_body(weekly, country)
     lines += ["", "## Prices reported by participants", ""] + crowd_section(db_path, country)
     lines += ["", "## Open forecasting contracts", ""] + market_section(db_path, country)
     lines += ["", "## Sources", "",
@@ -293,11 +344,12 @@ def latest_note(country: str, kind: str = "html") -> Path | None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--country", default="all", choices=["all", *BODIES])
+    from country import list_countries
+    ap.add_argument("--country", default="all", choices=["all", *list_countries()])
     ap.add_argument("--no-fetch", action="store_true", help="use the drivers already on disk")
     ap.add_argument("--db", default=str(DEFAULT_DB))
     a = ap.parse_args()
     fetch = not a.no_fetch
-    for c in (BODIES if a.country == "all" else [a.country]):
+    for c in (list_countries() if a.country == "all" else [a.country]):
         print("wrote", build(c, fetch=fetch, db_path=Path(a.db)))
         fetch = False                      # drivers fetched once per run

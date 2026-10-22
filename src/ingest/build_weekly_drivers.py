@@ -32,7 +32,20 @@ EXT = ROOT / "data" / "processed" / "macro_extension_monthly.csv"
 PANEL = ROOT / "data" / "processed" / "panel_v1.0_extended.csv"
 FX_URL = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{d}/v1/currencies/usd.json"
 FX_START = date(2024, 3, 8)            # first dated snapshot available
-CURRENCIES = {"ugx": "ugx_per_usd", "kes": "kes_per_usd", "rwf": "rwf_per_usd"}
+
+
+def _currencies() -> dict[str, str]:
+    """currency-api code -> column, for every country config with an fx_code."""
+    import yaml
+    out = {}
+    for f in sorted((ROOT / "config" / "countries").glob("*.yaml")):
+        fx = (yaml.safe_load(f.read_text(encoding="utf-8")) or {}).get("fx_code")
+        if fx:
+            out[fx] = f"{fx}_per_usd"
+    return out
+
+
+CURRENCIES = _currencies()
 
 
 def _get(url: str, timeout: int = 60) -> bytes:
@@ -52,21 +65,22 @@ def brent_daily() -> pd.Series:
     return s.dropna().astype(float).rename("brent_usd")
 
 
-def fx_weekly(cached: pd.DataFrame | None) -> pd.DataFrame:
-    have = set(cached.index.date) if cached is not None else set()
+def fx_weekly(cached: pd.DataFrame | None, backfill: bool = False) -> pd.DataFrame:
+    # every cached week counts as fetched, unless a currency was added since (then back-fill once)
+    have = set() if (cached is None or backfill) else set(cached.index.date)
     rows = []
     d, today = FX_START, date.today()
     while d <= today:
         if d not in have:
             try:
                 usd = json.loads(_get(FX_URL.format(d=d.isoformat()), 30))["usd"]
-                rows.append({"date": pd.Timestamp(d), **{v: usd[k] for k, v in CURRENCIES.items()}})
+                rows.append({"date": pd.Timestamp(d), **{v: usd.get(k) for k, v in CURRENCIES.items()}})
             except Exception:
                 pass                       # a missing snapshot is skipped, not fatal
         d += timedelta(days=7)
     try:                                   # always add today's reading
         usd = json.loads(_get(FX_URL.format(d="latest"), 30))["usd"]
-        rows.append({"date": pd.Timestamp(today), **{v: usd[k] for k, v in CURRENCIES.items()}})
+        rows.append({"date": pd.Timestamp(today), **{v: usd.get(k) for k, v in CURRENCIES.items()}})
     except Exception:
         pass
     new = pd.DataFrame(rows).set_index("date") if rows else pd.DataFrame(columns=list(CURRENCIES.values()))
@@ -76,7 +90,9 @@ def fx_weekly(cached: pd.DataFrame | None) -> pd.DataFrame:
 
 def build() -> tuple[pd.DataFrame, pd.DataFrame]:
     cached = pd.read_csv(WEEKLY, parse_dates=["date"]).set_index("date") if WEEKLY.exists() else None
-    fx = fx_weekly(cached[list(CURRENCIES.values())] if cached is not None else None)
+    cols = list(CURRENCIES.values())
+    new_cols = cached is not None and bool(set(cols) - set(cached.columns))
+    fx = fx_weekly(cached.reindex(columns=cols) if cached is not None else None, backfill=new_cols)
     brent = brent_daily()
     weekly = fx.join(brent.resample("D").ffill().reindex(fx.index, method="ffill"), how="left")
     weekly.round(4).to_csv(WEEKLY)

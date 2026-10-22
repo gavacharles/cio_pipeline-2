@@ -21,7 +21,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 LOG = ROOT / "data" / "market" / "cycle_log.csv"
 PY = sys.executable
-COUNTRIES = ["uganda", "kenya"]               # countries with settled contracts
+
+
+def _contract_countries() -> list[str]:
+    sys.path.insert(0, str(ROOT / "src" / "market"))
+    from country import load_country, list_countries
+    return [c for c in list_countries() if load_country(c)["markets"]]
+
+
+COUNTRIES = _contract_countries()               # countries with settled contracts
 
 
 def log(step: str, status: str, detail: str = "") -> None:
@@ -59,6 +67,7 @@ def daily(db: str | None) -> None:
     before = {c: latest_release_month(c) for c in COUNTRIES}
     run("harvest UBOS", "src/ingest/pull_ubos_cipi.py", "--out", "data/raw/ubos_cipi_downloads")
     run("harvest KNBS", "src/ingest/pull_knbs_cipi.py")
+    run("harvest Stats SA", "src/ingest/statssa_p01511.py", "pull")
     for c in COUNTRIES:
         after = latest_release_month(c)
         mkt = ["src/market/run_market.py"]

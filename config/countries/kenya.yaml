@@ -7,6 +7,7 @@ country: Kenya
 iso3: KEN
 status: pilot
 currency: KES
+fx_code: kes
 regulation:
   mode: play_money
   regulators:
