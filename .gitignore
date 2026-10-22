@@ -32,3 +32,6 @@ data/market/
 
 # Stats SA PDFs are re-downloadable; the parsed table is committed
 data/raw/statssa/
+
+# Local outreach and commercial notes (repo is public)
+outreach/
