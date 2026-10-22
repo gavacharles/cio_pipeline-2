@@ -1,0 +1,59 @@
+# Refresh the CiO Lab portal's data every two days.
+#
+# Harvests the UBOS releases and the MoFPED macro block (the same steps as
+# run_phase0.sh, each allowed to fail so a source outage does not stop the
+# refresh), rebuilds the panel and the forecast parameters, and posts the
+# resulting datasets to the portal's ingest endpoint. Secrets:
+#   CIO_INGEST_URL  e.g. https://cio.hovequill.com/api/cio-ingest
+#   CIO_INGEST_KEY  the same value as the portal's CIO_INGEST_KEY setting
+name: CiO data refresh
+
+on:
+  schedule:
+    - cron: '20 2 */2 * *'     # 02:20 UTC every second day
+  workflow_dispatch:
+  push:
+    branches: [main, feature/dashboard]
+    paths: ['data/processed/**', 'app/claims_library.json', 'app/claim_style.json', 'src/estimation/**']
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11', cache: 'pip' }
+      - run: pip install -r requirements.txt
+      - name: Harvest UBOS releases (best effort)
+        run: python src/ingest/pull_ubos_cipi.py --out data/raw/ubos_cipi_downloads || echo "UBOS harvest failed; using the files in the repository"
+      - name: Macro block from MoFPED (best effort)
+        run: |
+          python src/ingest/build_macro_from_mofped_csv.py --manual-dir data/raw/mofped_bulk/datasets --out data/raw/macro_block.csv \
+          || python src/ingest/build_macro_from_ubos_xlsx.py --ubos-dir data/raw/ubos_cipi_downloads --out data/raw/macro_block.csv \
+          || echo "macro block unchanged"
+      - name: Rebuild the panel
+        run: python src/index/build_panel.py --raw data/raw --out data/processed || echo "panel rebuild failed; publishing the committed panel"
+      - name: Build the datasets
+        run: python app/build_dashboard.py --json && test -s app/dashboard_data.json
+      - name: Post to the portal
+        env:
+          CIO_INGEST_URL: ${{ secrets.CIO_INGEST_URL }}
+          CIO_INGEST_KEY: ${{ secrets.CIO_INGEST_KEY }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          data = json.load(open('app/dashboard_data.json'))
+          version = str((data.get('manifest') or {}).get('panel_version') or '')
+          body = json.dumps({'source': f"cio_pipeline-2@{os.environ.get('GITHUB_SHA','')[:12]}", 'version': version, 'datasets': data}).encode()
+          req = urllib.request.Request(os.environ['CIO_INGEST_URL'], data=body, method='POST',
+                                       headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + os.environ['CIO_INGEST_KEY']})
+          with urllib.request.urlopen(req, timeout=120) as r:
+              print(r.status, r.read().decode()[:300])
+          PY
+      - name: Keep the refreshed artefacts
+        if: success()
+        run: |
+          git config user.name 'Paul Mutamba' && git config user.email 'mutapaul1@gmail.com'
+          git add -A data/processed data/raw/ubos_cipi_manifest.csv 2>/dev/null || true
+          git diff --cached --quiet || (git commit -q -m "Data refresh $(date -u +%F)" && git push)
