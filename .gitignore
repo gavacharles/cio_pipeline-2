@@ -26,3 +26,6 @@ env/
 
 # Dashboard scratch
 app/dashboard_data.json
+
+# Live forecasting-market ledger
+data/market/

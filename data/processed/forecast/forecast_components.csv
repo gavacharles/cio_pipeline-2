@@ -1,0 +1,523 @@
+component,month,median,p10,p90
+"aggregate, hardcore, crushed or broken stone",2026-05,140.675,140.003,141.818
+"aggregate, hardcore, crushed or broken stone",2026-06,140.851,139.638,143.515
+"aggregate, hardcore, crushed or broken stone",2026-07,141.062,139.261,144.333
+"aggregate, hardcore, crushed or broken stone",2026-08,141.461,139.228,145.221
+"aggregate, hardcore, crushed or broken stone",2026-09,141.818,139.14,146.424
+"aggregate, hardcore, crushed or broken stone",2026-10,142.362,139.171,148.412
+"aggregate, hardcore, crushed or broken stone",2026-11,142.854,139.189,149.71
+"aggregate, hardcore, crushed or broken stone",2026-12,143.328,139.261,151.018
+"aggregate, hardcore, crushed or broken stone",2027-01,143.813,139.35,153.534
+"aggregate, hardcore, crushed or broken stone",2027-02,144.255,139.485,155.234
+"aggregate, hardcore, crushed or broken stone",2027-03,144.732,139.626,156.152
+"aggregate, hardcore, crushed or broken stone",2027-04,145.219,139.843,156.97
+"aggregate, hardcore, crushed or broken stone",2027-05,145.709,139.92,157.654
+"aggregate, hardcore, crushed or broken stone",2027-06,146.106,140.072,158.861
+"aggregate, hardcore, crushed or broken stone",2027-07,146.602,140.203,159.733
+"aggregate, hardcore, crushed or broken stone",2027-08,147.071,140.285,160.419
+"aggregate, hardcore, crushed or broken stone",2027-09,147.52,140.488,161.223
+"aggregate, hardcore, crushed or broken stone",2027-10,148.054,140.682,161.95
+cement,2026-05,113.1,112.131,114.473
+cement,2026-06,114.024,111.931,116.184
+cement,2026-07,114.963,112.032,118.309
+cement,2026-08,115.341,111.744,120.07
+cement,2026-09,115.591,111.067,121.149
+cement,2026-10,115.694,111.005,122.218
+cement,2026-11,116.016,110.203,123.298
+cement,2026-12,116.246,109.539,124.312
+cement,2027-01,116.369,109.037,125.172
+cement,2027-02,116.652,108.53,126.336
+cement,2027-03,116.802,107.842,127.637
+cement,2027-04,117.137,107.411,128.503
+cement,2027-05,117.325,106.752,129.33
+cement,2027-06,117.454,106.194,130.523
+cement,2027-07,117.679,105.634,131.33
+cement,2027-08,117.843,105.228,132.404
+cement,2027-09,118.213,104.713,133.122
+cement,2027-10,118.229,104.535,133.749
+ceramic wall and floor tiles,2026-05,158.788,158.158,161.082
+ceramic wall and floor tiles,2026-06,159.414,158.075,164.049
+ceramic wall and floor tiles,2026-07,160.062,158.241,166.534
+ceramic wall and floor tiles,2026-08,160.837,158.349,168.26
+ceramic wall and floor tiles,2026-09,161.462,158.539,170.164
+ceramic wall and floor tiles,2026-10,162.234,158.62,172.508
+ceramic wall and floor tiles,2026-11,163.216,158.722,175.264
+ceramic wall and floor tiles,2026-12,164.315,158.947,177.047
+ceramic wall and floor tiles,2027-01,165.134,159.29,178.652
+ceramic wall and floor tiles,2027-02,166.268,159.347,180.574
+ceramic wall and floor tiles,2027-03,166.9,159.566,182.815
+ceramic wall and floor tiles,2027-04,167.83,159.829,184.657
+ceramic wall and floor tiles,2027-05,168.658,160.268,185.757
+ceramic wall and floor tiles,2027-06,169.629,160.504,187.127
+ceramic wall and floor tiles,2027-07,170.749,160.965,188.198
+ceramic wall and floor tiles,2027-08,171.634,161.319,189.728
+ceramic wall and floor tiles,2027-09,172.421,161.518,191.527
+ceramic wall and floor tiles,2027-10,173.577,161.866,193.75
+clay bricks and tiles,2026-05,154.676,154.126,156.559
+clay bricks and tiles,2026-06,154.851,153.712,157.501
+clay bricks and tiles,2026-07,155.623,153.442,158.481
+clay bricks and tiles,2026-08,156.172,153.356,160.146
+clay bricks and tiles,2026-09,156.643,153.381,162.466
+clay bricks and tiles,2026-10,157.045,153.329,163.949
+clay bricks and tiles,2026-11,157.775,153.441,165.971
+clay bricks and tiles,2026-12,158.459,153.746,167.317
+clay bricks and tiles,2027-01,159.152,154.1,168.315
+clay bricks and tiles,2027-02,159.763,154.263,170.027
+clay bricks and tiles,2027-03,160.468,154.503,171.412
+clay bricks and tiles,2027-04,161.202,154.676,172.938
+clay bricks and tiles,2027-05,162.055,154.866,174.076
+clay bricks and tiles,2027-06,162.731,155.269,175.111
+clay bricks and tiles,2027-07,163.437,155.433,175.94
+clay bricks and tiles,2027-08,164.154,155.766,177.319
+clay bricks and tiles,2027-09,164.886,156.115,178.606
+clay bricks and tiles,2027-10,165.823,156.247,179.906
+"concrete bricks, blocks and slabs",2026-05,113.081,112.698,113.614
+"concrete bricks, blocks and slabs",2026-06,113.338,112.607,114.633
+"concrete bricks, blocks and slabs",2026-07,113.534,112.355,115.165
+"concrete bricks, blocks and slabs",2026-08,113.734,112.19,115.741
+"concrete bricks, blocks and slabs",2026-09,113.968,112.112,116.328
+"concrete bricks, blocks and slabs",2026-10,114.217,112.028,117.152
+"concrete bricks, blocks and slabs",2026-11,114.384,111.778,117.491
+"concrete bricks, blocks and slabs",2026-12,114.601,111.627,117.887
+"concrete bricks, blocks and slabs",2027-01,114.842,111.455,118.265
+"concrete bricks, blocks and slabs",2027-02,115.014,111.385,118.601
+"concrete bricks, blocks and slabs",2027-03,115.232,111.366,119.047
+"concrete bricks, blocks and slabs",2027-04,115.51,111.291,119.408
+"concrete bricks, blocks and slabs",2027-05,115.742,111.36,119.799
+"concrete bricks, blocks and slabs",2027-06,115.957,111.36,120.114
+"concrete bricks, blocks and slabs",2027-07,116.122,111.301,120.447
+"concrete bricks, blocks and slabs",2027-08,116.425,111.294,120.846
+"concrete bricks, blocks and slabs",2027-09,116.6,111.374,121.181
+"concrete bricks, blocks and slabs",2027-10,116.785,111.374,121.564
+diesel,2026-05,199.403,196.782,204.389
+diesel,2026-06,205.552,201.219,216.179
+diesel,2026-07,211.286,204.36,227.925
+diesel,2026-08,213.102,204.888,232.655
+diesel,2026-09,214.768,204.586,237.358
+diesel,2026-10,216.309,203.956,243.297
+diesel,2026-11,217.212,203.912,247.21
+diesel,2026-12,218.882,202.835,252.005
+diesel,2027-01,220.851,201.715,256.061
+diesel,2027-02,222.184,200.904,260.389
+diesel,2027-03,223.724,200.214,264.123
+diesel,2027-04,224.989,200.32,269.144
+diesel,2027-05,226.554,200.229,272.574
+diesel,2027-06,228.354,199.969,275.815
+diesel,2027-07,229.656,199.379,278.96
+diesel,2027-08,231.002,198.933,281.636
+diesel,2027-09,232.47,197.917,285.436
+diesel,2027-10,234.045,197.864,289.588
+eucalyptus props,2026-05,168.36,166.502,172.106
+eucalyptus props,2026-06,168.962,166.292,173.944
+eucalyptus props,2026-07,169.826,166.338,175.191
+eucalyptus props,2026-08,170.662,166.303,178.707
+eucalyptus props,2026-09,171.597,166.279,180.512
+eucalyptus props,2026-10,172.367,166.317,184.938
+eucalyptus props,2026-11,173.075,166.609,186.882
+eucalyptus props,2026-12,173.985,166.489,188.538
+eucalyptus props,2027-01,174.762,166.628,190.565
+eucalyptus props,2027-02,175.891,166.86,191.586
+eucalyptus props,2027-03,176.677,166.961,193.842
+eucalyptus props,2027-04,177.789,167.384,195.13
+eucalyptus props,2027-05,178.853,167.445,196.919
+eucalyptus props,2027-06,179.879,167.541,198.919
+eucalyptus props,2027-07,181.05,167.417,200.273
+eucalyptus props,2027-08,181.838,167.913,201.855
+eucalyptus props,2027-09,183.059,168.258,202.808
+eucalyptus props,2027-10,184.359,168.524,205.325
+high tensile steel bars,2026-05,161.642,160.483,163.841
+high tensile steel bars,2026-06,162.161,160.419,166.934
+high tensile steel bars,2026-07,162.692,160.496,168.121
+high tensile steel bars,2026-08,163.227,160.529,169.767
+high tensile steel bars,2026-09,163.753,160.5,170.804
+high tensile steel bars,2026-10,164.584,160.661,171.893
+high tensile steel bars,2026-11,165.564,160.814,173.893
+high tensile steel bars,2026-12,166.526,161.019,176.083
+high tensile steel bars,2027-01,167.2,161.14,177.63
+high tensile steel bars,2027-02,167.838,161.378,178.471
+high tensile steel bars,2027-03,168.563,161.408,180.396
+high tensile steel bars,2027-04,169.497,161.543,181.485
+high tensile steel bars,2027-05,170.185,161.927,182.882
+high tensile steel bars,2027-06,171.059,162.205,183.889
+high tensile steel bars,2027-07,171.812,162.488,185.457
+high tensile steel bars,2027-08,172.447,162.484,187.137
+high tensile steel bars,2027-09,173.163,162.864,187.969
+high tensile steel bars,2027-10,173.751,163.068,189.444
+lime,2026-05,112.752,110.953,114.892
+lime,2026-06,112.972,110.279,116.201
+lime,2026-07,113.23,110.155,117.263
+lime,2026-08,113.538,109.082,118.465
+lime,2026-09,114.001,107.44,119.304
+lime,2026-10,114.477,106.157,120.16
+lime,2026-11,114.49,105.494,121.459
+lime,2026-12,114.833,104.947,122.18
+lime,2027-01,115.1,104.816,122.909
+lime,2027-02,115.268,104.588,124.059
+lime,2027-03,115.37,103.995,125.002
+lime,2027-04,115.63,103.473,125.57
+lime,2027-05,115.736,103.113,126.707
+lime,2027-06,115.981,102.37,127.959
+lime,2027-07,116.093,102.368,128.356
+lime,2027-08,116.388,102.074,130.014
+lime,2027-09,116.681,101.749,130.508
+lime,2027-10,116.93,101.717,130.885
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-05,129.32,127.675,131.369
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-06,129.412,127.089,132.824
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-07,129.556,126.931,134.666
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-08,129.645,126.682,135.763
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-09,129.718,126.653,136.789
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-10,130.005,126.735,137.642
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-11,130.567,126.297,138.49
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2026-12,131.053,126.124,139.28
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-01,131.488,125.987,140.173
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-02,131.784,125.865,140.903
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-03,132.15,125.63,141.896
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-04,132.503,125.777,142.992
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-05,132.969,125.793,144.002
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-06,133.695,125.741,144.746
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-07,134.164,125.702,145.773
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-08,134.441,125.323,146.474
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-09,134.905,125.283,146.99
+"nails, bolts, screws and similar of iron, steel, copper or aluminium",2027-10,135.286,125.593,147.72
+paints and varnishes,2026-05,125.806,124.928,126.716
+paints and varnishes,2026-06,126.411,125.151,127.789
+paints and varnishes,2026-07,128.594,126.899,130.346
+paints and varnishes,2026-08,128.694,126.558,130.916
+paints and varnishes,2026-09,129.156,126.513,131.651
+paints and varnishes,2026-10,129.463,126.487,132.51
+paints and varnishes,2026-11,129.823,126.519,133.526
+paints and varnishes,2026-12,130.243,126.644,134.671
+paints and varnishes,2027-01,130.435,126.609,135.455
+paints and varnishes,2027-02,130.823,126.702,136.484
+paints and varnishes,2027-03,131.273,126.717,137.299
+paints and varnishes,2027-04,131.595,126.71,137.839
+paints and varnishes,2027-05,131.91,126.927,138.498
+paints and varnishes,2027-06,132.308,126.874,138.991
+paints and varnishes,2027-07,132.533,126.874,139.633
+paints and varnishes,2027-08,133.028,127.034,140.646
+paints and varnishes,2027-09,133.433,127.14,141.269
+paints and varnishes,2027-10,133.781,127.209,141.804
+plastic pipes and fittings,2026-05,122.587,121.879,123.515
+plastic pipes and fittings,2026-06,122.724,121.388,124.456
+plastic pipes and fittings,2026-07,122.841,120.993,126.532
+plastic pipes and fittings,2026-08,123.087,120.556,127.36
+plastic pipes and fittings,2026-09,123.151,120.184,127.957
+plastic pipes and fittings,2026-10,123.284,119.984,128.613
+plastic pipes and fittings,2026-11,123.487,119.766,129.51
+plastic pipes and fittings,2026-12,123.692,119.672,130.932
+plastic pipes and fittings,2027-01,124.018,119.532,131.428
+plastic pipes and fittings,2027-02,124.295,119.294,133.125
+plastic pipes and fittings,2027-03,124.562,119.113,134.567
+plastic pipes and fittings,2027-04,124.823,118.825,135.663
+plastic pipes and fittings,2027-05,124.96,118.382,136.799
+plastic pipes and fittings,2027-06,125.246,118.319,137.73
+plastic pipes and fittings,2027-07,125.504,118.181,138.323
+plastic pipes and fittings,2027-08,125.794,118.03,138.862
+plastic pipes and fittings,2027-09,125.902,117.814,139.804
+plastic pipes and fittings,2027-10,126.158,117.685,140.275
+sand,2026-05,152.259,151.461,153.919
+sand,2026-06,152.759,151.295,155.199
+sand,2026-07,152.974,150.905,156.889
+sand,2026-08,153.391,150.593,158.009
+sand,2026-09,153.755,150.742,161.514
+sand,2026-10,154.069,150.661,167.192
+sand,2026-11,154.603,150.611,168.862
+sand,2026-12,155.188,150.698,169.283
+sand,2027-01,155.614,150.562,170.375
+sand,2027-02,156.311,150.615,171.569
+sand,2027-03,156.869,150.57,172.222
+sand,2027-04,157.271,150.548,173.342
+sand,2027-05,157.826,150.639,174.353
+sand,2027-06,158.527,150.846,175.084
+sand,2027-07,159.002,150.848,176.261
+sand,2027-08,159.442,150.982,177.142
+sand,2027-09,159.922,151.007,178.176
+sand,2027-10,160.56,151.106,179.25
+"sheet steel, roofing sheets and similar",2026-05,138.312,136.972,140.151
+"sheet steel, roofing sheets and similar",2026-06,138.615,136.861,142.332
+"sheet steel, roofing sheets and similar",2026-07,138.995,136.143,144.603
+"sheet steel, roofing sheets and similar",2026-08,139.586,135.225,145.617
+"sheet steel, roofing sheets and similar",2026-09,140.091,134.872,146.441
+"sheet steel, roofing sheets and similar",2026-10,140.642,134.446,147.449
+"sheet steel, roofing sheets and similar",2026-11,141.351,134.671,148.336
+"sheet steel, roofing sheets and similar",2026-12,142.124,134.403,149.631
+"sheet steel, roofing sheets and similar",2027-01,142.678,134.279,150.545
+"sheet steel, roofing sheets and similar",2027-02,143.251,134.001,151.638
+"sheet steel, roofing sheets and similar",2027-03,143.84,133.923,152.672
+"sheet steel, roofing sheets and similar",2027-04,144.4,133.609,153.918
+"sheet steel, roofing sheets and similar",2027-05,145.067,133.504,154.83
+"sheet steel, roofing sheets and similar",2027-06,145.641,133.019,155.938
+"sheet steel, roofing sheets and similar",2027-07,146.078,132.941,156.978
+"sheet steel, roofing sheets and similar",2027-08,146.541,132.85,158.348
+"sheet steel, roofing sheets and similar",2027-09,147.189,132.482,159.909
+"sheet steel, roofing sheets and similar",2027-10,147.733,132.11,160.584
+"timber, coniferous, greater than 6mm thick",2026-05,125.823,124.955,127.296
+"timber, coniferous, greater than 6mm thick",2026-06,126.098,124.51,128.259
+"timber, coniferous, greater than 6mm thick",2026-07,126.356,124.425,128.865
+"timber, coniferous, greater than 6mm thick",2026-08,126.75,124.293,129.818
+"timber, coniferous, greater than 6mm thick",2026-09,127.141,124.382,130.366
+"timber, coniferous, greater than 6mm thick",2026-10,127.453,124.675,131.131
+"timber, coniferous, greater than 6mm thick",2026-11,127.708,124.497,131.79
+"timber, coniferous, greater than 6mm thick",2026-12,127.883,124.4,132.743
+"timber, coniferous, greater than 6mm thick",2027-01,128.229,124.292,133.745
+"timber, coniferous, greater than 6mm thick",2027-02,128.536,124.196,134.206
+"timber, coniferous, greater than 6mm thick",2027-03,128.876,124.246,134.198
+"timber, coniferous, greater than 6mm thick",2027-04,129.272,124.44,134.841
+"timber, coniferous, greater than 6mm thick",2027-05,129.592,124.385,135.427
+"timber, coniferous, greater than 6mm thick",2027-06,129.841,124.276,136.277
+"timber, coniferous, greater than 6mm thick",2027-07,130.083,124.222,136.592
+"timber, coniferous, greater than 6mm thick",2027-08,130.341,124.187,137.16
+"timber, coniferous, greater than 6mm thick",2027-09,130.791,124.315,137.791
+"timber, coniferous, greater than 6mm thick",2027-10,131.138,124.416,138.263
+utilities,2026-05,144.897,144.704,145.267
+utilities,2026-06,144.939,144.524,147.545
+utilities,2026-07,145.016,144.356,148.813
+utilities,2026-08,145.138,144.197,149.56
+utilities,2026-09,145.323,144.056,152.746
+utilities,2026-10,145.535,143.93,153.348
+utilities,2026-11,145.811,143.789,154.083
+utilities,2026-12,146.084,143.693,155.073
+utilities,2027-01,146.451,143.613,157.258
+utilities,2027-02,146.783,143.54,158.836
+utilities,2027-03,147.032,143.462,159.869
+utilities,2027-04,147.37,143.418,160.96
+utilities,2027-05,147.684,143.33,161.73
+utilities,2027-06,148.049,143.287,162.261
+utilities,2027-07,148.406,143.263,163.095
+utilities,2027-08,148.734,143.226,163.426
+utilities,2027-09,148.999,143.226,163.801
+utilities,2027-10,149.264,143.21,164.242
+services,2026-05,107.87,107.737,108.24
+services,2026-06,107.935,107.527,108.549
+services,2026-07,108.083,107.412,108.798
+services,2026-08,108.209,107.419,109.112
+services,2026-09,108.325,107.381,109.317
+services,2026-10,108.427,107.408,109.525
+services,2026-11,108.498,107.368,109.716
+services,2026-12,108.573,107.361,109.876
+services,2027-01,108.697,107.37,110.074
+services,2027-02,108.83,107.384,110.219
+services,2027-03,108.943,107.412,110.409
+services,2027-04,109.013,107.458,110.548
+services,2027-05,109.108,107.468,110.751
+services,2027-06,109.198,107.507,110.926
+services,2027-07,109.279,107.536,111.104
+services,2027-08,109.392,107.52,111.273
+services,2027-09,109.485,107.613,111.411
+services,2027-10,109.615,107.666,111.469
+labour,2026-05,125.591,125.388,126.353
+labour,2026-06,125.797,125.331,126.926
+labour,2026-07,126.057,125.275,127.361
+labour,2026-08,126.267,125.311,127.753
+labour,2026-09,126.476,125.273,128.232
+labour,2026-10,126.681,125.291,128.963
+labour,2026-11,126.908,125.372,129.625
+labour,2026-12,127.146,125.522,130.11
+labour,2027-01,127.396,125.528,130.954
+labour,2027-02,127.564,125.641,131.724
+labour,2027-03,127.785,125.741,133.226
+labour,2027-04,128.019,125.822,133.957
+labour,2027-05,128.305,125.923,134.083
+labour,2027-06,128.563,126.044,134.6
+labour,2027-07,128.813,126.158,135.059
+labour,2027-08,129.059,126.295,135.543
+labour,2027-09,129.31,126.303,135.961
+labour,2027-10,129.519,126.47,136.331
+unpublished materials (all),2026-05,121.989,121.687,122.805
+unpublished materials (all),2026-06,122.439,121.864,123.735
+unpublished materials (all),2026-07,122.712,121.824,124.302
+unpublished materials (all),2026-08,122.897,121.863,125.016
+unpublished materials (all),2026-09,123.106,121.918,125.539
+unpublished materials (all),2026-10,123.365,122.048,125.797
+unpublished materials (all),2026-11,123.72,122.041,126.336
+unpublished materials (all),2026-12,124.023,122.045,126.682
+unpublished materials (all),2027-01,124.307,122.148,127.037
+unpublished materials (all),2027-02,124.556,122.173,127.489
+unpublished materials (all),2027-03,124.796,122.337,127.869
+unpublished materials (all),2027-04,125.038,122.421,128.201
+unpublished materials (all),2027-05,125.274,122.532,128.591
+unpublished materials (all),2027-06,125.518,122.749,128.983
+unpublished materials (all),2027-07,125.771,122.819,129.485
+unpublished materials (all),2027-08,126.046,122.926,129.923
+unpublished materials (all),2027-09,126.31,122.979,130.294
+unpublished materials (all),2027-10,126.59,123.111,130.638
+unpublished materials (buildings),2026-05,126.18,125.832,127.28
+unpublished materials (buildings),2026-06,126.633,125.892,128.107
+unpublished materials (buildings),2026-07,126.827,125.857,128.99
+unpublished materials (buildings),2026-08,127.03,125.825,129.593
+unpublished materials (buildings),2026-09,127.21,125.831,130.068
+unpublished materials (buildings),2026-10,127.525,125.901,130.512
+unpublished materials (buildings),2026-11,127.944,125.87,131.128
+unpublished materials (buildings),2026-12,128.258,125.878,131.721
+unpublished materials (buildings),2027-01,128.578,125.955,132.375
+unpublished materials (buildings),2027-02,128.901,125.957,133.121
+unpublished materials (buildings),2027-03,129.072,126.021,133.573
+unpublished materials (buildings),2027-04,129.37,126.118,133.999
+unpublished materials (buildings),2027-05,129.661,126.188,134.597
+unpublished materials (buildings),2027-06,129.922,126.3,135.062
+unpublished materials (buildings),2027-07,130.204,126.312,135.53
+unpublished materials (buildings),2027-08,130.54,126.407,136.071
+unpublished materials (buildings),2027-09,130.876,126.585,136.646
+unpublished materials (buildings),2027-10,131.145,126.655,136.946
+bitumen and bitumen primer,2026-05,120.712,120.09,121.919
+bitumen and bitumen primer,2026-06,121.037,119.859,122.989
+bitumen and bitumen primer,2026-07,121.25,119.625,123.657
+bitumen and bitumen primer,2026-08,121.397,119.318,124.769
+bitumen and bitumen primer,2026-09,121.592,119.036,125.547
+bitumen and bitumen primer,2026-10,121.837,119.131,125.836
+bitumen and bitumen primer,2026-11,122.092,118.947,126.495
+bitumen and bitumen primer,2026-12,122.408,118.769,127.121
+bitumen and bitumen primer,2027-01,122.62,118.739,127.586
+bitumen and bitumen primer,2027-02,122.775,118.612,128.069
+bitumen and bitumen primer,2027-03,123.089,118.531,128.784
+bitumen and bitumen primer,2027-04,123.402,118.532,129.204
+bitumen and bitumen primer,2027-05,123.611,118.559,129.574
+bitumen and bitumen primer,2027-06,123.894,118.599,129.944
+bitumen and bitumen primer,2027-07,124.203,118.495,130.497
+bitumen and bitumen primer,2027-08,124.289,118.381,130.876
+bitumen and bitumen primer,2027-09,124.509,118.273,131.406
+bitumen and bitumen primer,2027-10,124.684,118.286,131.804
+clays and murram,2026-05,133.612,132.551,135.548
+clays and murram,2026-06,133.734,131.207,138.046
+clays and murram,2026-07,133.907,130.835,141.251
+clays and murram,2026-08,134.113,130.444,142.765
+clays and murram,2026-09,134.235,130.291,144.451
+clays and murram,2026-10,134.529,130.059,146.215
+clays and murram,2026-11,135.071,129.584,147.595
+clays and murram,2026-12,135.711,129.33,148.454
+clays and murram,2027-01,136.095,129.106,149.246
+clays and murram,2027-02,136.654,128.938,150.158
+clays and murram,2027-03,137.133,128.791,151.369
+clays and murram,2027-04,137.733,128.592,152.223
+clays and murram,2027-05,137.946,128.386,153.242
+clays and murram,2027-06,138.432,128.243,154.455
+clays and murram,2027-07,138.781,128.202,155.441
+clays and murram,2027-08,139.349,127.999,156.197
+clays and murram,2027-09,139.708,128.053,157.04
+clays and murram,2027-10,140.34,127.785,157.655
+insulated electrical cables,2026-05,150.86,150.435,152.845
+insulated electrical cables,2026-06,151.197,150.109,154.686
+insulated electrical cables,2026-07,151.56,149.893,155.698
+insulated electrical cables,2026-08,151.893,149.705,157.643
+insulated electrical cables,2026-09,152.372,149.596,159.375
+insulated electrical cables,2026-10,152.805,149.549,160.931
+insulated electrical cables,2026-11,153.297,149.419,162.451
+insulated electrical cables,2026-12,153.86,149.41,163.604
+insulated electrical cables,2027-01,154.403,149.346,165.415
+insulated electrical cables,2027-02,154.927,149.23,166.987
+insulated electrical cables,2027-03,155.341,149.255,168.414
+insulated electrical cables,2027-04,155.83,149.423,169.336
+insulated electrical cables,2027-05,156.354,149.539,170.004
+insulated electrical cables,2027-06,156.766,149.54,170.918
+insulated electrical cables,2027-07,157.394,149.622,171.864
+insulated electrical cables,2027-08,158.083,149.698,172.612
+insulated electrical cables,2027-09,158.471,149.714,173.545
+insulated electrical cables,2027-10,159.197,149.931,174.259
+iron pipes,2026-05,166.995,166.462,169.556
+iron pipes,2026-06,167.142,165.947,179.442
+iron pipes,2026-07,167.363,165.444,182.756
+iron pipes,2026-08,167.745,165.052,185.367
+iron pipes,2026-09,168.139,164.571,187.449
+iron pipes,2026-10,168.473,164.106,188.634
+iron pipes,2026-11,169.668,163.645,190.284
+iron pipes,2026-12,171.109,163.239,192.652
+iron pipes,2027-01,172.552,162.904,194.923
+iron pipes,2027-02,174.339,162.678,197.539
+iron pipes,2027-03,176.029,162.448,198.899
+iron pipes,2027-04,177.453,162.181,201.07
+iron pipes,2027-05,178.616,162.296,202.92
+iron pipes,2027-06,179.43,162.482,205.423
+iron pipes,2027-07,180.471,162.55,207.005
+iron pipes,2027-08,181.491,162.51,209.159
+iron pipes,2027-09,183.0,162.662,211.179
+iron pipes,2027-10,183.601,162.826,212.896
+steel pipe fittings,2026-05,129.367,128.756,130.236
+steel pipe fittings,2026-06,129.429,127.688,135.745
+steel pipe fittings,2026-07,129.528,126.681,137.487
+steel pipe fittings,2026-08,129.825,126.42,138.819
+steel pipe fittings,2026-09,130.052,125.98,139.343
+steel pipe fittings,2026-10,130.279,125.052,139.604
+steel pipe fittings,2026-11,130.708,124.33,141.631
+steel pipe fittings,2026-12,131.283,123.406,144.525
+steel pipe fittings,2027-01,131.598,122.689,145.728
+steel pipe fittings,2027-02,132.186,122.235,147.063
+steel pipe fittings,2027-03,132.507,121.437,147.486
+steel pipe fittings,2027-04,132.627,120.928,148.736
+steel pipe fittings,2027-05,133.131,120.377,151.158
+steel pipe fittings,2027-06,133.922,120.025,152.652
+steel pipe fittings,2027-07,134.229,119.789,155.752
+steel pipe fittings,2027-08,134.648,119.421,158.082
+steel pipe fittings,2027-09,134.948,119.085,158.983
+steel pipe fittings,2027-10,135.203,118.927,159.78
+steel tubes and pipes,2026-05,130.007,128.898,132.376
+steel tubes and pipes,2026-06,130.191,126.548,138.714
+steel tubes and pipes,2026-07,130.416,125.604,140.658
+steel tubes and pipes,2026-08,130.709,124.808,141.427
+steel tubes and pipes,2026-09,130.851,123.523,142.441
+steel tubes and pipes,2026-10,130.724,122.847,144.17
+steel tubes and pipes,2026-11,131.31,122.034,145.934
+steel tubes and pipes,2026-12,131.918,121.291,147.994
+steel tubes and pipes,2027-01,132.194,120.57,149.089
+steel tubes and pipes,2027-02,132.805,119.257,151.617
+steel tubes and pipes,2027-03,133.116,118.716,153.106
+steel tubes and pipes,2027-04,133.24,118.351,154.011
+steel tubes and pipes,2027-05,133.468,118.053,155.742
+steel tubes and pipes,2027-06,134.146,117.582,158.148
+steel tubes and pipes,2027-07,134.833,116.936,159.161
+steel tubes and pipes,2027-08,135.21,116.605,161.491
+steel tubes and pipes,2027-09,135.638,116.29,163.575
+steel tubes and pipes,2027-10,135.249,116.122,164.906
+unpublished materials (civil),2026-05,118.717,118.386,119.351
+unpublished materials (civil),2026-06,118.801,118.271,119.969
+unpublished materials (civil),2026-07,118.937,118.175,120.264
+unpublished materials (civil),2026-08,119.032,118.057,120.585
+unpublished materials (civil),2026-09,119.183,117.946,121.244
+unpublished materials (civil),2026-10,119.303,117.907,122.071
+unpublished materials (civil),2026-11,119.544,117.901,122.374
+unpublished materials (civil),2026-12,119.682,117.971,122.773
+unpublished materials (civil),2027-01,119.837,117.973,123.152
+unpublished materials (civil),2027-02,120.024,117.992,123.753
+unpublished materials (civil),2027-03,120.118,117.95,124.043
+unpublished materials (civil),2027-04,120.297,117.973,124.274
+unpublished materials (civil),2027-05,120.528,118.024,124.55
+unpublished materials (civil),2027-06,120.71,118.12,124.831
+unpublished materials (civil),2027-07,120.892,118.214,125.086
+unpublished materials (civil),2027-08,121.049,118.23,125.617
+unpublished materials (civil),2027-09,121.201,118.255,125.885
+unpublished materials (civil),2027-10,121.344,118.258,126.099
+"doors, windows and frames of iron, steel or aluminium",2026-05,116.006,114.964,117.488
+"doors, windows and frames of iron, steel or aluminium",2026-06,115.974,112.985,119.335
+"doors, windows and frames of iron, steel or aluminium",2026-07,116.049,112.501,119.934
+"doors, windows and frames of iron, steel or aluminium",2026-08,116.167,112.585,121.033
+"doors, windows and frames of iron, steel or aluminium",2026-09,116.308,112.327,121.518
+"doors, windows and frames of iron, steel or aluminium",2026-10,116.565,112.64,121.89
+"doors, windows and frames of iron, steel or aluminium",2026-11,116.744,111.717,122.856
+"doors, windows and frames of iron, steel or aluminium",2026-12,116.899,111.477,123.334
+"doors, windows and frames of iron, steel or aluminium",2027-01,117.052,111.137,124.061
+"doors, windows and frames of iron, steel or aluminium",2027-02,117.267,111.176,124.807
+"doors, windows and frames of iron, steel or aluminium",2027-03,117.483,111.157,125.277
+"doors, windows and frames of iron, steel or aluminium",2027-04,117.731,111.226,125.558
+"doors, windows and frames of iron, steel or aluminium",2027-05,117.963,110.852,126.11
+"doors, windows and frames of iron, steel or aluminium",2027-06,118.245,110.702,126.876
+"doors, windows and frames of iron, steel or aluminium",2027-07,118.503,110.396,127.207
+"doors, windows and frames of iron, steel or aluminium",2027-08,118.667,110.476,127.623
+"doors, windows and frames of iron, steel or aluminium",2027-09,118.876,110.312,128.439
+"doors, windows and frames of iron, steel or aluminium",2027-10,119.182,110.142,129.071
+unpublished materials (specialised),2026-05,118.712,118.44,119.501
+unpublished materials (specialised),2026-06,118.967,118.446,120.309
+unpublished materials (specialised),2026-07,119.126,118.441,120.924
+unpublished materials (specialised),2026-08,119.268,118.397,122.131
+unpublished materials (specialised),2026-09,119.421,118.288,122.664
+unpublished materials (specialised),2026-10,119.587,118.313,123.033
+unpublished materials (specialised),2026-11,119.822,118.287,123.242
+unpublished materials (specialised),2026-12,120.047,118.275,123.459
+unpublished materials (specialised),2027-01,120.313,118.325,123.771
+unpublished materials (specialised),2027-02,120.593,118.375,124.132
+unpublished materials (specialised),2027-03,120.774,118.372,124.445
+unpublished materials (specialised),2027-04,121.074,118.428,124.79
+unpublished materials (specialised),2027-05,121.323,118.536,125.142
+unpublished materials (specialised),2027-06,121.546,118.634,125.53
+unpublished materials (specialised),2027-07,121.782,118.732,125.843
+unpublished materials (specialised),2027-08,122.016,118.808,126.327
+unpublished materials (specialised),2027-09,122.256,118.844,126.678
+unpublished materials (specialised),2027-10,122.443,118.927,127.032

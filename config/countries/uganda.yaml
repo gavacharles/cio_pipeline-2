@@ -1,0 +1,117 @@
+# Country configuration for the CiO construction-cost forecasting market.
+# Everything country-specific lives here; src/market/ is country-neutral.
+# See docs/MARKET_DESIGN.md for the contract rules these fields drive.
+country: Uganda
+iso3: UGA
+status: pilot            # pilot | planned
+currency: UGX
+regulation:
+  mode: play_money       # play_money | sandbox | licensed — no real money until a regulator signs off
+  regulators:
+    - "Capital Markets Authority (CMA) Uganda: index-linked contracts may be derivatives"
+    - "National Lotteries and Gaming Regulatory Board: real-money event bets may be gaming"
+  note: >
+    Points have no cash value and cannot be bought, sold or redeemed. Real-money
+    or hedging contracts need a legal opinion and CMA regulatory-sandbox entry first.
+
+settlement:
+  statistics_office: Uganda Bureau of Statistics (UBOS)
+  publication: Construction Input Price Index (CIPI), monthly Excel tables
+  url: https://www.ubos.org/datasets/
+  parser: ubos_cipi            # adapter in src/market/settlement.py
+  raw_dirs: [data/raw, data/raw/ubos_cipi_downloads]
+  frequency: monthly
+  quantity: mom_pct_change     # month-on-month % change, computed inside one release
+  decimals: 2                  # settlement value rounded to 2 dp before bucketing
+  # Observed Dec-2025..Apr-2026: published 0-2 calendar months after the reference month.
+  void_after_days: 120         # no first print within 120 days of month end -> market void, stakes refunded
+  excluded_participants:
+    - UBOS staff involved in CIPI price collection or compilation
+
+exchange:
+  starting_points: 1000
+  liquidity_b: 100             # LMSR depth; operator's worst-case subsidy per market = b * ln(1 / min prior)
+  probability_floor: 0.02      # nowcast prior never opens an outcome below 2%
+
+# Contract list. `label` is the exact UBOS row label as normalised by parse_cipi
+# (lower-case); matching on the label rather than the panel code keeps rebar and
+# roofing sheets apart (parse_cipi maps both to STEEL).
+# `cuts` are bucket edges in percent; buckets are [lo, hi), outer ones open-ended.
+# `opening` picks how the market maker's opening prices are set: pooled (src/market/nowcast.py),
+# structural (src/forecast/ model) or blend (50/50). Chosen per contract from
+# `run_market.py compare-opening` (mean log loss over h = 1, 2, 6, 2021-2026); the same rule
+# chosen on the first half of months also won on the second half (1.295 vs 1.308 pooled).
+markets:
+  - code: CIPI_ALL
+    label: overall construction index
+    title: Overall construction input prices
+    cuts: [-0.25, 0.0, 0.25, 0.75]
+    opening: structural
+  - code: CEM
+    label: cement
+    title: Cement
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: blend
+  - code: REBAR
+    label: high tensile steel bars
+    title: Reinforcement steel bars
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: pooled
+  - code: ROOFSHEET
+    label: sheet steel, roofing sheets and similar
+    title: Steel roofing sheets
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: blend
+  - code: DIESEL
+    label: diesel
+    title: Diesel
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: blend
+  - code: LABOUR
+    label: labour
+    title: Construction labour
+    cuts: [-0.5, 0.0, 0.01, 0.5]
+    opening: pooled
+  - code: AGG
+    label: aggregate, hardcore, crushed or broken stone
+    title: Aggregate and hardcore
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: blend
+  - code: SAND
+    label: sand
+    title: Sand
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: structural
+  - code: BLOCKS
+    label: concrete bricks, blocks and slabs
+    title: Concrete blocks
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: pooled
+  - code: TIMBER
+    label: timber, coniferous, greater than 6mm thick
+    title: Timber
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: pooled
+  - code: PAINT
+    label: paints and varnishes
+    title: Paints
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: pooled
+  - code: PIPES
+    label: plastic pipes and fittings
+    title: Plastic pipes
+    cuts: [-1.0, 0.0, 0.01, 1.0]
+    opening: pooled
+
+# What participants report each week (src/webapp): the prices they actually pay.
+price_items:
+  - { code: cement_50kg,  name: "Cement, 50 kg bag",           unit: bag }
+  - { code: rebar_y12,    name: "Rebar Y12, 12 m bar",          unit: bar }
+  - { code: rebar_y16,    name: "Rebar Y16, 12 m bar",          unit: bar }
+  - { code: iron_sheet,   name: "Iron sheet, gauge 28, 3 m",    unit: sheet }
+  - { code: diesel,       name: "Diesel, pump price",           unit: litre }
+  - { code: sand,         name: "Sand, per tipper (7 t)",       unit: trip }
+  - { code: aggregate,    name: "Aggregate, per tipper (7 t)",  unit: trip }
+  - { code: block_6in,    name: "Concrete block, 6 in",         unit: piece }
+  - { code: timber_2x4,   name: "Timber 2x4, per foot",         unit: foot }
+  - { code: mason_day,    name: "Mason, daily wage",            unit: day }
