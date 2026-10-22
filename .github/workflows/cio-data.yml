@@ -5,7 +5,8 @@
 # refresh), rebuilds the panel and the forecast parameters, and posts the
 # resulting datasets to the portal's ingest endpoint. Secrets:
 #   CIO_INGEST_URL  e.g. https://cio.hovequill.com/api/cio-ingest
-#   CIO_INGEST_KEY  the same value as the portal's CIO_INGEST_KEY setting
+#   CIO_INGEST_KEY  the same value as the portal's CIO_INGEST_KEY setting (sent as X-CiO-Key;
+#                   Static Web Apps strips the Authorization header)
 name: CiO data refresh
 
 on:
@@ -47,7 +48,7 @@ jobs:
           version = str((data.get('manifest') or {}).get('panel_version') or '')
           body = json.dumps({'source': f"cio_pipeline-2@{os.environ.get('GITHUB_SHA','')[:12]}", 'version': version, 'datasets': data}).encode()
           req = urllib.request.Request(os.environ['CIO_INGEST_URL'], data=body, method='POST',
-                                       headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + os.environ['CIO_INGEST_KEY']})
+                                       headers={'Content-Type': 'application/json', 'X-CiO-Key': os.environ['CIO_INGEST_KEY']})
           with urllib.request.urlopen(req, timeout=120) as r:
               print(r.status, r.read().decode()[:300])
           PY
