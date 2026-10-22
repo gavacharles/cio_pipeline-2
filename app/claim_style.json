@@ -1,0 +1,34 @@
+{
+  "_about": "House writing style for FIDIC claim documents, distilled from Contractor's Claim No. 1 (Delayed Instructions Impeding Right of Access and Possession of Site). The Claim builder drafts from these patterns, runs the sweep in 'banned' over every paragraph, and hands the whole file to Claude when a section is redrafted on the hosted version.",
+  "voice": [
+    "Measured advocacy in the third person: the Contractor submits, maintains, notes, records its position, respectfully requests. It never argues, insists, demands or strongly objects.",
+    "Parties appear only as their defined roles: the Contractor, the Employer, the Engineer. Defined terms are capitalised exactly: the Works, the Site, the Contract, the Programme, the Baseline Programme, Permanent Works, the Time for Completion, the Date for Completion, the Commencement Date, Cost, the Contract Price, the Employer's Requirements, the Conditions of Contract, Notice of Claim.",
+    "British English without exception. Dates carry leading zeros in day-month-year order (01 April 2025). Monetary figures are exact to the cent and, on formal mention, followed by words in parentheses.",
+    "shall marks obligation, may marks discretion.",
+    "No em dash or en dash anywhere; paired commas, parentheses, a colon or a full stop do the work. Curly quotation marks and apostrophes only.",
+    "Each paragraph advances one step of the case in one to four sentences and opens with its proposition. Long fact-bearing sentences are relieved by short declarative ones.",
+    "Every factual statement is anchored to a dated instrument with its full reference and annex cross-reference: letter P2B/SOSA/ART-GCU/06-25/060 dated 23 June 2025 (refer to Annex A-1-6). Anything unsupported by the materials is flagged [TO CONFIRM].",
+    "Sub-Clause citation form: Sub-Clause 2.1 [Right of Access to the Site] on formal mention, thereafter Sub-Clause 2.1.",
+    "Authority is introduced by one fixed formula: This is consistent with the principle established in Case v Other [year] citation, in which the court held that ... One authority per proposition.",
+    "End with prescription, not summary: entitlement, consequence and request."
+  ],
+  "formulae": {
+    "rejection": "This contention is without contractual foundation.",
+    "correction": "is, with respect, misconceived.",
+    "reasons": "The Contractor does not accept this characterisation, for three reasons. First, ... Second, ... Third, and in any event, ...",
+    "causation": "The chain of causation is unbroken:",
+    "causation_close": "The causal chain is direct, unbroken, and attributable to a single dominant cause.",
+    "but_for": "Applying the 'but for' test: but for [event], [consequence one]; [consequence two]; and [consequence three].",
+    "mitigation": "The standard imposed by Sub-Clause 8.4(b) is one of reasonableness, not of absolute obligation: the Contractor is not required to overcome the cause of the delay, but to take all reasonable steps to reduce its effect.",
+    "continuing": "The events giving rise to this Claim have a continuing effect within the meaning of Sub-Clause 20.1.",
+    "reservation": "The Contractor reserves its right to claim",
+    "request": "In accordance with Sub-Clauses [refs] of the Conditions of Contract, the Contractor respectfully requests that the Engineer:",
+    "good_faith": "This Claim document, together with the supporting appendices, is submitted in good faith and in a spirit of cooperation. The Contractor trusts that the Engineer will give due and impartial consideration to the facts, the contractual provisions, and the supporting evidence presented herein, and will issue a fair determination in accordance with Sub-Clause 3.5 of the Conditions of Contract.",
+    "available": "The Contractor remains available to discuss any aspect of this submission with the Engineer and to provide any further information that the Engineer may reasonably require."
+  },
+  "banned": {
+    "punctuation": ["—", "–", " - "],
+    "words": ["delve", "landscape", "underscore", "underscores", "highlight", "highlights", "showcase", "robust", "notable", "notably", "crucial", "pivotal", "vital", "seamless", "holistic", "multifaceted", "leverage", "harness", "unlock", "foster", "elevate", "empower", "streamline", "navigate", "journey", "embark", "tapestry", "realm", "paradigm", "synergy", "game-changer", "cutting-edge", "ever-evolving", "fast-paced", "myriad", "plethora", "testament", "stands as", "serves as", "marks a", "boasts", "sheds light", "deep dive", "unpack", "at its core", "in essence", "essentially", "arguably", "impactful", "utilize", "utilise", "a number of", "very", "truly", "deeply", "undoubtedly", "of course"],
+    "phrases": ["It is important to note", "It is worth noting", "It should be noted", "Needless to say", "In today's", "In the world of", "In the realm of", "When it comes to", "In conclusion", "In summary", "To summarise", "Overall,", "All in all", "At the end of the day", "First and foremost", "Last but not least", "Without a doubt", "It goes without saying", "As mentioned earlier", "Moving forward", "Going forward", "That being said", "With that in mind", "It could be argued that", "Some might say", "Firstly", "Secondly", "Thirdly", "Furthermore,", "Additionally,", "not merely", "on the one hand", "This section will", "we now turn to"]
+  }
+}
