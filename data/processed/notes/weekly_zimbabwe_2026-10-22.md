@@ -10,11 +10,23 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | ZWG per USD | 26.6 | -0.4% | -0.3% | -0.0% | -0.1% |
 | Brent in ZWG | 3,175.4 | -8.6% | +0.8% | +40.3% | +94.7% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: available: ZimStat monthly building materials (BMPI) and civil engineering materials (CEMPI) indices; adapter next.
+Status: available: ZimStat monthly building materials (BMPI) and civil engineering materials (CEMPI) indices; adapter next.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in ZWG has moved **+40.3%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+**Latest official reading:** ZimStat weighted Building Materials Price Index (BMPI), June 2024 = 100, quarterly, 2025-12: level 122.14, +1.0% on the previous period, +7.8% on a year earlier. Source: https://www.zimstat.co.zw/wp-content/uploads/Macro/Prices/BMPI/2025/BMPI_Weighted_12_2025.pdf
+
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in ZWG and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.0% | – |
+| Next 3 months | +4.6% | -1.7% to +46.9% |
+| Next 6 months | +18.1% | -4.4% to +70.8% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

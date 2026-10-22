@@ -173,4 +173,15 @@ def test_all_country_configs_and_generic_note(tmp_path, monkeypatch):
     import weekly_note
     monkeypatch.setattr(weekly_note, "NOTES", tmp_path)
     md = weekly_note.build("nigeria", fetch=False, db_path=tmp_path / "none.sqlite").read_text()
-    assert "Nigeria construction cost note" in md and "Official construction price index" in md
+    assert "Nigeria construction cost note" in md and "Official index" in md and "Next 6 months" in md
+
+
+def test_cost_pressure_indicator():
+    if not (ROOT / "data" / "raw" / "fx_imf_monthly.csv").exists():
+        pytest.skip("no FX history")
+    from cost_pressure import pressure_history, forecast, W_FUEL, W_IMPORT
+    h = pressure_history("ugx_per_usd")
+    assert len(h) > 60 and h.abs().max() < 20
+    f = forecast("ugx_per_usd", horizons=(3, 6))
+    assert f[3][1] <= f[3][0] <= f[3][2] and f[6][2] >= f[3][2]          # wider range further out
+    assert 0 < W_FUEL < W_IMPORT < 1

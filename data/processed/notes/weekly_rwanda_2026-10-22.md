@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | RWF per USD | 1,475.6 | -0.2% | +0.0% | +0.2% | +1.8% |
 | Brent in RWF | 170,019.0 | -11.6% | -3.7% | +35.8% | +91.6% |
 
-## Cost pressure
+## Official index
 
-Rwanda has no official construction input price index yet, so this note tracks the imported-cost drivers and the prices participants report.
+Status: none yet (candidate: Producer Price Index, construction component).
 
-Brent in francs has moved **+35.8%** over 13 weeks. For scale, in the neighbouring official indices a sustained 1% rise in oil in local currency has passed through about 0.1–0.15% to diesel within a few months (Uganda, UBOS; docs/FORECAST_MODEL.md). That is a reference, not a Rwanda estimate: prices reported here will build the Rwanda series.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in RWF and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.3% | – |
+| Next 3 months | +0.9% | -0.7% to +3.9% |
+| Next 6 months | +2.0% | -0.8% to +5.5% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

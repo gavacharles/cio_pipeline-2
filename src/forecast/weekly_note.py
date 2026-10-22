@@ -16,8 +16,9 @@ One note per country: data/processed/notes/weekly_<country>_<date>.{md,html}
   - kenya:  quarterly model for the KNBS overall/building/civil indices, conditioned on
             observed Brent and KES quarters; bands from walk-forward backtest errors
   - south_africa: latest Stats SA P0151.1 readings and next-month contract expectations
-  - rwanda and every other configured country without a wired-in index: drivers (local
-            currency, Brent in local currency), crowd prices, and the official-index status
+  - every other country: drivers, the latest official reading where one exists
+            (config/official_readings.yaml), and an imported-input cost-pressure outlook
+            (cost_pressure.py), plus crowd prices
 The participant app shows the latest note for the participant's country.
 
     python src/forecast/weekly_note.py [--country uganda|kenya|rwanda|all] [--no-fetch] [--db ...]
@@ -220,18 +221,6 @@ def kenya_body(weekly) -> list[str]:
     return lines
 
 
-def rwanda_body(weekly) -> list[str]:
-    w = weekly.assign(oil_rwf=weekly["brent_usd"] * weekly["rwf_per_usd"])
-    q13 = _chg(w["oil_rwf"], 91)
-    return ["## Cost pressure", "",
-            "Rwanda has no official construction input price index yet, so this note tracks the imported-cost "
-            "drivers and the prices participants report.", "",
-            f"Brent in francs has moved **{_fmt(q13, pct=True)}** over 13 weeks. For scale, in the neighbouring "
-            "official indices a sustained 1% rise in oil in local currency has passed through about 0.1–0.15% to "
-            "diesel within a few months (Uganda, UBOS; docs/FORECAST_MODEL.md). That is a reference, not a Rwanda "
-            "estimate: prices reported here will build the Rwanda series."]
-
-
 def south_africa_body(weekly) -> list[str]:
     from country import load_country
     from settlement import load_releases, history, first_print
@@ -260,20 +249,49 @@ def south_africa_body(weekly) -> list[str]:
     return lines
 
 
+def official_reading(country: str) -> list[str]:
+    f = ROOT / "config" / "official_readings.yaml"
+    r = (yaml.safe_load(f.read_text(encoding="utf-8")) or {}).get(country) if f.exists() else None
+    if not r:
+        return []
+    parts = [f"level {r['level']}" if r.get("level") is not None else None,
+             f"{r['change_period_pct']:+.1f}% on the previous period" if r.get("change_period_pct") is not None else None,
+             f"{r['change_year_pct']:+.1f}% on a year earlier" if r.get("change_year_pct") is not None else None]
+    q = "" if r.get("quality") == "official" else " (official figure as reported in the press; verify)"
+    return [f"**Latest official reading:** {r['series']}, {r['period']}: "
+            + ", ".join(x for x in parts if x) + f"{q}. Source: {r['source']}", ""]
+
+
+def pressure_section(country: str) -> list[str]:
+    from cost_pressure import pressure_history, forecast
+    ccy_code, col = ccy(country)
+    try:
+        hist, fc = pressure_history(col), forecast(col)
+    except Exception:
+        return ["_Cost-pressure indicator unavailable (no exchange-rate history)._"]
+    if hist.empty or not fc:
+        return ["_Cost-pressure indicator unavailable (no exchange-rate history)._"]
+    last3 = float(hist.tail(3).sum())
+    lines = ["**Imported-input cost pressure** (oil in " + ccy_code + " and the exchange rate, weighted like the "
+             "official baskets in the pilot countries; an indicator, not a price index):", "",
+             "| Window | Pressure on input costs | 80% range |", "|---|---|---|",
+             f"| Last 3 months (observed) | {last3:+.1f}% | – |"]
+    for h, (med, lo, hi) in fc.items():
+        lines.append(f"| Next {h} months | {med:+.1f}% | {lo:+.1f}% to {hi:+.1f}% |")
+    lines += ["", "In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official "
+              "construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of "
+              "cost moves, not local materials or labour. Price reports from participants fill that gap."]
+    return lines
+
+
 def generic_body(weekly, country: str) -> list[str]:
     from country import load_country
     cfg = load_country(country)
-    ccy_code, col = ccy(country)
-    q13 = _chg((weekly["brent_usd"] * weekly[col]) if col in weekly.columns else weekly["brent_usd"], 91)
-    return ["## Cost pressure", "",
-            f"Official construction price index: {cfg['settlement']['publication']}.", "",
-            f"Until an official series is wired in, this note tracks the imported-cost drivers and the prices "
-            f"participants report. Brent in {ccy_code} has moved **{_fmt(q13, pct=True)}** over 13 weeks; in the "
-            "official East African indices a sustained 1% rise in oil in local currency has passed through about "
-            "0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate."]
+    return (["## Official index", "", f"Status: {cfg['settlement']['publication']}.", ""]
+            + official_reading(country) + ["## Cost pressure outlook", ""] + pressure_section(country))
 
 
-BODIES = {"uganda": uganda_body, "kenya": kenya_body, "rwanda": rwanda_body, "south_africa": south_africa_body}
+BODIES = {"uganda": uganda_body, "kenya": kenya_body, "south_africa": south_africa_body}
 
 
 def build(country: str = "uganda", fetch: bool = True, db_path: Path = DEFAULT_DB) -> Path:

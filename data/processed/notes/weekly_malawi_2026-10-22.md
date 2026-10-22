@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | MWK per USD | 1,733.9 | +0.0% | -0.2% | -0.1% | +0.2% |
 | Brent in MWK | 206,911.6 | -8.2% | -0.5% | +40.3% | +95.3% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: partial: NCIC construction cost indices developed with NSO; values and frequency not yet confirmed.
+Status: partial: NCIC construction cost indices developed with NSO; values and frequency not yet confirmed.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in MWK has moved **+40.3%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in MWK and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.0% | – |
+| Next 3 months | +0.3% | -1.6% to +6.3% |
+| Next 6 months | +2.2% | -2.0% to +16.0% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

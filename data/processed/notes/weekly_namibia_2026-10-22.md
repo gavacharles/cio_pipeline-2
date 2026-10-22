@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | NAD per USD | 16.4 | -0.5% | +1.2% | -0.2% | -5.3% |
 | Brent in NAD | 1,961.1 | -8.7% | +0.9% | +40.1% | +84.5% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: partial: NSA PPI covers cement, lime and plaster only; private First Capital building cost index.
+Status: partial: NSA PPI covers cement, lime and plaster only; private First Capital building cost index.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in NAD has moved **+40.1%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in NAD and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.2% | – |
+| Next 3 months | +0.4% | -2.9% to +3.9% |
+| Next 6 months | +0.4% | -4.4% to +5.5% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

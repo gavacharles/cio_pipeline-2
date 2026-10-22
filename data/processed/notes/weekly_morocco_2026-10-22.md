@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | MAD per USD | 9.7 | -1.8% | +2.3% | +4.6% | +6.2% |
 | Brent in MAD | 1,162.5 | -9.9% | +2.0% | +46.8% | +107.0% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: none found; HCP industrial PPI may include construction products (unconfirmed).
+Status: none found; HCP industrial PPI may include construction products (unconfirmed).
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in MAD has moved **+46.8%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in MAD and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +6.4% | – |
+| Next 3 months | +0.1% | -3.0% to +4.9% |
+| Next 6 months | +0.2% | -4.4% to +5.6% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

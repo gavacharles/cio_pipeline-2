@@ -1,8 +1,18 @@
-# Countries (status 22 October 2026)
+# Countries (18; status 22 October 2026)
 
-Every country has a weekly note, price reports in its own currency, and weekly plus IMF-monthly
-exchange rates. **Contracts and forecasts** need an official construction price series that
-is published regularly.
+Every country has a weekly note, price reports in its own currency, weekly and IMF-monthly
+exchange rates, and a forecast:
+
+| Forecast type | Countries | What it is |
+|---|---|---|
+| Structural (UBOS weights) | Uganda | Component models with macro drivers, re-aggregated |
+| Quarterly driver model | Kenya | Shilling and oil in shillings, conditioned on observed months |
+| Contract nowcast | South Africa | Opening probabilities from recent Stats SA patterns |
+| Cost-pressure outlook | the other 15 | Oil in local currency and the exchange rate (`src/forecast/cost_pressure.py`); an indicator, not a price index. Correlates 0.26–0.37 with the official indices (0.45–0.58 with diesel) in Uganda and South Africa |
+
+Latest official readings for Ghana, Zimbabwe, Senegal and Mauritius are kept, with sources, in
+`config/official_readings.yaml` until each office's files are parsed automatically.
+**Contracts** need an official construction price series that is published regularly.
 
 | Country | Level | Official construction price series | Next step |
 |---|---|---|---|

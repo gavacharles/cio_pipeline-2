@@ -10,11 +10,23 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | GHS per USD | 11.6 | -1.1% | +1.1% | +1.0% | +9.3% |
 | Brent in GHS | 1,388.6 | -9.2% | +0.8% | +41.7% | +113.0% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: available: GSS Prime Building Cost Index (PBCI), monthly, 406 items, base 2023; adapter next.
+Status: available: GSS Prime Building Cost Index (PBCI), monthly, 406 items, base 2023; adapter next.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in GHS has moved **+41.7%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+**Latest official reading:** GSS Prime Building Cost Index (PBCI), 2023 = 100, monthly, 2026-08: level 138.4, +0.1% on the previous period, +4.6% on a year earlier. Source: https://www.myjoyonline.com/wp-content/uploads/2026/09/August-2026_PBCI-Bulletin.pdf
+
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in GHS and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.9% | – |
+| Next 3 months | +2.5% | -4.6% to +7.8% |
+| Next 6 months | +4.6% | -8.7% to +13.8% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

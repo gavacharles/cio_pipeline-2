@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | TZS per USD | 2,640.5 | -0.1% | -0.3% | +0.3% | +7.7% |
 | Brent in TZS | 315,093.7 | -8.4% | -0.6% | +40.8% | +109.9% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: none current: NCC labour/material indices last seen 2020; NBS quarterly PPI/trade indices, construction coverage unconfirmed.
+Status: none current: NCC labour/material indices last seen 2020; NBS quarterly PPI/trade indices, construction coverage unconfirmed.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in TZS has moved **+40.8%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in TZS and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.2% | – |
+| Next 3 months | +0.3% | -2.7% to +3.9% |
+| Next 6 months | +0.6% | -3.5% to +5.4% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

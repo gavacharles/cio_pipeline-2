@@ -10,11 +10,23 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | MUR per USD | 47.3 | -0.3% | -0.6% | +0.6% | +4.7% |
 | Brent in MUR | 5,646.7 | -8.5% | -0.9% | +41.3% | +104.1% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: available: quarterly Construction Price Index (materials 68.6%); adapter next.
+Status: available: quarterly Construction Price Index (materials 68.6%); adapter next.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in MUR has moved **+41.3%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+**Latest official reading:** Statistics Mauritius Construction Price Index (single-family house), quarterly, 2026-03: level 151.6, +4.5% on a year earlier (official figure as reported in the press; verify). Source: https://fr.allafrica.com/stories/202604260011.html
+
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in MUR and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.5% | – |
+| Next 3 months | +0.4% | -1.9% to +3.2% |
+| Next 6 months | +0.5% | -2.9% to +5.0% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

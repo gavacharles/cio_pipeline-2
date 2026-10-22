@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | NGN per USD | 1,331.0 | +0.1% | -0.1% | -3.5% | -9.0% |
 | Brent in NGN | 158,831.6 | -8.1% | -0.4% | +35.4% | +77.3% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: none found; only press price surveys (e.g. cement ~N10,000/bag Lagos, 2025).
+Status: none found; only press price surveys (e.g. cement ~N10,000/bag Lagos, 2025).
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in NGN has moved **+35.4%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in NGN and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +2.5% | – |
+| Next 3 months | +0.8% | -2.9% to +13.5% |
+| Next 6 months | +2.7% | -3.1% to +26.2% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

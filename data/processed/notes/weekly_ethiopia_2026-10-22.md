@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | ETB per USD | 162.5 | +0.1% | +1.0% | +0.7% | +10.2% |
 | Brent in ETB | 19,392.7 | -8.1% | +0.7% | +41.4% | +114.8% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: unclear: a quarterly construction materials index was planned in 2020; status unknown.
+Status: unclear: a quarterly construction materials index was planned in 2020; status unknown.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in ETB has moved **+41.4%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in ETB and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.4% | – |
+| Next 3 months | +1.8% | -0.5% to +5.1% |
+| Next 6 months | +3.5% | -0.2% to +30.1% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

@@ -10,11 +10,23 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | XOF per USD | 583.7 | +0.0% | +2.3% | +1.8% | +4.1% |
 | Brent in XOF | 69,654.9 | -8.2% | +2.0% | +42.9% | +102.9% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: available: ANSD monthly Indice des prix des materiaux de construction (IMC); adapter next.
+Status: available: ANSD monthly Indice des prix des materiaux de construction (IMC); adapter next.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in XOF has moved **+42.9%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+**Latest official reading:** ANSD Indice des prix des materiaux de construction (IMC), 2022 = 100, monthly, 2026-04: +1.1% on the previous period, +2.4% on a year earlier. Source: https://www.ansd.sn/Indicateur/indice-des-prix-des-materiaux-de-construction-imc
+
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in XOF and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +4.8% | – |
+| Next 3 months | -0.2% | -2.9% to +4.4% |
+| Next 6 months | +0.1% | -4.7% to +5.4% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

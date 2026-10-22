@@ -10,11 +10,21 @@ _CiO Lab construction cost note · play-money pilot · not investment advice._
 | EGP per USD | 53.4 | +2.0% | +2.5% | +5.9% | +12.3% |
 | Brent in EGP | 6,376.7 | -6.4% | +2.2% | +48.6% | +118.8% |
 
-## Cost pressure
+## Official index
 
-Official construction price index: candidate: CAPMAS Monthly Bulletin of Building Materials Prices (steel, cement, wood, bricks); latest issue seen 2018, confirm it is current.
+Status: candidate: CAPMAS Monthly Bulletin of Building Materials Prices (steel, cement, wood, bricks); latest issue seen 2018, confirm it is current.
 
-Until an official series is wired in, this note tracks the imported-cost drivers and the prices participants report. Brent in EGP has moved **+48.6%** over 13 weeks; in the official East African indices a sustained 1% rise in oil in local currency has passed through about 0.1-0.15% to diesel within a few months (Uganda, UBOS). That is a reference, not a local estimate.
+## Cost pressure outlook
+
+**Imported-input cost pressure** (oil in EGP and the exchange rate, weighted like the official baskets in the pilot countries; an indicator, not a price index):
+
+| Window | Pressure on input costs | 80% range |
+|---|---|---|
+| Last 3 months (observed) | +6.3% | – |
+| Next 3 months | +0.7% | -1.9% to +10.9% |
+| Next 6 months | +3.4% | -2.6% to +19.9% |
+
+In Uganda and South Africa this indicator's 3-month changes correlate 0.26–0.37 with the official construction indices (0.45–0.58 with Uganda's diesel index): it captures the imported part of cost moves, not local materials or labour. Price reports from participants fill that gap.
 
 ## Prices reported by participants
 

@@ -1,0 +1,36 @@
+# Latest official construction price readings for countries whose index is not yet parsed
+# automatically. Update when a new bulletin appears (the weekly note prints these with source).
+# quality: official = read from the statistics office's own publication;
+#          secondary = official figure as reported by the press (verify against the original).
+ghana:
+  series: GSS Prime Building Cost Index (PBCI), 2023 = 100, monthly
+  period: 2026-08
+  level: 138.4
+  change_period_pct: 0.1        # on previous month
+  change_year_pct: 4.6
+  quality: official
+  source: https://www.myjoyonline.com/wp-content/uploads/2026/09/August-2026_PBCI-Bulletin.pdf
+zimbabwe:
+  series: ZimStat weighted Building Materials Price Index (BMPI), June 2024 = 100, quarterly
+  period: 2025-12
+  level: 122.14
+  change_period_pct: 1.0        # on previous quarter
+  change_year_pct: 7.8
+  quality: official
+  source: https://www.zimstat.co.zw/wp-content/uploads/Macro/Prices/BMPI/2025/BMPI_Weighted_12_2025.pdf
+senegal:
+  series: ANSD Indice des prix des materiaux de construction (IMC), 2022 = 100, monthly
+  period: 2026-04
+  level: null
+  change_period_pct: 1.1
+  change_year_pct: 2.4
+  quality: official
+  source: https://www.ansd.sn/Indicateur/indice-des-prix-des-materiaux-de-construction-imc
+mauritius:
+  series: Statistics Mauritius Construction Price Index (single-family house), quarterly
+  period: 2026-03
+  level: 151.6
+  change_period_pct: null
+  change_year_pct: 4.5
+  quality: secondary
+  source: https://fr.allafrica.com/stories/202604260011.html
