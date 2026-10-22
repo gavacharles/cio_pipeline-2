@@ -17,6 +17,9 @@ on:
     branches: [main, feature/dashboard]
     paths: ['data/processed/**', 'app/claims_library.json', 'app/claim_style.json', 'src/estimation/**']
 
+permissions:
+  contents: write      # the final step commits the refreshed panel back to the branch
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
@@ -57,4 +60,5 @@ jobs:
         run: |
           git config user.name 'Paul Mutamba' && git config user.email 'mutapaul1@gmail.com'
           git add -A data/processed data/raw/ubos_cipi_manifest.csv 2>/dev/null || true
-          git diff --cached --quiet || (git commit -q -m "Data refresh $(date -u +%F)" && git push)
+          git diff --cached --quiet || (git commit -q -m "Data refresh $(date -u +%F)" && git push) \
+            || echo "::warning::datasets were posted to the portal, but the refreshed artefacts could not be pushed back to the branch"
