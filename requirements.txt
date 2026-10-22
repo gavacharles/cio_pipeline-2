@@ -14,3 +14,10 @@ torch>=2.1             # LSTM/GRU forecasting (P9) [optional; ridge fallback pro
 matplotlib>=3.7        # figures
 pytest>=7.4            # test suite
 pyyaml>=6.0            # country configs for the forecasting market (src/market)
+# Participant app, weekly drivers and KNBS PDFs (src/webapp, src/ingest)
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9
+httpx>=0.27            # tests (fastapi TestClient)
+xlrd>=2.0               # EIA Brent .xls
+pypdf>=4.0               # KNBS PDFs when poppler's pdftotext is absent

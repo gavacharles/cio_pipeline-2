@@ -1,0 +1,43 @@
+# Rwanda: price reporting and forecasts first; no settled contracts yet.
+# NISR publishes no construction input price index. Its monthly PPI may include
+# construction (NISR pages disagree), so settlement waits until a source is agreed.
+# Until then participants report weekly prices and the note tracks RWF and fuel.
+country: Rwanda
+iso3: RWA
+status: reporting
+currency: RWF
+regulation:
+  mode: play_money
+  regulators:
+    - "Capital Market Authority (CMA) Rwanda: regulatory sandbox"
+    - "Ministry of Trade and Industry / National Gaming Board: real-money event bets may be gaming"
+  note: Points have no cash value; no contracts until an official settlement series is chosen.
+
+settlement:
+  statistics_office: National Institute of Statistics of Rwanda (NISR)
+  publication: "none yet (candidate: Producer Price Index, construction component)"
+  url: https://statistics.gov.rw/
+  parser: none
+  raw_dirs: [data/raw/nisr]
+  frequency: monthly
+  quantity: mom_pct_change
+  decimals: 2
+  void_after_days: 120
+  excluded_participants: []
+
+exchange:
+  starting_points: 1000
+  liquidity_b: 100
+  probability_floor: 0.02
+
+markets: []
+
+price_items:
+  - { code: cement_50kg,  name: "Cement, 50 kg bag",          unit: bag }
+  - { code: rebar_y12,    name: "Rebar Y12, 12 m bar",         unit: bar }
+  - { code: iron_sheet,   name: "Iron sheet, gauge 30, 3 m",   unit: sheet }
+  - { code: diesel,       name: "Diesel, pump price",          unit: litre }
+  - { code: sand,         name: "Sand, per tonne",             unit: tonne }
+  - { code: aggregate,    name: "Aggregate / gravel, per tonne", unit: tonne }
+  - { code: brick,        name: "Burnt clay brick",            unit: piece }
+  - { code: mason_day,    name: "Mason, daily wage",           unit: day }

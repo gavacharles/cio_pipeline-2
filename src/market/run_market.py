@@ -12,7 +12,7 @@ run_market.py — command line for the CiO construction-cost forecasting market.
     python src/market/run_market.py settle --country uganda        # settle from new releases, void stale ones
     python src/market/run_market.py leaderboard
 
-Outputs: data/processed/market/backtest_{scores,metrics}.csv,
+Outputs: data/processed/market/backtest_{scores,metrics}_<country>.csv,
          data/processed/market/revision_report.csv,
          data/market/exchange.sqlite (git-ignored; the live ledger)
 """
@@ -29,7 +29,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from country import load_country                                        # noqa: E402
 from ledger import Exchange, ExchangeError                              # noqa: E402
 from nowcast import mom_changes, predictive_probs, walk_forward, summarise, expected_change  # noqa: E402
-from settlement import load_releases, series_history, first_print, bucket_labels, revision_report  # noqa: E402
+from settlement import (load_releases, series_history, first_print, bucket_labels,  # noqa: E402
+                        revision_report, period_step, history)
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "data" / "processed" / "market"
@@ -41,19 +42,21 @@ def cmd_backtest(args) -> None:
     rel = load_releases(cfg)
     floor = cfg["exchange"]["probability_floor"]
     rows, scores = [], []
+    freq, _ = period_step(cfg)
+    min_train = cfg["exchange"].get("nowcast_min_train", 36)
     for m in cfg["markets"]:
-        r = mom_changes(series_history(rel, m["label"]))
+        r = mom_changes(history(rel, m["label"], cfg))
         for h in args.horizons:
-            s = walk_forward(r, m["cuts"], horizon=h, floor=floor)
+            s = walk_forward(r, m["cuts"], horizon=h, floor=floor, min_train=min_train)
             if s.empty:
                 continue
             s.insert(0, "code", m["code"]); s.insert(1, "horizon", h)
             scores.append(s)
             rows.append({"code": m["code"], "horizon": h, **summarise(s)})
     OUT.mkdir(parents=True, exist_ok=True)
-    pd.concat(scores).to_csv(OUT / "backtest_scores.csv", index=False)
+    pd.concat(scores).to_csv(OUT / f"backtest_scores_{cfg['key']}.csv", index=False)
     met = pd.DataFrame(rows)
-    met.to_csv(OUT / "backtest_metrics.csv", index=False)
+    met.to_csv(OUT / f"backtest_metrics_{cfg['key']}.csv", index=False)
     print(met.to_string(index=False))
     print("\nlog_skill > 0 => opening prices beat all-history bucket frequencies; "
           "DM_stat > 1.96 => significantly.")
@@ -111,28 +114,34 @@ def cmd_compare_opening(args) -> None:
     print("\nbest per horizon:", tot.idxmin(axis=1).to_dict())
 
 
-def _month_end(ref: pd.Timestamp) -> str:
-    return (ref + pd.DateOffset(months=1)).strftime("%Y-%m-%dT00:00:00Z")
+def _closes(ref: pd.Timestamp, cfg: dict) -> str:
+    """Trading closes before prices are collected: end of the reference month (UBOS),
+    or the 15th of the quarter's middle month, KNBS's price reference date."""
+    if cfg["settlement"].get("trading_closes") == "mid_quarter_15th":
+        return (ref + pd.DateOffset(months=1, days=14)).strftime("%Y-%m-%dT00:00:00Z")
+    _, step = period_step(cfg)
+    return (ref + pd.DateOffset(months=step)).strftime("%Y-%m-%dT00:00:00Z")
 
 
 def cmd_open(args) -> None:
     cfg = load_country(args.country)
     rel = load_releases(cfg)
     latest = rel.release_month.max()
-    this_month = pd.Timestamp.now().to_period("M").to_timestamp()
+    freq, step = period_step(cfg)
+    this_period = pd.Timestamp.now().to_period("Q" if step == 3 else "M").to_timestamp()
     ref = (pd.Timestamp(args.ref_month) if args.ref_month
-           else max(latest + pd.DateOffset(months=1), this_month))
-    horizon = (ref.year - latest.year) * 12 + ref.month - latest.month
+           else max(latest + pd.DateOffset(months=step), this_period))
+    horizon = ((ref.year - latest.year) * 12 + ref.month - latest.month) // step
     if horizon < 1:
         sys.exit(f"{ref:%Y-%m} is already published (latest release covers {latest:%Y-%m})")
-    closes = _month_end(ref)
+    closes = _closes(ref, cfg)
     if closes <= pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"):
         sys.exit(f"{ref:%Y-%m} has already ended, so its market would open closed")
     if horizon > 2:
         print(f"warning: latest release on file covers {latest:%Y-%m}; opening {ref:%Y-%m} at horizon {horizon}. "
               "Harvest newer UBOS releases (src/ingest/pull_ubos_cipi.py) for sharper opening prices.")
     ex = Exchange(args.db, cfg["exchange"]["starting_points"])
-    void_after = (ref + pd.DateOffset(months=1) + pd.Timedelta(days=cfg["settlement"]["void_after_days"])
+    void_after = (ref + pd.DateOffset(months=step) + pd.Timedelta(days=cfg["settlement"]["void_after_days"])
                   ).strftime("%Y-%m-%dT00:00:00Z")
     opener = None
     if any(m["opening"] != "pooled" for m in cfg["markets"]):
@@ -142,7 +151,7 @@ def cmd_open(args) -> None:
         opener = StructuralOpener(rel_dir / src).fit(latest)
     floor = cfg["exchange"]["probability_floor"]
     for m in cfg["markets"]:
-        r = mom_changes(series_history(rel, m["label"], as_of=latest))
+        r = mom_changes(history(rel, m["label"], cfg, as_of=latest))
         prior = predictive_probs(r, ref, m["cuts"], horizon, floor)
         if m["opening"] != "pooled" and opener is not None and opener.has(m["label"]):
             ps = opener.probs(m["label"], ref, m["cuts"], floor)
@@ -193,7 +202,7 @@ def cmd_settle(args) -> None:
     for m in ex.markets(country=cfg["key"]):
         if m["status"] in ("settled", "void"):
             continue
-        fp = first_print(rel, m["label"], m["ref_month"], cfg["settlement"]["decimals"])
+        fp = first_print(rel, m["label"], m["ref_month"], cfg["settlement"]["decimals"], period_step(cfg)[1])
         if fp:
             k = ex.settle(m["id"], fp["value"], f"{fp['source_file']} ({fp['note']})")
             print(f"settled #{m['id']} {m['code']} {m['ref_month']}: {fp['value']:+.2f}% -> '{m['outcomes'][k]}'"

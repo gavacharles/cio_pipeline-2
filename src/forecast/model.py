@@ -55,6 +55,26 @@ def load_policy_events(cfg: dict, root) -> list[dict]:
     return [e for e in events if e.get("status") == "enacted" and e.get("pct") is not None]
 
 
+def known_primitives(panel: pd.DataFrame, extension: pd.DataFrame, cfg: dict, origin, H: int,
+                     columns: list[str]) -> np.ndarray:
+    """[H, k] macro primitives already observed after the forecast origin (NaN = not yet
+    known), from a monthly `extension` of panel columns (e.g. Brent and UGX/USD readings
+    since the last CIPI release). Only dlog drivers are filled."""
+    out = np.full((H, len(columns)), np.nan)
+    if extension is None or extension.empty:
+        return out
+    origin = pd.Timestamp(origin)
+    dlog_cols = {c for d in cfg["drivers"].values() if d.get("transform", "dlog") == "dlog" for c in d["columns"]}
+    for c in set(extension.columns) & set(columns) & dlog_cols:
+        s = pd.concat([panel[c].loc[:origin], extension[c].loc[origin + pd.DateOffset(days=1):]]).dropna()
+        r = 100 * np.log(s).diff()
+        for h in range(H):
+            d = origin + pd.DateOffset(months=h + 1)
+            if d in r.index:
+                out[h, columns.index(c)] = r[d]
+    return out
+
+
 def lag_only_drivers(cfg: dict) -> set[str]:
     """Indicator drivers (levels, year-on-year rates) enter with lags 1-3 only."""
     return {n for n, d in cfg["drivers"].items() if d.get("transform", "dlog") != "dlog"}
@@ -277,7 +297,7 @@ class ForecastModel:
 
     def simulate(self, H: int, n_paths: int | None = None, scenario: str = "baseline",
                  seed: int | None = None, macro_path: np.ndarray | None = None,
-                 pass_through: float | None = None) -> np.ndarray:
+                 pass_through: float | None = None, known: np.ndarray | None = None) -> np.ndarray:
         """Component level paths [P, H, C]. `macro_path` [H, k] fixes the macro primitives
         (e.g. realised values for an ex-post check) instead of simulating them."""
         ms = self.cfg["macro_simulation"]
@@ -292,6 +312,8 @@ class ForecastModel:
             prim = np.repeat(macro_path[None], n_paths, axis=0)
         else:
             add, offset, replace = self._scenario(scenario, H)
+            if known is not None:      # observed months override the simulated macro path
+                replace = known if replace is None else np.where(np.isnan(known), replace, known)
             prim = self.var.simulate(H, u, add, replace) + offset
         full = np.concatenate([np.repeat(self.prim_tail[None], n_paths, axis=0), prim], axis=1)
         X = drivers_from_primitives(full, self.cfg, self.prim_cols)  # [P, 3+H, drivers]

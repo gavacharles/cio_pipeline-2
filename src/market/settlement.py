@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src" / "ingest"))
+sys.path.insert(0, str(ROOT / "src" / "ingest"))  # parse_cipi, parse_knbs_cipi
 
 from parse_cipi import parse_cipi_workbook, CipiParseError   # noqa: E402
 
@@ -45,10 +45,36 @@ def _ubos_cipi_files(raw_dirs: list[str]) -> list[Path]:
     return files
 
 
+def history(releases: pd.DataFrame, label: str, cfg: dict, as_of=None) -> pd.Series:
+    """series_history with the country's frequency and history rule
+    (settlement.history: newest_release (default; safe across rebasings) | combine_releases)."""
+    return series_history(releases, label, as_of, period_step(cfg)[0],
+                          cfg["settlement"].get("history") == "combine_releases")
+
+
+def period_step(cfg: dict) -> tuple[str, int]:
+    """(pandas frequency, months per period) for the country's settlement series."""
+    return ("QS-JAN", 3) if cfg["settlement"]["frequency"] == "quarterly" else ("MS", 1)
+
+
+def _knbs_releases(cfg: dict) -> pd.DataFrame:
+    """KNBS quarterly PDFs; series are named '<sheet>|<label>', e.g. 'all|total', 'all|cement'."""
+    from parse_knbs_cipi import parse_all
+    files = [f for d in cfg["settlement"]["raw_dirs"] for f in (ROOT / d).glob("*.pdf")]
+    rel, _ = parse_all(files)
+    if rel.empty:
+        raise FileNotFoundError("no parseable KNBS releases in " + ", ".join(cfg["settlement"]["raw_dirs"]))
+    rel["series_label"] = rel["sheet"].str.lower() + "|" + rel["series_label"]
+    rel = rel.rename(columns={"release_period": "release_month"})
+    return rel[["source_file", "series_label", "date", "index_value", "release_month"]]
+
+
 def load_releases(cfg: dict) -> pd.DataFrame:
     """Parse every release for the country into one long frame.
-    Adds `release_month` = the latest month a release contains (its reference month)."""
+    Adds `release_month` = the latest period a release contains (its reference period)."""
     parser = cfg["settlement"]["parser"]
+    if parser == "knbs_cipi_quarterly":
+        return _knbs_releases(cfg)
     if parser != "ubos_cipi":
         raise NotImplementedError(f"no settlement adapter for parser {parser!r} yet")
     frames = []
@@ -65,7 +91,8 @@ def load_releases(cfg: dict) -> pd.DataFrame:
     return rel
 
 
-def series_history(releases: pd.DataFrame, label: str, as_of: pd.Timestamp | None = None) -> pd.Series:
+def series_history(releases: pd.DataFrame, label: str, as_of: pd.Timestamp | None = None,
+                   freq: str = "MS", combine: bool = False) -> pd.Series:
     """Levels of one series from the newest release published up to `as_of` (inclusive,
     by reference month). One release = one consistent base, so no splicing is needed."""
     rel = releases[releases.series_label == label]
@@ -73,15 +100,20 @@ def series_history(releases: pd.DataFrame, label: str, as_of: pd.Timestamp | Non
         rel = rel[rel.release_month <= as_of]
     if rel.empty:
         return pd.Series(dtype=float)
+    if combine:   # one base, never revised (KNBS): stitch releases, newest value wins
+        s = rel.sort_values("release_month").drop_duplicates("date", keep="last")
+        return s.set_index("date")["index_value"].sort_index().asfreq(freq)
     newest = rel.loc[rel.release_month.idxmax(), "source_file"]
     s = rel[rel.source_file == newest].set_index("date")["index_value"].sort_index()
-    return s.asfreq("MS")
+    return s.asfreq(freq)
 
 
-def first_print(releases: pd.DataFrame, label: str, ref_month, decimals: int = 2) -> dict | None:
-    """The settlement value for (label, ref_month), or None if not yet published."""
+def first_print(releases: pd.DataFrame, label: str, ref_month, decimals: int = 2,
+                step_months: int = 1) -> dict | None:
+    """The settlement value for (label, ref_month), or None if not yet published.
+    `step_months` = 3 for quarterly series (change on the previous quarter)."""
     ref = pd.Timestamp(ref_month).to_period("M").to_timestamp()
-    prev = ref - pd.DateOffset(months=1)
+    prev = ref - pd.DateOffset(months=step_months)
     rel = releases[releases.series_label == label]
     first = rel[rel.release_month == ref]
     note = "first print"

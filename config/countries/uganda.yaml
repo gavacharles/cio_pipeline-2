@@ -102,3 +102,16 @@ markets:
     title: Plastic pipes
     cuts: [-1.0, 0.0, 0.01, 1.0]
     opening: pooled
+
+# What participants report each week (src/webapp): the prices they actually pay.
+price_items:
+  - { code: cement_50kg,  name: "Cement, 50 kg bag",           unit: bag }
+  - { code: rebar_y12,    name: "Rebar Y12, 12 m bar",          unit: bar }
+  - { code: rebar_y16,    name: "Rebar Y16, 12 m bar",          unit: bar }
+  - { code: iron_sheet,   name: "Iron sheet, gauge 28, 3 m",    unit: sheet }
+  - { code: diesel,       name: "Diesel, pump price",           unit: litre }
+  - { code: sand,         name: "Sand, per tipper (7 t)",       unit: trip }
+  - { code: aggregate,    name: "Aggregate, per tipper (7 t)",  unit: trip }
+  - { code: block_6in,    name: "Concrete block, 6 in",         unit: piece }
+  - { code: timber_2x4,   name: "Timber 2x4, per foot",         unit: foot }
+  - { code: mason_day,    name: "Mason, daily wage",            unit: day }

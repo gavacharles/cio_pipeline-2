@@ -166,7 +166,7 @@ def test_ledger_void_refunds():
 def test_country_configs_validate():
     ug = load_country("uganda")
     assert ug["markets"] and all(m["cuts"] == sorted(m["cuts"]) for m in ug["markets"])
-    assert load_country("kenya")["status"] == "planned"
+    assert load_country("kenya")["status"] == "pilot" and load_country("rwanda")["markets"] == []
 
 
 def test_config_refuses_real_money():

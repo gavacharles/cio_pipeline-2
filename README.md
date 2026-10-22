@@ -47,6 +47,11 @@ tests/test_forecast.py       forecaster tests (exact rebuild, no look-ahead, coh
 config/forecast_model.yaml   driver groups, shrinkage, simulation and scenarios
 config/policy_events.yaml    sourced tax measures (fuel, cement, paint excise) applied as known shocks
 src/ingest/build_rainfall_block.py  monthly rainfall driver (ERA5, five towns) -> data/raw/
+src/ingest/build_weekly_drivers.py  weekly Brent + UGX/KES/RWF readings for the weekly note
+src/ingest/pull_knbs_cipi.py, parse_knbs_cipi.py  Kenya KNBS quarterly CIPI PDFs
+src/forecast/weekly_note.py  weekly construction-cost note (data/processed/notes/)
+src/webapp/app.py            participant app: invites, contracts, price reports, note, leaderboard
+src/market/cycle.py          daily/weekly automation (deploy/crontab.example); see docs/OPERATIONS.md
 config/series_map.yaml       editable dataset/series codes
 config/countries/*.yaml      per-country market config (Uganda pilot, Kenya planned)
 config/global_series_2015_2026.json quoted 2015-2026 source/dataset/series catalog

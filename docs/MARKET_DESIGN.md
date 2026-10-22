@@ -68,7 +68,7 @@ seasonality, empirical residuals) and recent bucket frequencies, both weighted w
 24-month half-life (`src/market/nowcast.py`). The blend never opens a bucket below 2%.
 
 Walk-forward backtest, 2021–2026, one and two months ahead
-(`run_market.py backtest`, output `data/processed/market/backtest_metrics.csv`):
+(`run_market.py backtest`, output `data/processed/market/backtest_metrics_uganda.csv`):
 
 - It beats all-history bucket frequencies in **19 of 24** series × horizon cases.
 - The gain is significant (Diebold–Mariano > 1.96) for **aggregate** and **sand**.
