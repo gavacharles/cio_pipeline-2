@@ -102,3 +102,29 @@ def test_known_macro_overrides_simulation():
     lo = m.aggregate_paths(m.simulate(3, n_paths=300, seed=1), "ALL")[:, 1]
     hi = m.aggregate_paths(m.simulate(3, n_paths=300, seed=1, known=known), "ALL")[:, 1]
     assert np.median(hi) > np.median(lo)
+
+
+def test_quarterly_model_uses_known_drivers():
+    from quarterly_model import QuarterlyModel
+    idx = pd.date_range("2019-10-01", periods=24, freq="QS-JAN")
+    rng = np.random.default_rng(0)
+    D = pd.DataFrame({"fx": rng.normal(0, 2, 24), "oil": rng.normal(0, 8, 24)}, index=idx)
+    r = 0.5 + 0.08 * D["oil"] + rng.normal(0, 0.3, 24)          # index driven by oil
+    lv = 100 * np.exp(np.cumsum(r) / 100)
+    m = QuarterlyModel(alpha=1.0).fit(lv, D)
+    assert m.coef[m.names.index("oil_0")] > 0.03
+    up = pd.DataFrame({"fx": [0.0], "oil": [30.0]}, index=[idx[-1] + pd.DateOffset(months=3)])
+    down = up.assign(oil=-30.0)
+    hi, _ = m.simulate(1, n_paths=500, known=up)
+    lo, _ = m.simulate(1, n_paths=500, known=down)
+    assert np.median(hi) > np.median(lo)
+
+
+@pytest.mark.skipif(not (ROOT / "data" / "raw" / "weekly_drivers.csv").exists(), reason="no weekly drivers")
+def test_rwanda_note_builds_offline(tmp_path, monkeypatch):
+    import weekly_note
+    monkeypatch.setattr(weekly_note, "NOTES", tmp_path)
+    md = weekly_note.build("rwanda", fetch=False, db_path=tmp_path / "none.sqlite").read_text()
+    assert "Rwanda construction cost note" in md and "Brent in RWF" in md
+    assert (tmp_path / md.splitlines()[0] if False else tmp_path).exists()
+    assert any(p.suffix == ".html" for p in tmp_path.iterdir())

@@ -249,7 +249,7 @@ def note(request: Request):
     user, redirect = need_login(request)
     if redirect:
         return redirect
-    notes = sorted(NOTES.glob("weekly_*.html"))
+    notes = sorted(NOTES.glob(f"weekly_{user['country']}_*.html"))
     if not notes:
         return page("Weekly note", "<p>The first weekly note has not been published yet.</p>", user)
     return HTMLResponse(notes[-1].read_text(encoding="utf-8"))

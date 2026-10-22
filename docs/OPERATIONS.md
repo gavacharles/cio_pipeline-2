@@ -44,7 +44,19 @@ CIO_ADMIN_KEY=<secret> uvicorn --app-dir src/webapp app:app --host 0.0.0.0 --por
 
 Every step is logged to `data/market/cycle_log.csv`. A failed step is logged and the others still run.
 
-## Weekly note (`src/forecast/weekly_note.py`)
+## Weekly notes (`src/forecast/weekly_note.py`) — one per country, every Monday
+
+| Country | What the note forecasts | Evidence |
+|---|---|---|
+| Uganda | Overall index and key materials for this month and +3 months; structural model conditioned on Brent and UGX since the last UBOS release | Monthly backtest, docs/FORECAST_MODEL.md |
+| Kenya | KNBS overall, building and civil indices for the next two quarterly prints (`quarterly_model.py`: shilling and Brent in shillings, ridge-shrunk, conditioned on observed months) | Walk-forward, 12–13 quarters: two quarters ahead 0.86–0.93 of trend's error; one quarter ahead about equal. It lost for cement and labour, so single materials show the latest KNBS readings only. Bands come from the model's own past errors |
+| Rwanda | No forecast (no official index): RWF, Brent in RWF, crowd prices, and Uganda's oil-to-diesel pass-through as a labelled reference | – |
+
+`python src/forecast/weekly_note.py --country all` writes `data/processed/notes/weekly_<country>_<date>.{md,html}`;
+the app shows each participant their own country's note. Exchange-rate history comes from the IMF
+(`build_fx_history.py`, monthly, from 2015), spliced with weekly snapshots.
+
+### Uganda note detail
 
 The note works between official releases. It refits the structural model at the last UBOS release
 and **conditions on the Brent and UGX/USD readings observed since then**
@@ -65,7 +77,8 @@ The backtest calibration (`interval_calibration.csv`) applies to `run_forecast.p
 | Official index | UBOS CIPI, monthly Excel | KNBS CIPI, quarterly PDF | None (NISR PPI may cover construction; unconfirmed) |
 | Contracts | 12, monthly | 7, quarterly; trading closes on the 15th of the quarter's middle month (KNBS price date) | None yet |
 | Opening prices | Structural / blend / pooled per contract | Pooled nowcast (12 test quarters; mixed skill) | – |
-| Forecaster | Full structural model | Not yet (26 quarters) | Not yet (no index) |
+| Forecaster | Full structural model | Quarterly model for the 3 cost indices | None (no index) |
+| Weekly note | Yes | Yes | Yes (drivers + crowd prices) |
 | Price reports and weekly drivers | Yes | Yes (KES) | Yes (RWF) |
 
 **Kenya data:** `pull_knbs_cipi.py` and `parse_knbs_cipi.py`. 22 releases from Q1 2021 to Q2 2026; 16
