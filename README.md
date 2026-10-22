@@ -38,24 +38,7 @@ src/ingest/pull_global_catalog.py source/dataset/series registry + multi-source 
 src/index/build_panel.py     splice vintages + join macro + diagnostics -> panel_v1.0
 src/index/reconcile_cipi.py  CIPI-vs-CPI/PPI overlap diagnostics
 tests/test_pipeline.py       pytest regression suite (parser + splicer)
-src/market/                  construction-cost forecasting market (play money): country
-                             config, first-print settlement, nowcast, LMSR, ledger, CLI
-tests/test_market.py         market tests (settlement, LMSR, ledger, config)
-src/forecast/                structural CIPI forecaster: recovers UBOS's weights, forecasts the
-                             29 components from macro drivers, re-aggregates (docs/FORECAST_MODEL.md)
-tests/test_forecast.py       forecaster tests (exact rebuild, no look-ahead, coherence, scenarios)
-config/forecast_model.yaml   driver groups, shrinkage, simulation and scenarios
-config/policy_events.yaml    sourced tax measures (fuel, cement, paint excise) applied as known shocks
-src/ingest/build_rainfall_block.py  monthly rainfall driver (ERA5, five towns) -> data/raw/
-src/ingest/build_weekly_drivers.py  weekly Brent + UGX/KES/RWF readings for the weekly note
-src/ingest/pull_knbs_cipi.py, parse_knbs_cipi.py  Kenya KNBS quarterly CIPI PDFs
-src/forecast/weekly_note.py  weekly construction-cost notes per country (data/processed/notes/)
-src/forecast/quarterly_model.py  Kenya quarterly forecaster (KNBS indices)
-src/ingest/build_fx_history.py  IMF monthly KES/RWF/UGX per USD
-src/webapp/app.py            participant app: invites, contracts, price reports, note, leaderboard
-src/market/cycle.py          daily/weekly automation (deploy/crontab.example); see docs/OPERATIONS.md
 config/series_map.yaml       editable dataset/series codes
-config/countries/*.yaml      per-country market config (Uganda pilot, Kenya planned)
 config/global_series_2015_2026.json quoted 2015-2026 source/dataset/series catalog
 data/raw/                    inputs (CIPI xlsx + macro pulls) — frozen, never edited
 data/processed/              panel_v1.0.{parquet,csv}, splice_log.csv, coverage_report.csv,
@@ -69,8 +52,9 @@ data/processed/              panel_v1.0.{parquet,csv}, splice_log.csv, coverage_
 - `reconciliation_report.csv` — CIPI vs CPI/PPI overlap diagnostics
 - `coverage_report.csv` / `panel_manifest.json` — provenance & missingness
 
-## Forecasting market
-`docs/MARKET_DESIGN.md` covers the contract rules, legal position, backtest and how to add a
-country. Quick start: `python src/market/run_market.py backtest`, then `open`, `board`, `settle`.
+## Construction cost platform
+The forecasting market, forecasters, participant app and weekly notes for 18 countries moved to
+the private repository `gavacharles/cio-construction-costs` (22 Oct 2026). It uses this pipeline's
+UBOS parser and copies of `panel_v1.0*.csv` as inputs.
 
 Deposit `data/processed/` to Zenodo and cite the version DOI in every paper.
