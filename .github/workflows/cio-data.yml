@@ -7,6 +7,13 @@
 #   CIO_INGEST_URL  e.g. https://cio.hovequill.com/api/cio-ingest
 #   CIO_INGEST_KEY  the same value as the portal's CIO_INGEST_KEY setting (sent as X-CiO-Key;
 #                   Static Web Apps strips the Authorization header)
+#
+# Because every source step is allowed to fail, a run in which UBOS did not
+# answer still republishes the panel committed in the repository, and nothing
+# in the datasets themselves says so. Each best-effort step therefore leaves a
+# one-word marker in $RUNNER_TEMP, the build step assembles them into
+# refresh.json (never committed), and the POST carries it as the top-level
+# field `refresh`, which the portal stores and shows on its Home page.
 name: CiO data refresh
 
 on:
@@ -30,16 +37,49 @@ jobs:
         with: { python-version: '3.11', cache: 'pip' }
       - run: pip install -r requirements.txt
       - name: Harvest UBOS releases (best effort)
-        run: python src/ingest/pull_ubos_cipi.py --out data/raw/ubos_cipi_downloads || echo "UBOS harvest failed; using the files in the repository"
+        run: |
+          { python src/ingest/pull_ubos_cipi.py --out data/raw/ubos_cipi_downloads && echo ok > "$RUNNER_TEMP/ubos_harvest"; } \
+          || { echo failed > "$RUNNER_TEMP/ubos_harvest"; echo "UBOS harvest failed; using the files in the repository"; }
       - name: Macro block from MoFPED (best effort)
         run: |
-          python src/ingest/build_macro_from_mofped_csv.py --manual-dir data/raw/mofped_bulk/datasets --out data/raw/macro_block.csv \
-          || python src/ingest/build_macro_from_ubos_xlsx.py --ubos-dir data/raw/ubos_cipi_downloads --out data/raw/macro_block.csv \
-          || echo "macro block unchanged"
+          # Braces keep each attempt and its marker together; a bare a && b || c && d chain
+          # would fall through to the next marker after a success.
+          { python src/ingest/build_macro_from_mofped_csv.py --manual-dir data/raw/mofped_bulk/datasets --out data/raw/macro_block.csv && echo mofped > "$RUNNER_TEMP/macro_block"; } \
+          || { python src/ingest/build_macro_from_ubos_xlsx.py --ubos-dir data/raw/ubos_cipi_downloads --out data/raw/macro_block.csv && echo ubos > "$RUNNER_TEMP/macro_block"; } \
+          || { echo unchanged > "$RUNNER_TEMP/macro_block"; echo "macro block unchanged"; }
       - name: Rebuild the panel
-        run: python src/index/build_panel.py --raw data/raw --out data/processed || echo "panel rebuild failed; publishing the committed panel"
+        run: |
+          { python src/index/build_panel.py --raw data/raw --out data/processed && echo true > "$RUNNER_TEMP/panel_rebuilt"; } \
+          || { echo false > "$RUNNER_TEMP/panel_rebuilt"; echo "panel rebuild failed; publishing the committed panel"; }
       - name: Build the datasets
-        run: python app/build_dashboard.py --json && test -s app/dashboard_data.json
+        run: |
+          python app/build_dashboard.py --json && test -s app/dashboard_data.json
+          # Assemble the provenance record from the markers. A missing marker is read as
+          # the pessimistic value, so a step that was skipped or crashed before writing
+          # its marker is never reported as a success. processed_changed asks git whether
+          # the rebuild moved anything under data/processed compared with the checkout,
+          # which is the same test the push-back step applies.
+          python - <<'PY'
+          import datetime, json, os, subprocess
+          tmp = os.environ['RUNNER_TEMP']
+          def marker(name, fallback):
+              try:
+                  return open(os.path.join(tmp, name)).read().strip() or fallback
+              except OSError:
+                  return fallback
+          status = subprocess.run(['git', 'status', '--porcelain', '--', 'data/processed'], capture_output=True, text=True)
+          refresh = {
+              'ubos_harvest': marker('ubos_harvest', 'failed'),
+              'macro_block': marker('macro_block', 'unchanged'),
+              'panel_rebuilt': marker('panel_rebuilt', 'false') == 'true',
+              'processed_changed': status.returncode == 0 and status.stdout.strip() != '',
+              'run_url': f"{os.environ.get('GITHUB_SERVER_URL', 'https://github.com')}/{os.environ.get('GITHUB_REPOSITORY', '')}/actions/runs/{os.environ.get('GITHUB_RUN_ID', '')}",
+              'ran_at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+          }
+          with open(os.path.join(tmp, 'refresh.json'), 'w') as f:
+              json.dump(refresh, f)
+          print('refresh:', json.dumps(refresh))
+          PY
       - name: Post to the portal
         env:
           CIO_INGEST_URL: ${{ secrets.CIO_INGEST_URL }}
@@ -49,7 +89,8 @@ jobs:
           import json, os, urllib.request
           data = json.load(open('app/dashboard_data.json'))
           version = str((data.get('manifest') or {}).get('panel_version') or '')
-          body = json.dumps({'source': f"cio_pipeline-2@{os.environ.get('GITHUB_SHA','')[:12]}", 'version': version, 'datasets': data}).encode()
+          refresh = json.load(open(os.path.join(os.environ['RUNNER_TEMP'], 'refresh.json')))
+          body = json.dumps({'source': f"cio_pipeline-2@{os.environ.get('GITHUB_SHA','')[:12]}", 'version': version, 'datasets': data, 'refresh': refresh}).encode()
           req = urllib.request.Request(os.environ['CIO_INGEST_URL'], data=body, method='POST',
                                        headers={'Content-Type': 'application/json', 'X-CiO-Key': os.environ['CIO_INGEST_KEY']})
           with urllib.request.urlopen(req, timeout=120) as r:
